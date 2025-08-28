@@ -6,6 +6,7 @@
         
         * Update to use the WingDings as the actual instructions in code
             - Create mapping file instead of hard-coding instruction dict
+
                 [keymap.csv]
                     "]", "🗀  "
                     "[", "🗁  "
@@ -17,14 +18,22 @@
                     "-", "👇︎ "
             
         * Add sub-routines as text files with WingDing names
-            WingDingFork/subroutines/
-                🕿.txt
-                🖏.txt
+            - Add ability to save current code as a new sub-routine
 
-            [🕿.txt]
-                / Hello World
-                >++++++++[<+++++++++>-]<.>++++[<+++++++>-]<+.+++++++..+++.>>++++++[<+++++++>-]<++.------------.>++++++[<+++++++++>-]<+.<.+++.------.--------.>>>++++[<++++++++>-
-]<+.
+                WingDingFork/subroutines/
+                    🕿.txt
+                    🖏.txt
+                    
+                [🕿.txt]
+                    >++++++++[<+++++++++>-]<.
+                    >++++[<+++++++>-]<+.
+                    +++++++..
+                    +++.
+                    >>++++++[<+++++++>-]<++.
+                    ------------.>++++++[<+++++++++>-]<+.
+                    <.+++.------.
+                    --------.
+                    >>>++++[<++++++++>-]<+.
             
 */
 
