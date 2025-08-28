@@ -31,8 +31,6 @@ namespace dingfork
                 return wingDingDict[wing];
             }
 
-            Console.Clear();
-
             return "";
         }
     }
@@ -188,6 +186,7 @@ namespace dingfork
                 Console.WriteLine(sbDingFork);
 
                 string userKey = Console.ReadKey().KeyChar.ToString();
+                Console.Clear();
 
                 if (userKey == "q")
                 { // quit the program
@@ -225,10 +224,18 @@ namespace dingfork
                 }
                 else if (userKey == "d") // Delete one character
                 {
-                    userCode.Remove(-1, 1);
+                    if (userCode.Length == 0) { continue; } // Nothing to remove
+
+                    userCode.Remove(userCode.Length - 1, 1);
+
+                    // Hacky, need to re-render the WingDingUserCode due to kerning
+                    wingDingUserCode.Clear();
+                    foreach (char c in userCode.ToString()) {
+                        wingDingUserCode.Append(wingDings.getDing(c.ToString()));
+                    } 
                     continue;
                 }
-
+    
                 string wingDing = wingDings.getDing(userKey);
 
                 if (wingDing == "")
