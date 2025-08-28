@@ -3,7 +3,20 @@
 
     Next:
         * Clean up TODOs
-        * Add sub-routines as text files with WingDing names ie:
+        
+        * Update to use the WingDings as the actual instructions in code
+            - Create mapping file instead of hard-coding instruction dict
+                [keymap.csv]
+                    "]", "🗀  "
+                    "[", "🗁  "
+                    "<", "👈︎ "
+                    ">", "👉︎ "
+                    ".", "🖳  "
+                    ",", "✂  "
+                    "+", "👆︎ "
+                    "-", "👇︎ "
+            
+        * Add sub-routines as text files with WingDing names
             WingDingFork/subroutines/
                 🕿.txt
                 🖏.txt
