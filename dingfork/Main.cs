@@ -202,7 +202,7 @@ namespace dingfork
                     userCode.Clear();
                     wingDingUserCode.Clear();
 
-                    Console.WriteLine("New WingDing? (Y/N)");
+                    Console.WriteLine("\n\nNew WingDing? (Y/N)\n");
 
                     string optKey = Console.ReadKey().KeyChar.ToString();
                     while (true)
