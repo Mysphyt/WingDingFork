@@ -7,8 +7,8 @@ A BrainFuck interpreter but it's WingDings
 ```
 
 ### Usage:
-```
 Enter or paste your [code] from the following instructions:
+```
 + : 👆︎ Increment the byte at the data pointer by one.
 - : 👇︎ Decrement the byte at the data pointer by one.
 . : 🖳 Output the byte at the data pointer.
@@ -19,7 +19,6 @@ Enter or paste your [code] from the following instructions:
        forward to the next command, jump it back to the command after the matching [ command.[a]
 [ : 🗁 If the byte at the data pointer is zero, then instead of moving the instruction pointer
        forward to the next command, jump it forward to the command after the matching ] command.
-
 ```
 
 ### Example Program:
