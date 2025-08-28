@@ -1,7 +1,22 @@
 # WingDingFork
 A BrainFuck interpreter but it's WingDings
 
-Example Program:
+### Usage:
+```
+Enter or paste your [code]
 
+Instructions:
+] : 🗀 
+[ : 🗁 
+< : 👈︎
+> : 👉︎
+. : 🖳 
+, : ✂ 
++ : 👆︎
+- : 👇︎
+ 
+```
+
+### Example Program:
 
 ![Hello World](./ref/example.png)
