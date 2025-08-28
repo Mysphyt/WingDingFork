@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("dingfork")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+52512ad7c8de50b5b5119618f99640662f305f3b")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+0d078e8ba87d6c69c7a29e78b421ee97f25f15fc")]
 [assembly: System.Reflection.AssemblyProductAttribute("dingfork")]
 [assembly: System.Reflection.AssemblyTitleAttribute("dingfork")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
