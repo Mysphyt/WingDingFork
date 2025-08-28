@@ -1,4 +1,19 @@
-﻿// See https://aka.ms/new-console-template for more information
+﻿/*
+    WingDingFork
+
+    Next:
+        * Clean up TODOs
+        * Add sub-routines as text files with WingDing names ie:
+            WingDingFork/subroutines/
+                🕿.txt
+                🖏.txt
+
+            [🕿.txt]
+                / Hello World
+                >++++++++[<+++++++++>-]<.>++++[<+++++++>-]<+.+++++++..+++.>>++++++[<+++++++>-]<++.------------.>++++++[<+++++++++>-]<+.<.+++.------.--------.>>>++++[<++++++++>-
+]<+.
+            
+*/
 
 using System;
 using System.Text;

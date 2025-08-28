@@ -1,13 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "rl7CU5Y5E9Y=",
+  "dgSpecHash": "EI1DZi6WuR0=",
   "success": true,
   "projectFilePath": "C:\\Users\\aaron\\git\\WingDingFork\\dingfork\\dingfork.csproj",
-  "expectedPackageFiles": [
-    "C:\\Users\\aaron\\.nuget\\packages\\microsoft.net.illink.tasks\\9.0.8\\microsoft.net.illink.tasks.9.0.8.nupkg.sha512",
-    "C:\\Users\\aaron\\.nuget\\packages\\microsoft.netcore.app.runtime.win-x64\\9.0.8\\microsoft.netcore.app.runtime.win-x64.9.0.8.nupkg.sha512",
-    "C:\\Users\\aaron\\.nuget\\packages\\microsoft.windowsdesktop.app.runtime.win-x64\\9.0.8\\microsoft.windowsdesktop.app.runtime.win-x64.9.0.8.nupkg.sha512",
-    "C:\\Users\\aaron\\.nuget\\packages\\microsoft.aspnetcore.app.runtime.win-x64\\9.0.8\\microsoft.aspnetcore.app.runtime.win-x64.9.0.8.nupkg.sha512"
-  ],
+  "expectedPackageFiles": [],
   "logs": []
 }
