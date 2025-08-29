@@ -17,5 +17,6 @@ A BrainFuck interpreter but it's WingDings
 ```
 
 ### Example Program:
-![Hello World](./ref/example1.png)
-![Hello World](./ref/example2.png)
+
+![Example1](./ref/example1.png)
+![Example2](./ref/example2.png)
