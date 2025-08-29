@@ -31,6 +31,16 @@ namespace WingDings
             }
         }
 
+        public void SaveSubroutine(string userCode)
+        {
+            Console.Write("Saving code: {0}\nEnter subroutine name: ", userCode);
+            string subroutineName = Console.ReadLine();
+            string subroutinePath = WingDingDecoder.subroutinesDirectory + subroutineName;
+            File.WriteAllText(subroutinePath, userCode.ToString());
+            Console.WriteLine("Current code saved to: subroutines/{0}\n\nPress any key to continue...", subroutineName);
+            Console.ReadKey();
+        }
+
         public string GetSubroutine(string id)
         {
             if (wingDingSubRoutines.ContainsKey(id))

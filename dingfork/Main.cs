@@ -16,15 +16,17 @@ namespace dingfork
         const string WINGDINGFORK_HEADER = """
         👇︎ 👆︎ ✂  🖳  👈︎ 👉︎ 🗁  🗀   WingDingFork 🗀  🗁  👈︎ 👉︎ 🖳  ✂  👆︎ 👇︎ 
         """;
-
+        /*
+            TODO: validate that loaded keymap does not overlap this instruction set
+        */
         const string INTERFACE_STRING = """
-
 
         code ⮚ {0}
 
         <r>: Run [code]
         <d>: Delete last instruction
         <x>: Clear all instructions
+        <s>: Save as subroutine
         <q>: Quit
 
         """;
@@ -36,8 +38,9 @@ namespace dingfork
             foreach (var subroutine in wingDings.wingDingSubRoutines)
             {
                 string subroutineWingDing = subroutine.Key;
-                string subroutineCode = subroutine.Value;
-                userCode.Replace(subroutineWingDing, subroutineCode);
+                // HACK: Super hacky way of adding | (or re-adding) delimiters and reducing even and odd number of spaces to a single space
+                string subroutineCode = subroutine.Value.Replace("  ", " ").Replace("   ", " ").Replace(" ", "|");
+                userCode = userCode.Replace(subroutineWingDing, subroutineCode);
             }
             return userCode;
         }
@@ -54,16 +57,15 @@ namespace dingfork
         static void RunWingDingCode(string userCode)
         {
             // Parse any subroutines
-            // string parsedCode = ParseSubroutines(userCode.ToString());
+            string parsedCode = ParseSubroutines(userCode);
 
             Console.OutputEncoding = System.Text.Encoding.UTF8;
 
             Console.Write("Code: {0} \nOutput:\n ", CleanUserCode(userCode));
             var interpreter = new Runner();
 
-            interpreter.Run(wingDings.wingDingsToKeys, userCode);
+            interpreter.Run(wingDings.wingDingsToKeys, parsedCode);
         }
-
 
         static void MainLoop()
         {
@@ -92,13 +94,18 @@ namespace dingfork
                 string userKey = Console.ReadKey().KeyChar.ToString();
                 Console.Clear();
 
-                if (userKey == "q")
+                if (userKey == "s") // Save as a new subroutine
+                {
+                    wingDings.SaveSubroutine(CleanUserCode(userCode.ToString()));
+                }
+
+                else if (userKey == "q")
                 { // quit the program
                     System.Environment.Exit(1);
                 }
 
                 // TODO: clean up messy control flow
-                if (userKey == "r")
+                else if (userKey == "r")
                 { // Run the current code
                     RunWingDingCode(userCode.ToString());
 
@@ -121,7 +128,7 @@ namespace dingfork
                         }
                         else
                         {
-                            Console.Write("\nInvalid Key - please enter (Y/N): ");
+                            Console.Write("\nInvalid Key - please enter (y/n): ");
                         }
                     }
                     Console.Clear();
@@ -168,9 +175,9 @@ namespace dingfork
                     - replace ReadKey with async key events
             */
 
+            wingDings.LoadSubRoutines();
             MainLoop();
             //WingDings wingDings = new WingDings();
-            //wingDings.LoadSubRoutines();
             //Console.OutputEncoding = System.Text.Encoding.UTF8;
 
             // string testString = "👉︎👉︎👉︎👉︎";
