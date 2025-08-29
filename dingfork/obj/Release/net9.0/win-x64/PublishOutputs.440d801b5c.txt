@@ -1,2 +1,0 @@
-C:\Users\aaron\git\WingDingFork\dingfork\bin\Release\net9.0\win-x64\publish\dingfork.pdb
-C:\Users\aaron\git\WingDingFork\dingfork\bin\Release\net9.0\win-x64\publish\dingfork.exe
