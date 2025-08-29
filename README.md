@@ -7,57 +7,15 @@ A BrainFuck interpreter but it's WingDings
 ```
 
 ### Usage:
-Enter or paste your [code] from the following instructions:
-```
-+ : 👆︎ Increment the byte at the data pointer by one.
-- : 👇︎ Decrement the byte at the data pointer by one.
-. : 🖳 Output the byte at the data pointer.
-, : ✂ Accept one byte of input, storing its value in the byte at the data pointer.
-< : 👈︎ Decrement the data pointer by one (to point to the next cell to the left).
-> : 👉︎ Increment the data pointer by one (to point to the next cell to the right).
-] : 🗀 If the byte at the data pointer is nonzero, then instead of moving the instruction pointer
-       forward to the next command, jump it back to the command after the matching [ command.[a]
-[ : 🗁 If the byte at the data pointer is zero, then instead of moving the instruction pointer
-       forward to the next command, jump it forward to the command after the matching ] command.
+
+#### Enter or paste your [code] from the following (default) instructions, or modify the mapping file with different WingDings.
+[WingDing <> key mapping](./dingfork/data/keymap.csv)
+
+* Keys must include the brainfuck instruction set: [],.+-<>
+* You may create or save "subroutines", just make sure to add the name of the subroutine (ex: 🕿) to keymap.csv`
+   - This is currently buggy when combining subroutines
 ```
 
 ### Example Program:
-
-![Hello World](./ref/example.png)
-
-### Next:
-        * Clean up TODOs
-        
-        X Update to use the WingDings as the actual instructions in code
-            - Create mapping file instead of hard-coding instruction dict
-
-                [keymap.csv]
-                    "]", "🗀  "
-                    "[", "🗁  "
-                    "<", "👈︎ "
-                    ">", "👉︎ "
-                    ".", "🖳  "
-                    ",", "✂  "
-                    "+", "👆︎ "
-                    "-", "👇︎ "
-            
-        * Add sub-routines as text files with WingDing names
-            - Add ability to save current code as a new sub-routine
-
-                WingDingFork/subroutines/
-                    🕿.txt
-                    🖏.txt
-                    
-                [🕿.txt]
-                    >++++++++[<+++++++++>-]<.
-                    >++++[<+++++++>-]<+.
-                    +++++++..
-                    +++.
-                    >>++++++[<+++++++>-]<++.
-                    ------------.>++++++[<+++++++++>-]<+.
-                    <.+++.------.
-                    --------.
-                    >>>++++[<++++++++>-]<+.
-            
-
-        * Text to WingDing code converter?
+![Hello World](./ref/example1.png)
+![Hello World](./ref/example2.png)
