@@ -8,23 +8,52 @@ using System.Security.Permissions;
 using System.Threading;
 using System.Security.Cryptography;
 using System.Windows;
+using System.Reflection.Metadata.Ecma335;
 
 namespace dingfork
 {
     public class WingDings
     {
-        public Dictionary<string, string> wingDingDict = new Dictionary<string, string>()
+        public Dictionary<string, string> wingDingDict = new Dictionary<string, string>();
+
+        public Dictionary<string, string> wingDingSubRoutines = new Dictionary<string, string>();
+
+        public void LoadSubRoutines()
         {
-            // Includes " " kerning
-            { "]", "🗀  "},
-            {"[", "🗁  "},
-            {"<", "👈︎ "},
-            {">", "👉︎ "},
-            {".", "🖳  "},
-            {",", "✂  "},
-            {"+", "👆︎ "},
-            {"-", "👇︎ "}
-        };
+            string[] files = Directory.GetFiles("../../../subroutines/", "*", SearchOption.AllDirectories);
+            foreach (string f in files)
+            {
+                string subroutineID = f.Split('/')[^1];
+                string subroutineString = File.ReadAllText(f);
+                wingDingSubRoutines.Add(subroutineID, subroutineString);
+            }
+        }
+
+        public string GetSubroutine(string id)
+        {
+            if (wingDingSubRoutines.ContainsKey(id)) {
+                return wingDingSubRoutines[id];
+            }
+            return "";
+        }
+
+        public void LoadDingKeyMap()
+        {
+            try
+            {
+                // Hacky csv to dict
+                wingDingDict = File.ReadLines("../../../data/keymap.csv").Select(line => line.Split('|')).ToDictionary(line => line[0], line => line[1]);
+
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Error loading dingfork/data/keymap.csv, got: {0}\nPress any key to quit.", e.ToString());
+                // Enter any key        
+                Console.ReadKey();
+                // Exit the program
+                System.Environment.Exit(1);
+            }
+        }
 
         public string getDing(string wing)
         {
@@ -49,72 +78,78 @@ namespace dingfork
             tape = new byte[30000];
         }
 
-        public void Run()
+        public void Run(Dictionary<string, string> keymap)
         {
             try
             {
                 var unmatchedBracketCounter = 0;
                 for (int i = 0; i < input.Length; i++)
                 {
-                    switch (input[i])
+                    string instruction = input[i].ToString();
+                    if (instruction == keymap[">"])
                     {
-                        case '>':
-                            pointer++;
-                            break;
-                        case '<':
-                            pointer--;
-                            break;
-                        case '+':
-                            tape[pointer]++;
-                            break;
-                        case '-':
-                            tape[pointer]--;
-                            break;
-                        case '.':
-                            Console.Write(Convert.ToChar(tape[pointer]));
-                            break;
-                        case ',':
-                            var key = Console.ReadKey();
-                            tape[pointer] = (byte)key.KeyChar;
-                            break;
-                        case '[':
-                            if (tape[pointer] == 0)
+                        pointer++;
+                    }
+                    else if (instruction == keymap["<"])
+                    {
+                        pointer--;
+                    }
+                    else if (instruction == keymap["+"])
+                    {
+                        tape[pointer]++;
+                    }
+                    else if (instruction == keymap["-"])
+                    {
+                        tape[pointer]--;
+                    }
+                    else if (instruction == keymap["."])
+                    {
+                        Console.Write(Convert.ToChar(tape[pointer]));
+                    }
+                    else if (instruction == keymap[","])
+                    {
+                        var key = Console.ReadKey();
+                        tape[pointer] = (byte)key.KeyChar;
+                    }
+                    else if (instruction == keymap["["])
+                    {
+                        if (tape[pointer] == 0)
+                        {
+                            unmatchedBracketCounter++;
+                            while (instruction != keymap["]"] || unmatchedBracketCounter != 0)
                             {
-                                unmatchedBracketCounter++;
-                                while (input[i] != ']' || unmatchedBracketCounter != 0)
-                                {
-                                    i++;
+                                i++;
 
-                                    if (input[i] == '[')
-                                    {
-                                        unmatchedBracketCounter++;
-                                    }
-                                    else if (input[i] == ']')
-                                    {
-                                        unmatchedBracketCounter--;
-                                    }
+                                if (instruction == keymap["["])
+                                {
+                                    unmatchedBracketCounter++;
+                                }
+                                else if (instruction == keymap["]"])
+                                {
+                                    unmatchedBracketCounter--;
                                 }
                             }
-                            break;
-                        case ']':
-                            if (tape[pointer] != 0)
+                        }
+                    }
+                    else if (instruction == keymap["]"])
+                    {
+                        if (tape[pointer] != 0)
+                        {
+                            unmatchedBracketCounter++;
+                            while (instruction != keymap["["] || unmatchedBracketCounter != 0)
                             {
-                                unmatchedBracketCounter++;
-                                while (input[i] != '[' || unmatchedBracketCounter != 0)
-                                {
-                                    i--;
+                                i--;
 
-                                    if (input[i] == ']')
-                                    {
-                                        unmatchedBracketCounter++;
-                                    }
-                                    else if (input[i] == '[')
-                                    {
-                                        unmatchedBracketCounter--;
-                                    }
+                                if (instruction == keymap["]"])
+                                {
+                                    unmatchedBracketCounter++;
+                                }
+                                else if (instruction == keymap["["])
+                                {
+                                    unmatchedBracketCounter--;
                                 }
                             }
-                            break;
+                        }
                     }
                 }
             }
@@ -147,26 +182,23 @@ namespace dingfork
 
         """;
 
+        private static WingDings wingDings = new WingDings();
 
-        static void RunWingDingCode(string wingDingUserCode, string userCode)
+        static void RunWingDingCode(string userCode)
         {
 
-            Console.WriteLine("\nRunning: {0}", wingDingUserCode.ToString());
+            Console.WriteLine("\nRunning: {0}", userCode.ToString());
 
             Console.Write("\nOutput:\n ");
             var interpreter = new Interpreter(userCode.ToString());
-
-            interpreter.Run();
+            interpreter.Run(wingDings.wingDingDict);
         }
 
-        static void Main()
+        static void MainLoop()
         {
-            /*
-                TODO: 
-                    - replace ReadKey with async key events
-            */
 
-            WingDings wingDings = new WingDings();
+            // Load the data/keymap.csv file
+            wingDings.LoadDingKeyMap();
 
             // Allows unicode characters to be printed to the console 
             Console.OutputEncoding = System.Text.Encoding.UTF8;
@@ -176,14 +208,13 @@ namespace dingfork
 
             // StringBuilders for user input
             StringBuilder userCode = new StringBuilder();
-            StringBuilder wingDingUserCode = new StringBuilder();
 
             while (true)
             {
                 // StringBuilder for 
                 StringBuilder sbDingFork = new StringBuilder(WINGDINGFORK_HEADER);
 
-                sbDingFork.AppendFormat(INTERFACE_STRING, wingDingUserCode);
+                sbDingFork.AppendFormat(INTERFACE_STRING, userCode);
 
                 Console.WriteLine(sbDingFork);
 
@@ -198,10 +229,9 @@ namespace dingfork
                 // TODO: clean up messy control flow
                 if (userKey == "r")
                 { // Run the current code
-                    RunWingDingCode(wingDingUserCode.ToString(), userCode.ToString());
+                    RunWingDingCode(userCode.ToString());
 
                     userCode.Clear();
-                    wingDingUserCode.Clear();
 
                     Console.WriteLine("\n\nNew WingDing? (Y/N)\n");
 
@@ -222,22 +252,21 @@ namespace dingfork
                 if (userKey == "x") // Clear the current code
                 {
                     userCode.Clear();
-                    wingDingUserCode.Clear();
                 }
                 else if (userKey == "d") // Delete one character
                 {
                     if (userCode.Length == 0) { continue; } // Nothing to remove
 
+                    // Trim kerning whitespace
+                    while (userCode[userCode.Length - 1] == ' ')
+                    {
+                        userCode.Remove(userCode.Length - 1, 1);
+                    }
+                    // Remove the wingding
                     userCode.Remove(userCode.Length - 1, 1);
-
-                    // Hacky, need to re-render the WingDingUserCode due to kerning
-                    wingDingUserCode.Clear();
-                    foreach (char c in userCode.ToString()) {
-                        wingDingUserCode.Append(wingDings.getDing(c.ToString()));
-                    } 
-                    continue;
                 }
-    
+
+
                 string wingDing = wingDings.getDing(userKey);
 
                 if (wingDing == "")
@@ -245,12 +274,22 @@ namespace dingfork
                     continue;
                 }
 
-                userCode.Append(userKey);
-                wingDingUserCode.Append(wingDing);
+                userCode.Append(wingDing);
 
                 Console.Clear();
             }
+        }
 
+        static void Main()
+        {
+            /*
+                TODO: 
+                    - replace ReadKey with async key events
+            */
+
+            MainLoop();
+            //WingDings wingDings = new WingDings();
+            //wingDings.LoadSubRoutines();
         }
     }
 
