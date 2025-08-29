@@ -28,7 +28,7 @@ Enter or paste your [code] from the following instructions:
 ### Next:
         * Clean up TODOs
         
-        * Update to use the WingDings as the actual instructions in code
+        X Update to use the WingDings as the actual instructions in code
             - Create mapping file instead of hard-coding instruction dict
 
                 [keymap.csv]

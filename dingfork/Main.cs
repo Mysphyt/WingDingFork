@@ -14,12 +14,16 @@ namespace dingfork
 {
     public class WingDings
     {
-        public Dictionary<string, string> wingDingDict = new Dictionary<string, string>();
-
+        // wingding -> key
+        public Dictionary<string, string> wingDingsToKeys = new Dictionary<string, string>();
+        // key -> wingding
+        public Dictionary<string, string> keysToWingDings = new Dictionary<string, string>();
+        // wingding -> wingding[]
         public Dictionary<string, string> wingDingSubRoutines = new Dictionary<string, string>();
 
         public void LoadSubRoutines()
         {
+            // Parses subroutines/ folder
             string[] files = Directory.GetFiles("../../../subroutines/", "*", SearchOption.AllDirectories);
             foreach (string f in files)
             {
@@ -41,9 +45,15 @@ namespace dingfork
         {
             try
             {
-                // Hacky csv to dict
-                wingDingDict = File.ReadLines("../../../data/keymap.csv").Select(line => line.Split('|')).ToDictionary(line => line[0], line => line[1]);
-
+                // Hacky csv to dict for wingdings -> keys
+                wingDingsToKeys = File.ReadLines("../../../data/keymap.csv").Select(line => line.Split('|')).ToDictionary(line => line[0], line => line[1]);
+                foreach (var wingKey in wingDingsToKeys)
+                {
+                    if (!keysToWingDings.ContainsKey(wingKey.Value))
+                    {
+                        keysToWingDings.Add(wingKey.Value, wingKey.Key);
+                    }
+                }
             }
             catch (Exception e)
             {
@@ -57,9 +67,9 @@ namespace dingfork
 
         public string getDing(string wing)
         {
-            if (wingDingDict.ContainsKey(wing))
+            if (keysToWingDings.ContainsKey(wing))
             {
-                return wingDingDict[wing];
+                return keysToWingDings[wing];
             }
 
             return "";
@@ -74,6 +84,8 @@ namespace dingfork
 
         public Interpreter(string input)
         {
+            // Log the final code
+            Console.WriteLine("\nRunning: {0}", input);
             this.input = input.ToCharArray();
             tape = new byte[30000];
         }
@@ -86,65 +98,66 @@ namespace dingfork
                 for (int i = 0; i < input.Length; i++)
                 {
                     string instruction = input[i].ToString();
-                    if (instruction == keymap[">"])
+                    if (!keymap.ContainsKey(instruction)) { continue; }
+                    if (">" == keymap[instruction])
                     {
                         pointer++;
                     }
-                    else if (instruction == keymap["<"])
+                    else if ("<" == keymap[instruction])
                     {
                         pointer--;
                     }
-                    else if (instruction == keymap["+"])
+                    else if ("+" == keymap[instruction])
                     {
                         tape[pointer]++;
                     }
-                    else if (instruction == keymap["-"])
+                    else if ("-" == keymap[instruction])
                     {
                         tape[pointer]--;
                     }
-                    else if (instruction == keymap["."])
+                    else if ("." == keymap[instruction])
                     {
                         Console.Write(Convert.ToChar(tape[pointer]));
                     }
-                    else if (instruction == keymap[","])
+                    else if ("," == keymap[instruction])
                     {
                         var key = Console.ReadKey();
                         tape[pointer] = (byte)key.KeyChar;
                     }
-                    else if (instruction == keymap["["])
+                    else if ("[" == keymap[instruction])
                     {
                         if (tape[pointer] == 0)
                         {
                             unmatchedBracketCounter++;
-                            while (instruction != keymap["]"] || unmatchedBracketCounter != 0)
+                            while ("]" != keymap[instruction] || unmatchedBracketCounter != 0)
                             {
                                 i++;
 
-                                if (instruction == keymap["["])
+                                if ("[" == keymap[instruction])
                                 {
                                     unmatchedBracketCounter++;
                                 }
-                                else if (instruction == keymap["]"])
+                                else if ("]" == keymap[instruction])
                                 {
                                     unmatchedBracketCounter--;
                                 }
                             }
                         }
                     }
-                    else if (instruction == keymap["]"])
+                    else if ("]" == keymap[instruction])
                     {
                         if (tape[pointer] != 0)
                         {
                             unmatchedBracketCounter++;
-                            while (instruction != keymap["["] || unmatchedBracketCounter != 0)
+                            while ("[" != keymap[instruction] || unmatchedBracketCounter != 0)
                             {
                                 i--;
 
-                                if (instruction == keymap["]"])
+                                if ("]" == keymap[instruction])
                                 {
                                     unmatchedBracketCounter++;
                                 }
-                                else if (instruction == keymap["["])
+                                else if ("[" == keymap[instruction])
                                 {
                                     unmatchedBracketCounter--;
                                 }
@@ -184,15 +197,28 @@ namespace dingfork
 
         private static WingDings wingDings = new WingDings();
 
+        static string ParseSubroutines(string userCode)
+        {
+            foreach (var subroutine in wingDings.wingDingSubRoutines)
+            {
+                string subroutineWingDing = subroutine.Key;
+                string subroutineCode = subroutine.Value;
+                userCode.Replace(subroutineWingDing, subroutineCode);
+            }
+            return userCode;
+        }
+
         static void RunWingDingCode(string userCode)
         {
+            // Parse any subroutines
+            // string parsedCode = ParseSubroutines(userCode.ToString());
 
-            Console.WriteLine("\nRunning: {0}", userCode.ToString());
 
             Console.Write("\nOutput:\n ");
             var interpreter = new Interpreter(userCode.ToString());
-            interpreter.Run(wingDings.wingDingDict);
+            interpreter.Run(wingDings.wingDingsToKeys);
         }
+
 
         static void MainLoop()
         {

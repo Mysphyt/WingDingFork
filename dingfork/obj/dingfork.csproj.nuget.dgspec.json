@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\aaron\\git\\WingDingFork\\dingfork\\dingfork.csproj": {}
+    "c:\\Users\\aaron\\git\\WingDingFork\\dingfork\\dingfork.csproj": {}
   },
   "projects": {
-    "C:\\Users\\aaron\\git\\WingDingFork\\dingfork\\dingfork.csproj": {
+    "c:\\Users\\aaron\\git\\WingDingFork\\dingfork\\dingfork.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\aaron\\git\\WingDingFork\\dingfork\\dingfork.csproj",
+        "projectUniqueName": "c:\\Users\\aaron\\git\\WingDingFork\\dingfork\\dingfork.csproj",
         "projectName": "dingfork",
-        "projectPath": "C:\\Users\\aaron\\git\\WingDingFork\\dingfork\\dingfork.csproj",
+        "projectPath": "c:\\Users\\aaron\\git\\WingDingFork\\dingfork\\dingfork.csproj",
         "packagesPath": "C:\\Users\\aaron\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\aaron\\git\\WingDingFork\\dingfork\\obj\\",
+        "outputPath": "c:\\Users\\aaron\\git\\WingDingFork\\dingfork\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\aaron\\AppData\\Roaming\\NuGet\\NuGet.Config"
