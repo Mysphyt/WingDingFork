@@ -4,6 +4,7 @@
 using System.Reflection;
 using System.Diagnostics;
 using System.Text;
+using System.ComponentModel.DataAnnotations;
 
 namespace Interpreter
 {
@@ -131,9 +132,7 @@ namespace Interpreter
 
         public void Run(Dictionary<string, string> keymap, string input)
         {
-            /*
-                TODO: update to validate keymap value set contains required 8 instructions
-            */
+            if (input == "") { return; } // Nothing to run
 
             //...
             var stopwatch = new Stopwatch();
@@ -169,7 +168,6 @@ namespace Interpreter
 
                     if (!instructionMthdMap.ContainsKey(instruction))
                     {
-                        Console.WriteLine("{0}  !", instruction);
                         continue;
                     }
 
