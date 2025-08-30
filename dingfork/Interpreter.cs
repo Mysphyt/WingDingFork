@@ -168,7 +168,7 @@ namespace Interpreter
 
                     stopwatch.Start();
                 }
-                Console.WriteLine("Output: {0}: ", output.ToString());
+                Console.WriteLine("Output:\n\n{0}", output.ToString());
             }
             catch (Exception e)
             {
