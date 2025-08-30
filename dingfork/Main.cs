@@ -35,12 +35,22 @@ namespace dingfork
 
         static string ParseSubroutines(string userCode)
         {
-            foreach (var subroutine in wingDings.wingDingSubRoutines)
+            string subroutineCode = userCode;
+            string prevSubroutineCode = "";
+
+            // While there are still subroutines
+            while (subroutineCode != prevSubroutineCode)
             {
-                string subroutineWingDing = subroutine.Key;
-                // HACK: Super hacky way of adding | (or re-adding) delimiters and reducing even and odd number of spaces to a single space
-                string subroutineCode = subroutine.Value.Replace("  ", " ").Replace("   ", " ").Replace(" ", "|");
-                userCode = userCode.Replace(subroutineWingDing, subroutineCode);
+                prevSubroutineCode = subroutineCode;
+                foreach (var subroutine in wingDings.wingDingSubRoutines)
+                {
+                        string subroutineWingDing = subroutine.Key;
+                       
+                        // HACK: Super hacky way of adding | (or re-adding) delimiters and reducing even and odd number of spaces to a single space
+                        subroutineCode = subroutine.Value.Replace("  ", " ").Replace("   ", " ").Replace(" ", "|");
+
+                        userCode = userCode.Replace(subroutineWingDing, subroutineCode);
+                }
             }
             return userCode;
         }
@@ -61,8 +71,9 @@ namespace dingfork
 
             Console.OutputEncoding = System.Text.Encoding.UTF8;
 
-            Console.Write("Code: {0} \nOutput:\n ", CleanUserCode(userCode));
             var interpreter = new Runner();
+
+            interpreter.LoadInstructionMap(WingDingDecoder.dataDirectory);
 
             interpreter.Run(wingDings.wingDingsToKeys, parsedCode);
         }

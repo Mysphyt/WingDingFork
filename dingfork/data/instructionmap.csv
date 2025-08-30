@@ -1,0 +1,9 @@
+👉|inc_data
+👈|dec_data
+👆|inc_byte
+👇|dec_byte
+👍|out_byte
+🖐|inp_byte
+🗁|loop_bgn
+🗀|loop_end
+💣|cls_tape
