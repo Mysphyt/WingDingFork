@@ -9,12 +9,11 @@ A BrainFuck interpreter but it's WingDings
 ### Usage:
 
 #### Enter or paste your [code] from the following (default) instructions, or modify the mapping file with different WingDings.
-[WingDing <> key mapping](./dingfork/data/keymap.csv)
 
-* `keymap.csv` maps keyboard keys to WingDing instructions.
+* [keymap](./dingfork/data/keymap.csv) maps keyboard keys to WingDing instructions.
    * Additional instruction for resetting memory (default 💣 : !)
 
-* (TODO) `instructionmap.csv` maps WingDings to instructions
+* [instructionmap](./dingfork/data/instructionmap.csv) maps WingDings to Brainfuck instructions.
 ```
 INSTRUCTIONS:
    
@@ -26,6 +25,7 @@ INSTRUCTIONS:
    inp_byte : Accept one byte of input, storing its value in the byte at the data pointer.
    loop_bgn : If the byte at the data pointer is zero, then instead of moving the instruction pointer forward to the next command, jump it forward to the command after the matching ] command.
    loop_end : If the byte at the data pointer is nonzero, then instead of moving the instruction pointer forward to the next command, jump it back to the command after the matching [ command.[a]
+   cls_tape : Resets memory (tape) to zeroed state.
 
 ```
 
