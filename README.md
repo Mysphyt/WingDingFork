@@ -13,7 +13,7 @@ A BrainFuck interpreter but it's WingDings
 * [keymap](./dingfork/data/keymap.csv) maps keyboard keys to WingDing instructions.
    * Additional instruction for resetting memory (default 💣 : !)
 
-* [instructionmap](./dingfork/data/instructionmap.csv) maps WingDings to instructions
+* [instructionmap](./dingfork/data/instructionmap.csv) maps WingDings to Brainfuck instructions.
 ```
 INSTRUCTIONS:
    
