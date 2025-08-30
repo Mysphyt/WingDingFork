@@ -9,12 +9,11 @@ A BrainFuck interpreter but it's WingDings
 ### Usage:
 
 #### Enter or paste your [code] from the following (default) instructions, or modify the mapping file with different WingDings.
-[WingDing <> key mapping](./dingfork/data/keymap.csv)
 
-* `keymap.csv` maps keyboard keys to WingDing instructions.
+* [WingDing <> key mapping](./dingfork/data/keymap.csv) maps keyboard keys to WingDing instructions.
    * Additional instruction for resetting memory (default 💣 : !)
 
-* `instructionmap.csv` maps WingDings to instructions
+* [WingDing <> key mapping](./dingfork/data/instructionmap.csv) maps WingDings to instructions
 ```
 INSTRUCTIONS:
    
