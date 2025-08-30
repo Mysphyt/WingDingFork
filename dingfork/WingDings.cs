@@ -33,11 +33,13 @@ namespace WingDings
 
         public void SaveSubroutine(string userCode)
         {
+            Console.OutputEncoding = System.Text.Encoding.UTF8;
+
             Console.Write("Saving code: {0}\nEnter subroutine name: ", userCode);
-            string subroutineName = Console.ReadLine();
+            string subroutineName = Console.ReadKey().KeyChar.ToString();
             string subroutinePath = WingDingDecoder.subroutinesDirectory + subroutineName;
             File.WriteAllText(subroutinePath, userCode.ToString());
-            Console.WriteLine("Current code saved to: subroutines/{0}\n\nPress any key to continue...", subroutineName);
+            Console.WriteLine("\nCurrent code saved to: subroutines/{0}\n\nPress any key to continue...", subroutineName);
             Console.ReadKey();
         }
 
@@ -54,6 +56,9 @@ namespace WingDings
         {
             try
             {
+
+                Console.OutputEncoding = System.Text.Encoding.UTF8;
+
                 // HACK: csv to dict for wingdings -> keys
                 /* 
                         1. Read keymap CSV
@@ -61,10 +66,6 @@ namespace WingDings
                         3. Convert the split values to dictionary key/value pairs
                 */
                 wingDingsToKeys = File.ReadLines(dataDirectory + "keymap.csv").Select(line => line.Replace(" ", "").Split('|')).ToDictionary(line => line[0], line => line[1]);
-                Console.OutputEncoding = System.Text.Encoding.UTF8;
-
-                // foreach (var keyval in wingDingsToKeys) { Console.Write("{0}, {1}", keyval.Key, keyval.Value); }
-                // Console.ReadKey();
 
                 foreach (var wingKey in wingDingsToKeys)
                 {

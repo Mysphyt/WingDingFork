@@ -118,7 +118,6 @@ namespace Interpreter
             */
 
             //...
-
             var stopwatch = new Stopwatch();
             stopwatch.Start();
 
@@ -126,21 +125,23 @@ namespace Interpreter
             input = input.Replace(" ", "");
             Type thisType = this.GetType();
 
+            Console.OutputEncoding = System.Text.Encoding.UTF8;
+
+            // Remove whitespace in input string
+            input = input.Remove(input.Length - 1).Replace(" ", "");
+
             try
             {
-                Console.OutputEncoding = System.Text.Encoding.UTF8;
-
-                // Remove whitespace in input string
-                input = input.Remove(input.Length - 1).Replace(" ", "");
-
                 instructions = input.Split("|");
 
-                // HACK: remove the trailing empty instruction
-                // foreach (var instruction in instructionMap) { Console.Write("* "+instruction.Key); }
+                // Nothing to do
+                if (instructions.Length == 0) { return; }
 
-                Console.WriteLine("Running Program... \n");
                 for (i = 0; i < instructions.Length; i++)
                 {
+                    Console.Clear();
+                    Console.WriteLine("[{0}s] Running Program... \n", stopwatch.ElapsedMilliseconds / 1000);
+
                     string instruction = instructions[i];
                     // Console.WriteLine(instruction+i);
 
@@ -158,21 +159,21 @@ namespace Interpreter
                     // Invoke the instruction
                     theMethod.Invoke(this, []);
 
-                    stopwatch.Stop();
                     float elapsed_time = stopwatch.ElapsedMilliseconds;
-
-                    if (elapsed_time > 5000) // Kill the program after 10 seconds, assume infinite loop
+                    if (elapsed_time > 3000) // Kill the program after 10 seconds, assume infinite loop
                     {
-                        throw new Exception("Uh-oh! Infinite loop detected... program took longer than 10 seconds to execute");
+                        throw new Exception(String.Format("Uh-oh! Infinite loop detected... program took longer than 3 seconds to execute\nFailed at: {1}  |  {2}", instruction, i));
                     }
-
-                    stopwatch.Start();
                 }
                 Console.WriteLine("Output:\n\n{0}", output.ToString());
             }
             catch (Exception e)
             {
                 Console.WriteLine("\nError in [code]: {0}\n", e.ToString());
+            }
+            finally
+            {
+                stopwatch.Stop();
             }
         }
 
