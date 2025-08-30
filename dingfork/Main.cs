@@ -4,7 +4,7 @@
 
 using System.Text;
 using Interpreter;
-using WingDings;
+using Data;
 
 namespace dingfork
 {
@@ -14,7 +14,14 @@ namespace dingfork
         // TODO: make headers
 
         const string WINGDINGFORK_HEADER = """
-        👇︎ 👆︎ ✂  🖳  👈︎ 👉︎ 🗁  🗀   WingDingFork 🗀  🗁  👈︎ 👉︎ 🖳  ✂  👆︎ 👇︎ 
+
+        __        ___             ____  _             _____          _    
+        \ \      / (_)_ __   __ _|  _ \(_)_ __   __ _|  ___|__  _ __| | __
+         \ \ /\ / /| | '_ \ / _` | | | | | '_ \ / _` | |_ / _ \| '__| |/ /
+          \ V  V / | | | | | (_| | |_| | | | | | (_| |  _| (_) | |  |   < 
+           \_/\_/  |_|_| |_|\__, |____/|_|_| |_|\__, |_|  \___/|_|  |_|\_\
+                            |___/               |___/                     
+
         """;
         /*
             TODO: validate that loaded keymap does not overlap this instruction set
@@ -31,7 +38,7 @@ namespace dingfork
 
         """;
 
-        private static WingDingDecoder wingDings = new WingDingDecoder();
+        private static DataLoader dataLoader = new DataLoader();
 
         static string ParseSubroutines(string userCode)
         {
@@ -42,7 +49,7 @@ namespace dingfork
             while (subroutineCode != prevSubroutineCode)
             {
                 prevSubroutineCode = subroutineCode;
-                foreach (var subroutine in wingDings.wingDingSubRoutines)
+                foreach (var subroutine in dataLoader.wingDingSubRoutines)
                 {
                         string subroutineWingDing = subroutine.Key;
                        
@@ -73,16 +80,13 @@ namespace dingfork
 
             var interpreter = new Runner();
 
-            interpreter.LoadInstructionMap(WingDingDecoder.dataDirectory);
+            interpreter.LoadInstructionMap(dataLoader.instructionMap);
 
-            interpreter.Run(wingDings.wingDingsToKeys, parsedCode);
+            interpreter.Run(dataLoader.wingDingsToKeys, parsedCode);
         }
 
         static void MainLoop()
         {
-
-            // Load the data/keymap.csv file
-            wingDings.LoadDingKeyMap();
 
             // Allows unicode characters to be printed to the console 
             Console.OutputEncoding = System.Text.Encoding.UTF8;
@@ -107,7 +111,7 @@ namespace dingfork
 
                 if (userKey == "s") // Save as a new subroutine
                 {
-                    wingDings.SaveSubroutine(CleanUserCode(userCode.ToString()));
+                    dataLoader.SaveSubroutine(CleanUserCode(userCode.ToString()));
                 }
 
                 else if (userKey == "q")
@@ -163,7 +167,7 @@ namespace dingfork
                 }
 
 
-                string wingDing = wingDings.getDing(userKey);
+                string wingDing = dataLoader.getDing(userKey);
 
                 if (wingDing == "")
                 {
@@ -186,9 +190,8 @@ namespace dingfork
                     - replace ReadKey with async key events
             */
 
-            wingDings.LoadSubRoutines();
             MainLoop();
-            //WingDings wingDings = new WingDings();
+            //WingDings dataLoader = new WingDings();
             //Console.OutputEncoding = System.Text.Encoding.UTF8;
 
             // string testString = "👉︎👉︎👉︎👉︎";

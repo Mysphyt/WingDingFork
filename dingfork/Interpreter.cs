@@ -16,19 +16,37 @@ namespace Interpreter
 
         StringBuilder output = new StringBuilder();
 
-        public int i = 0;
+        public int globalInstructionIt = 0;
 
-        Dictionary<string, string> instructionMap = new Dictionary<string, string>();
+        // Wingding --> instruction method name
+        // HACK: copy of data map for now
+        Dictionary<string, string> instructionMthdMap = new Dictionary<string, string>();
 
+        // HACK: Hardcoded for now -- base instruction set
+        string[] availInstructions = [
+             "inc_data"
+            ,"dec_data"
+            ,"inc_byte"
+            ,"dec_byte"
+            ,"out_byte"
+            ,"inp_byte"
+            ,"loop_bgn"
+            ,"loop_end"
+            ,"cls_tape"
+        ];
+        
         public Runner()
         {
             tape = new byte[60000];
         }
 
-        public void LoadInstructionMap(string filePath)
+        public void LoadInstructionMap(Dictionary<string, string> strInstructionMap)
         {
-            instructionMap = File.ReadLines(filePath + "instructionmap.csv").Select(line => line.Replace(" ", "").Split('|')).ToDictionary(line => line[0], line => line[1]);
+            // Copy of data.instructionMap for now
+            instructionMthdMap = strInstructionMap;
         }
+
+        // TODO: break out instructions
 
         public void inc_data()
         {
@@ -66,15 +84,15 @@ namespace Interpreter
             if (tape[pointer] == 0)
             {
                 unmatchedBracketCounter++;
-                while (instructionMap[instructions[i]] != "loop_end" || unmatchedBracketCounter != 0)
+                while (instructionMthdMap[instructions[globalInstructionIt]] != "loop_bgn"|| unmatchedBracketCounter != 0)
                 {
-                    i++;
+                    globalInstructionIt++;
 
-                    if (instructionMap[instructions[i]] == "loop_bgn")
+                    if (instructionMthdMap[instructions[globalInstructionIt]] == "loop_bgn")
                     {
                         unmatchedBracketCounter++;
                     }
-                    else if (instructionMap[instructions[i]] == "loop_end")
+                    else if (instructionMthdMap[instructions[globalInstructionIt]] == "loop_end")
                     {
                         unmatchedBracketCounter--;
                     }
@@ -88,15 +106,15 @@ namespace Interpreter
             if (tape[pointer] != 0)
             {
                 unmatchedBracketCounter++;
-                while (instructionMap[instructions[i]] != "loop_bgn" || unmatchedBracketCounter != 0)
+                while (instructionMthdMap[instructions[globalInstructionIt]] != "loop_bgn" || unmatchedBracketCounter != 0)
                 {
-                    i--;
+                    globalInstructionIt--;
 
-                    if (instructionMap[instructions[i]] == "loop_end")
+                    if (instructionMthdMap[instructions[globalInstructionIt]] == "loop_end")
                     {
                         unmatchedBracketCounter++;
                     }
-                    else if (instructionMap[instructions[i]] == "loop_bgn")
+                    else if (instructionMthdMap[instructions[globalInstructionIt]] == "loop_bgn")
                     {
                         unmatchedBracketCounter--;
                     }
@@ -123,7 +141,6 @@ namespace Interpreter
 
             // Trim whitespace
             input = input.Replace(" ", "");
-            Type thisType = this.GetType();
 
             Console.OutputEncoding = System.Text.Encoding.UTF8;
 
@@ -137,35 +154,42 @@ namespace Interpreter
                 // Nothing to do
                 if (instructions.Length == 0) { return; }
 
-                for (i = 0; i < instructions.Length; i++)
-                {
-                    Console.Clear();
-                    Console.WriteLine("[{0}s] Running Program... \n", stopwatch.ElapsedMilliseconds / 1000);
+                // Time in seconds until the program is killed
+                int timeout = 3;
 
-                    string instruction = instructions[i];
+                Console.WriteLine("\nRunning Program... \n\n[timeout: {0}s]\n\n", timeout);
+
+                for (globalInstructionIt = 0; globalInstructionIt < instructions.Length; globalInstructionIt++)
+                {
+                    // Log current runtime
+                    // Console.WriteLine("[{0}s] Running Program... \n", stopwatch.ElapsedMilliseconds / 1000);
+
+                    string instruction = instructions[globalInstructionIt];
                     // Console.WriteLine(instruction+i);
 
-                    if (!instructionMap.ContainsKey(instruction))
+                    if (!instructionMthdMap.ContainsKey(instruction))
                     {
-                        Console.WriteLine("{-1}  !", instruction);
+                        Console.WriteLine("{0}  !", instruction);
                         continue;
                     }
-                    // DEBUG
-                    // Console.WriteLine("Running: " + instruction + " = " + pointer + " ~ " + i);
 
-                    // Parse the method name to MethodInfo
-                    MethodInfo theMethod = thisType.GetMethod(instructionMap[instruction]);
-
-                    // Invoke the instruction
-                    theMethod.Invoke(this, []);
+                    // Check against avail instructions
+                    if (!availInstructions.Contains(instructionMthdMap[instruction]))
+                    {
+                        Console.WriteLine(instruction);
+                        Console.ReadKey();
+                        continue;
+                    }
+                    // Call the instruction method
+                    GetType().GetMethod(instructionMthdMap[instruction]).Invoke(this, []);
 
                     float elapsed_time = stopwatch.ElapsedMilliseconds;
-                    if (elapsed_time > 3000) // Kill the program after 10 seconds, assume infinite loop
+                    if (elapsed_time > timeout * 1000) // Kill the program after 10 seconds, assume infinite loop
                     {
-                        throw new Exception(String.Format("Uh-oh! Infinite loop detected... program took longer than 3 seconds to execute\nFailed at: {1}  |  {2}", instruction, i));
+                        throw new Exception(String.Format("Uh-oh! Infinite loop detected... program took longer than 3 seconds to execute\nFailed at: {1}  |  {2}", instruction, globalInstructionIt));
                     }
                 }
-                Console.WriteLine("Output:\n\n{0}", output.ToString());
+                Console.WriteLine("=================== Output =================== \n\n{0}\n\n==============================================\n", output.ToString());
             }
             catch (Exception e)
             {
