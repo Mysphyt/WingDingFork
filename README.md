@@ -11,7 +11,24 @@ A BrainFuck interpreter but it's WingDings
 #### Enter or paste your [code] from the following (default) instructions, or modify the mapping file with different WingDings.
 [WingDing <> key mapping](./dingfork/data/keymap.csv)
 
-* Keys must include the brainfuck instruction set: [],.+-<>
+* `keymap.csv` maps keyboard keys to WingDing instructions.
+   * Additional instruction for resetting memory (default 💣 : !)
+
+* (TODO) `instructionmap.csv` maps WingDings to instructions
+```
+INSTRUCTIONS:
+   
+   inc_data : Increment the data pointer by one (to point to the next cell to the right).
+   dec_data : Decrement the data pointer by one (to point to the next cell to the left).
+   inc_byte : Increment the byte at the data pointer by one.
+   dec_byte : Decrement the byte at the data pointer by one.
+   out_byte : Output the byte at the data pointer.
+   inp_byte : Accept one byte of input, storing its value in the byte at the data pointer.
+   loop_bgn : If the byte at the data pointer is zero, then instead of moving the instruction pointer forward to the next command, jump it forward to the command after the matching ] command.
+   loop_end : If the byte at the data pointer is nonzero, then instead of moving the instruction pointer forward to the next command, jump it back to the command after the matching [ command.[a]
+
+```
+
 * You may create or save "subroutines", just make sure to add the name of the subroutine (ex: 🕿) to keymap.csv`
    - This is currently buggy when combining subroutines
 
