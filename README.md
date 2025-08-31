@@ -8,7 +8,7 @@ https://en.wikipedia.org/wiki/List_of_emojis
 
 Brainfuck
 https://en.wikipedia.org/wiki/Brainfuck
-↔️```
+```
 
 ### Running:
 ```
@@ -18,11 +18,12 @@ https://en.wikipedia.org/wiki/Brainfuck
 ### Usage:
 
 #### Enter or paste your [code] from the following (default) instructions, or modify the mapping file with different WingDings.
-
-* [keymap](./dingfork/data/keymap.csv) maps keyboard keys to WingDing instructions.
-   * Additional instruction for resetting memory (default 💣 : !)
-
-* [instructionmap](./dingfork/data/instructionmap.csv) maps WingDings to Brainfuck instructions.
+* [config](./dingfork/data/config.yml): configuration setttings
+```
+  dataConfigName : name of the keymap and subroutine directory in data
+```
+* [keymap](./dingfork/data/default/keymap.csv): maps keyboard keys to WingDing symbols and instructions
+   * Additional instruction for resetting memory [cls_tape]
 ```
 INSTRUCTIONS:
    
