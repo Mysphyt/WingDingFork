@@ -161,30 +161,15 @@ namespace dingfork
             string[] mthdOptions = ["Quit", "RunLoop", "ChangeConfig", "PrintConfig"];
 
             // Load config.yml (fake yml read for now)
-            using (StreamReader reader = new StreamReader(String.Format("{0}/config.yml", DataLoader.dataDirectory)))
+            string configPath = String.Format("{0}/config.yml", DataLoader.dataDirectory);
+
+            configMap = FileHelper.ParseYAML(configPath);
+
+            if (configMap.ContainsKey("dataConfigName"))
             {
-                string line;
-                while ((line = reader.ReadLine()) != null)
-                {
-                    // ignore lines without a mapping
-                    if (!line.Contains(':'))
-                    {
-                        continue;
-                    }
-                    string[] kvp = line.Split(":");
-
-                    configMap.Add(kvp[0], kvp[1].Replace(" ", ""));
-
-                }
-
-                // Update the data loader config
-                if (configMap.ContainsKey("dataConfigName"))
-                {
-                    dataLoader = new DataLoader(configMap["dataConfigName"]);
-                }
-
+                dataLoader = new DataLoader(configMap["dataConfigName"]);
             }
-
+            
             while (true)
             {
                 // StringBuilder for 

@@ -37,13 +37,28 @@ namespace Data
                 string subroutinesConfigDirectory = String.Format(subroutinesDirectory, dataConfigName);
                 string[] files = Directory.GetFiles(subroutinesConfigDirectory, "*", SearchOption.AllDirectories);
 
-                foreach (string f in files)
+                Dictionary<string, string> subroutineArgs = new Dictionary<string, string>();
+                // Load subroutines
+                foreach (string subroutineFile in files)
                 {
-                    string subroutineID = f.Split('/')[^1];
-                    string subroutineString = File.ReadAllText(f);
-                    wingDingSubRoutines.Add(subroutineID, subroutineString);
-                }
+                    try
+                    {
+                        Console.WriteLine("subroutineFile: " + subroutineFile);
+                        subroutineArgs = FileHelper.ParseYAML(subroutineFile);
 
+                        string subroutineName = subroutineFile.Split('/')[^1];
+                        string subroutineWingDing = subroutineArgs["wingding"];
+                        string subroutineCode = subroutineArgs["code"];
+
+                        wingDingSubRoutines.Add(subroutineWingDing, subroutineCode);
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine("\nFailed to parse subroutine: {0}\n\nError: {1}", subroutineFile, e.ToString());
+                        continue;
+                    }
+                }
+🏳
                 // HACK: csv to dict for wingdings -> key^method_name
                 keymapFile = String.Format("{0}/{1}/keymap", dataDirectory, dataConfigName);
                 Dictionary<string, string> tmpWingDingMap = File.ReadLines(keymapFile).Select(line => line.Replace(" ", "").Split('|')).ToDictionary(line => line[0], line => line[1]);
@@ -84,32 +99,53 @@ namespace Data
             Console.OutputEncoding = System.Text.Encoding.UTF8;
 
             string subroutineUnformatted = """
+            wingding: {0}
+            code: {1}
             """;
 
+            string subroutineName = "";
+            string subroutineWingDing = "";
+
+            // Get the subroutine name from the user
             Console.Write("Saving code: {0}\nEnter subroutine name: ", userCode);
-            string subroutineName = Console.ReadLine();
+            subroutineName = Console.ReadLine();
+
             Console.WriteLine("Confirm subroutine name: {0}\nEnter (y/n)", subroutineName);
-            bool yesNo = UserOpts.YesNoOpt();
-            if (!yesNo)
+
+            if (!UserOpts.YesNoOpt()) // Get a y/n from the user
+            {
+                return;
+            }
+
+            // Get The subroutine wingding from the user
+            Console.Write("Saving subroutine: {0}\nEnter subroutine WingDing: ", subroutineName);
+            subroutineWingDing = Console.ReadLine();
+
+            Console.WriteLine("Confirm subroutine WingDing: {0}\nEnter (y/n)", subroutineWingDing);
+
+            if (!UserOpts.YesNoOpt()) // Get a y/n from the user
             {
                 return;
             }
 
             // Make sure there is an existing key mapping
-            if (!wingDingsToKeys.Keys.Contains(subroutineName))
+            if (!wingDingsToKeys.ContainsKey(subroutineName))
             {
                 // Create a new mapping
                 Console.Write("\nEnter shortcut key for {0}: ", subroutineName);
                 string shortcut = Console.ReadLine();
+
                 using (StreamWriter sw = File.AppendText(keymapFile))
                 {
                     sw.WriteLine("\n" + subroutineName + "|" + shortcut + "^sb_instr");
                 }
                 return;
             }
+
             // Write the subroutine 
             string subroutinePath = String.Format(subroutinesDirectory, dataConfigName) + subroutineName;
-            File.WriteAllText(subroutinePath, userCode.ToString());
+            File.WriteAllText(subroutinePath, String.Format(subroutineWingDing, userCode.ToString()));
+
             Console.WriteLine("\nCurrent code saved to: subroutines/{0}\n\nPress any key to continue...", subroutineName);
             Console.ReadLine();
         }
