@@ -21,7 +21,6 @@ namespace Helper
                     }
                     string[] kvp = line.Split(":");
 
-                    Console.WriteLine("~" + kvp[0] + kvp[1]);
                     ymlDict.Add(kvp[0], kvp[1].Replace(" ", ""));
                 }
 

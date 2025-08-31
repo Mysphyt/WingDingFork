@@ -43,7 +43,6 @@ namespace Data
                 {
                     try
                     {
-                        Console.WriteLine("subroutineFile: " + subroutineFile);
                         subroutineArgs = FileHelper.ParseYAML(subroutineFile);
 
                         string subroutineName = subroutineFile.Split('/')[^1];
@@ -58,7 +57,7 @@ namespace Data
                         continue;
                     }
                 }
-🏳
+
                 // HACK: csv to dict for wingdings -> key^method_name
                 keymapFile = String.Format("{0}/{1}/keymap", dataDirectory, dataConfigName);
                 Dictionary<string, string> tmpWingDingMap = File.ReadLines(keymapFile).Select(line => line.Replace(" ", "").Split('|')).ToDictionary(line => line[0], line => line[1]);
