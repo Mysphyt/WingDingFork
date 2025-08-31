@@ -5,10 +5,11 @@
 using System.Text;
 using Interpreter;
 using Data;
+using Helper;
 
 namespace dingfork
 {
-    public class MainClass
+    public class DingFork
     {
 
         // TODO: make headers
@@ -22,6 +23,13 @@ namespace dingfork
            \_/\_/  |_|_| |_|\__, |____/|_|_| |_|\__, |_|  \___/|_|  |_|\_\
                             |___/               |___/                     
 
+            Loaded configuration: {0}
+
+            <1>: New WingDing
+            <2>: Change configuration
+            <3>: Configuration info
+            <0>: Exit
+
         """;
         /*
             TODO: validate that loaded keymap does not overlap this instruction set
@@ -30,15 +38,18 @@ namespace dingfork
 
         code ⮚ {0}
 
-        <r>: Run [code]
-        <d>: Delete last instruction
-        <x>: Clear all instructions
-        <s>: Save as subroutine
-        <q>: Quit
+        <1>: Run [code]
+        <2>: Delete last instruction
+        <3>: Clear all instructions
+        <4>: Save as subroutine
+        <0>: Quit
 
         """;
+        private Dictionary<string, string> configMap = new Dictionary<string, string>();
 
-        private static DataLoader dataLoader = new DataLoader();
+        private static DataLoader dataLoader = new DataLoader("default");
+        // StringBuilders for user input
+        private StringBuilder userCode = new StringBuilder();
 
         static string ParseSubroutines(string userCode)
         {
@@ -51,18 +62,18 @@ namespace dingfork
                 prevSubroutineCode = subroutineCode;
                 foreach (var subroutine in dataLoader.wingDingSubRoutines)
                 {
-                        string subroutineWingDing = subroutine.Key;
-                       
-                        // HACK: Super hacky way of adding | (or re-adding) delimiters and reducing even and odd number of spaces to a single space
-                        subroutineCode = subroutine.Value.Replace("  ", " ").Replace("   ", " ").Replace(" ", "|");
+                    string subroutineWingDing = subroutine.Key;
 
-                        userCode = userCode.Replace(subroutineWingDing, subroutineCode);
+                    // HACK: Super hacky way of adding | (or re-adding) delimiters and reducing even and odd number of spaces to a single space
+                    subroutineCode = subroutine.Value.Replace("  ", " ").Replace("   ", " ").Replace(" ", "|");
+
+                    userCode = userCode.Replace(subroutineWingDing, subroutineCode);
                 }
             }
             return userCode;
         }
 
-        private static string CleanUserCode(string userCode)
+       private static string CleanUserCode(string userCode)
         {
             string cleanUserCode = userCode;
 
@@ -71,12 +82,10 @@ namespace dingfork
             return cleanUserCode;
         }
 
-        static void RunWingDingCode(string userCode)
+        static void InterpretWingDingCode(string userCode)
         {
             // Parse any subroutines
             string parsedCode = ParseSubroutines(userCode);
-
-            Console.OutputEncoding = System.Text.Encoding.UTF8;
 
             var interpreter = new Runner();
 
@@ -85,88 +94,152 @@ namespace dingfork
             interpreter.Run(dataLoader.wingDingsToKeys, parsedCode);
         }
 
-        static void MainLoop()
+        public void Save()
         {
+            dataLoader.SaveSubroutine(CleanUserCode(userCode.ToString()));
+        }
+        public void Quit()
+        { // quit the program
+            System.Environment.Exit(1);
+        }
 
-            // Allows unicode characters to be printed to the console 
-            Console.OutputEncoding = System.Text.Encoding.UTF8;
+        // TODO: clean up messy control flow
+        public void Run()
+        { // Run the current code
+            InterpretWingDingCode(userCode.ToString());
 
-            // Main loop for multiple code entries
-            Console.Clear();
+            userCode.Clear();
 
-            // StringBuilders for user input
-            StringBuilder userCode = new StringBuilder();
+            Console.Write("\n\nNew WingDing? (y/n): ");
+
+            bool yesNo = UserOpts.YesNoOpt();
+
+            // User decides to exit or run another program
+            if (yesNo)
+            {
+                return;
+            }
+            else
+            {
+                System.Environment.Exit(1);
+            }
+        }
+
+        public void Clear()
+        {
+            userCode.Clear();
+        }
+
+        public void Pop()
+        {
+            if (userCode.Length == 0) { return; } // Nothing to remove
+
+            // Trim kerning whitespace
+            while (userCode[userCode.Length - 1] == ' ')
+            {
+                userCode.Remove(userCode.Length - 1, 1);
+            }
+            // Remove the wingding
+            userCode.Remove(userCode.Length - 1, 1);
+        }
+
+        public void ChangeConfig()
+        {
+            Console.WriteLine("Enter new config name: ");
+            string newConfig = Console.ReadLine();
+            // TODO: validate the new config
+            dataLoader = new DataLoader(newConfig);
+        }
+
+        public void PrintConfig()
+        {
+            Console.WriteLine("TODO");
+        }
+
+        public void MainLoop()
+        {
+            string[] mthdOptions = ["Quit", "RunLoop", "ChangeConfig", "PrintConfig"];
+
+            // Load config.yml (fake yml read for now)
+            using (StreamReader reader = new StreamReader(String.Format("{0}/config.yml", DataLoader.dataDirectory)))
+            {
+                string line;
+                while ((line = reader.ReadLine()) != null)
+                {
+                    // ignore lines without a mapping
+                    if (!line.Contains(':'))
+                    {
+                        continue;
+                    }
+                    string[] kvp = line.Split(":");
+
+                    configMap.Add(kvp[0], kvp[1].Replace(" ", ""));
+
+                }
+
+                // Update the data loader config
+                if (configMap.ContainsKey("dataConfigName"))
+                {
+                    dataLoader = new DataLoader(configMap["dataConfigName"]);
+                }
+
+            }
 
             while (true)
             {
                 // StringBuilder for 
-                StringBuilder sbDingFork = new StringBuilder(WINGDINGFORK_HEADER);
-
-                sbDingFork.AppendFormat(INTERFACE_STRING, CleanUserCode(userCode.ToString()));
+                StringBuilder sbDingFork = new StringBuilder(String.Format(WINGDINGFORK_HEADER, dataLoader.dataConfigName));
 
                 Console.WriteLine(sbDingFork);
 
                 string userKey = Console.ReadKey().KeyChar.ToString();
                 Console.Clear();
 
-                if (userKey == "s") // Save as a new subroutine
+                // If the user entered an available option [0..mthdOptions.Length]
+                if (int.TryParse(userKey, out int option))
                 {
-                    dataLoader.SaveSubroutine(CleanUserCode(userCode.ToString()));
-                }
-
-                else if (userKey == "q")
-                { // quit the program
-                    System.Environment.Exit(1);
-                }
-
-                // TODO: clean up messy control flow
-                else if (userKey == "r")
-                { // Run the current code
-                    RunWingDingCode(userCode.ToString());
-
-                    userCode.Clear();
-
-                    Console.Write("\n\nNew WingDing? (y/n): ");
-
-                    // User decides to exit or run another program
-                    while (true)
+                    if (option <= mthdOptions.Length)
                     {
-                        string optKey = Console.ReadKey().KeyChar.ToString().ToLower();
-
-                        if (optKey == "y")
-                        {
-                            break;
-                        }
-                        else if (optKey == "n")
-                        {
-                            System.Environment.Exit(1);
-                        }
-                        else
-                        {
-                            Console.Write("\nInvalid Key - please enter (y/n): ");
-                        }
+                        GetType().GetMethod(mthdOptions[option]).Invoke(this, []);
                     }
-                    Console.Clear();
                 }
-
-                if (userKey == "x") // Clear the current code
+                else
                 {
-                    userCode.Clear();
+                    Console.WriteLine("{0} is not a recognized option", userKey);
                 }
-                else if (userKey == "d") // Delete one character
-                {
-                    if (userCode.Length == 0) { continue; } // Nothing to remove
+            }
+        }
 
-                    // Trim kerning whitespace
-                    while (userCode[userCode.Length - 1] == ' ')
+        public void RunLoop()
+        {
+            string[] mthdOptions = ["Quit", "Run", "Pop", "Clear","Save" ];
+            
+            // Main loop for multiple code entries
+            Console.Clear();
+
+            while (true)
+            {
+                // StringBuilder for 
+                StringBuilder sbDingFork = new StringBuilder(String.Format(INTERFACE_STRING, CleanUserCode(userCode.ToString())));
+
+                Console.WriteLine(sbDingFork);
+
+                string userKey = Console.ReadKey().KeyChar.ToString();
+                Console.Clear();
+
+                // If the user entered an available option [0..mthdOptions.Length]
+                if (int.TryParse(userKey, out int option))
+                {
+                    if (option <= mthdOptions.Length)
                     {
-                        userCode.Remove(userCode.Length - 1, 1);
+                        GetType().GetMethod(mthdOptions[option]).Invoke(this, []);
                     }
-                    // Remove the wingding
-                    userCode.Remove(userCode.Length - 1, 1);
                 }
-
-
+                else
+                {
+                    Console.WriteLine("{0} is not a recognized option", userKey);
+                }
+ 
                 string wingDing = dataLoader.getDing(userKey);
 
                 if (wingDing == "")
@@ -177,30 +250,24 @@ namespace dingfork
                 // Use | as delimeter
                 // --> certain characters have a Length of 2, ie 👇.Length,
                 //  can't iterate one string length at a time and uncertainty of user input length.
-                userCode.Append(wingDing+"|");
+                userCode.Append(wingDing + "|");
 
                 Console.Clear();
             }
         }
 
-        static void Main()
-        {
-            /*
-                TODO: 
-                    - replace ReadKey with async key events
-            */
-
-            MainLoop();
-            //WingDings dataLoader = new WingDings();
-            //Console.OutputEncoding = System.Text.Encoding.UTF8;
-
-            // string testString = "👉︎👉︎👉︎👉︎";
-            // char testChar = testString[0];
-            // string testChar = testString.Substring(0, 2);
-            // Console.WriteLine(testString + "|" +  testChar + "|" + testChar.ToString());
-            // Console.WriteLine("👉︎👉︎👉︎👉".Substring(4, 2));
-        }
     }
 
+    class MainClass // Runs DingFork.MainLoop
+    {
+        static void Main()
+        {
+            // Allows unicode characters to be printed to the console 
+            Console.OutputEncoding = System.Text.Encoding.UTF8;
+            // Start the Main program loop
+            DingFork df = new DingFork();
+            df.MainLoop();
+        }
+    }
 
 }

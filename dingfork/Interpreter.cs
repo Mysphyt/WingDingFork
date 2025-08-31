@@ -141,8 +141,6 @@ namespace Interpreter
             // Trim whitespace
             input = input.Replace(" ", "");
 
-            Console.OutputEncoding = System.Text.Encoding.UTF8;
-
             // Remove whitespace in input string
             input = input.Remove(input.Length - 1).Replace(" ", "");
 

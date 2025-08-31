@@ -1,5 +1,8 @@
 
 
+using System.Data;
+using Helper;
+
 namespace Data
 {
     public class DataLoader
@@ -8,8 +11,11 @@ namespace Data
         // --> remove /app/ reference
         // --> remove path to .net folder in debug
         public static string dingforkDirectory = System.AppDomain.CurrentDomain.BaseDirectory.Split("dingfork")[0].Replace("\\app\\", "") + "\\dingfork\\";
-        public static string subroutinesDirectory = dingforkDirectory + "/subroutines/";
         public static string dataDirectory = dingforkDirectory + "/data/";
+        public static string subroutinesDirectory = dingforkDirectory + "/data/{0}/subroutines/";
+
+        public string dataConfigName;
+        public string keymapFile;
 
         // wingding -> key
         public Dictionary<string, string> wingDingsToKeys = new Dictionary<string, string>();
@@ -19,16 +25,18 @@ namespace Data
         public Dictionary<string, string> wingDingSubRoutines = new Dictionary<string, string>();
         // wingding -> interpreter instruction method name
         public Dictionary<string, string> instructionMap = new Dictionary<string, string>();
- 
 
-        public DataLoader()
+        public DataLoader(string _dataConfigName)
         {
-            Console.OutputEncoding = System.Text.Encoding.UTF8;
+            // TODO: break out load methods for each Map
+            dataConfigName = _dataConfigName;
 
             try // Try to load data files
             {
                 // Parses subroutines/ folder
-                string[] files = Directory.GetFiles(subroutinesDirectory, "*", SearchOption.AllDirectories);
+                string subroutinesConfigDirectory = String.Format(subroutinesDirectory, dataConfigName);
+                string[] files = Directory.GetFiles(subroutinesConfigDirectory, "*", SearchOption.AllDirectories);
+
                 foreach (string f in files)
                 {
                     string subroutineID = f.Split('/')[^1];
@@ -36,15 +44,11 @@ namespace Data
                     wingDingSubRoutines.Add(subroutineID, subroutineString);
                 }
 
-                // HACK: csv to dict for wingdings -> keys
-                /* 
-                        1. Read keymap CSV
-                        2. For each line, trim the whitespace and split on "|"
-                        3. Convert the split values to dictionary key/value pairs
-                */
-                Dictionary<string, string> tmpWingDingMap = File.ReadLines(dataDirectory + "keymap.csv").Select(line => line.Replace(" ", "").Split('|')).ToDictionary(line => line[0], line => line[1]);
+                // HACK: csv to dict for wingdings -> key^method_name
+                keymapFile = String.Format("{0}/{1}/keymap", dataDirectory, dataConfigName);
+                Dictionary<string, string> tmpWingDingMap = File.ReadLines(keymapFile).Select(line => line.Replace(" ", "").Split('|')).ToDictionary(line => line[0], line => line[1]);
 
-                // Parse the keys and method names from keymap.csv data
+                // Parse the keys and method names from keymap data
                 foreach (var keyToMthd in tmpWingDingMap)
                 {
                     string[] keyMthd = keyToMthd.Value.Split("^");
@@ -79,16 +83,35 @@ namespace Data
         {
             Console.OutputEncoding = System.Text.Encoding.UTF8;
 
-            Console.Write("Saving code: {0}\nEnter subroutine name: ", userCode);
-            string subroutineName = Console.ReadKey().KeyChar.ToString();
+            string subroutineUnformatted = """
+            """;
 
-            // sanitize directory traversal from subroutineName
-            subroutineName = subroutineName.Replace(".", "").Replace("/", "").Replace("\\", "");
-            
-            string subroutinePath = subroutinesDirectory + subroutineName;
+            Console.Write("Saving code: {0}\nEnter subroutine name: ", userCode);
+            string subroutineName = Console.ReadLine();
+            Console.WriteLine("Confirm subroutine name: {0}\nEnter (y/n)", subroutineName);
+            bool yesNo = UserOpts.YesNoOpt();
+            if (!yesNo)
+            {
+                return;
+            }
+
+            // Make sure there is an existing key mapping
+            if (!wingDingsToKeys.Keys.Contains(subroutineName))
+            {
+                // Create a new mapping
+                Console.Write("\nEnter shortcut key for {0}: ", subroutineName);
+                string shortcut = Console.ReadLine();
+                using (StreamWriter sw = File.AppendText(keymapFile))
+                {
+                    sw.WriteLine("\n" + subroutineName + "|" + shortcut + "^sb_instr");
+                }
+                return;
+            }
+            // Write the subroutine 
+            string subroutinePath = String.Format(subroutinesDirectory, dataConfigName) + subroutineName;
             File.WriteAllText(subroutinePath, userCode.ToString());
             Console.WriteLine("\nCurrent code saved to: subroutines/{0}\n\nPress any key to continue...", subroutineName);
-            Console.ReadKey();
+            Console.ReadLine();
         }
 
         public string GetSubroutine(string id)
