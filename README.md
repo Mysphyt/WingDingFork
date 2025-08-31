@@ -45,7 +45,6 @@ INSTRUCTIONS:
 
 ### Example Program:
 
-![Example2](./ref/example2.png)
-
-
-![Example1](./ref/example1.png)
+![Example2](./ref/example1.png)
+![Example1](./ref/example2.png)
+![Example1](./ref/example3.png)
