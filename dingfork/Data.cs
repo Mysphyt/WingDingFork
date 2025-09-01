@@ -129,10 +129,10 @@ namespace Data
             }
 
             // Make sure there is an existing key mapping
-            if (!wingDingsToKeys.ContainsKey(subroutineName))
+            if (!wingDingsToKeys.ContainsKey(subroutineWingDing))
             {
                 // Create a new mapping
-                Console.Write("\n\nNo existing shortcut found in keymap...\nEnter shortcut key for {0}: ", subroutineName);
+                Console.Write("\n\nNo existing shortcut found in keymap...\n\nEnter shortcut key for {0}: ", subroutineName);
                 string shortcut = Console.ReadLine();
 
                 using (StreamWriter sw = File.AppendText(keymapFile))
