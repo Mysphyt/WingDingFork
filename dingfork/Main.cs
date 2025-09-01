@@ -15,13 +15,6 @@ namespace dingfork
 
         const string MAINLOOP_HEADER = """
 
-        __        ___             ____  _             _____          _    
-        \ \      / (_)_ __   __ _|  _ \(_)_ __   __ _|  ___|__  _ __| | __
-         \ \ /\ / /| | '_ \ / _` | | | | | '_ \ / _` | |_ / _ \| '__| |/ /
-          \ V  V / | | | | | (_| | |_| | | | | | (_| |  _| (_) | |  |   < 
-           \_/\_/  |_|_| |_|\__, |____/|_|_| |_|\__, |_|  \___/|_|  |_|\_\
-                            |___/               |___/                     
-
             Loaded configuration: {0}
 
             <1>: Code New WingDing
@@ -102,7 +95,7 @@ namespace dingfork
         {
             string cleanUserCode = userCode;
 
-            cleanUserCode = cleanUserCode.Replace("|", " ");
+            cleanUserCode = cleanUserCode.Replace(FileHelper.INSTRUCTION_DELIM, " ");
 
             return cleanUserCode;
         }
@@ -193,7 +186,10 @@ namespace dingfork
             */
             Console.WriteLine("Paste your code, then hit enter:\n");
             string pastedCode = Console.ReadLine();
-            RunLoop(pastedCode);
+
+            // TODO: parse/sanitize pasted code for available instructions
+            userCode = new StringBuilder(pastedCode);
+            RunLoop();
         }
 
         public void LoadCode()
@@ -201,6 +197,7 @@ namespace dingfork
             // TODO: Load code from a file then call RunLoop(loadedCode)
             Console.WriteLine("TODO");
         }
+
 
         public void MainLoop()
         {
@@ -218,7 +215,8 @@ namespace dingfork
             while (true)
             {
                 // StringBuilder for 
-                StringBuilder sbDingFork = new StringBuilder(String.Format(MAINLOOP_HEADER, dataLoader.dataConfigName));
+                StringBuilder sbDingFork = new StringBuilder(FileHelper.WING_DING_FORK);
+                sbDingFork.Append(String.Format(MAINLOOP_HEADER, dataLoader.dataConfigName));
 
                 Console.WriteLine(sbDingFork);
 
@@ -242,7 +240,7 @@ namespace dingfork
             }
         }
 
-        public void RunLoop(string loadedCode)
+        public void RunLoop()
         {
             /*
                 Loop for running WingDing code
@@ -251,12 +249,12 @@ namespace dingfork
             */
 
             // Refresh userCode and clear the console
-            userCode = new StringBuilder(loadedCode);
             Console.Clear();
             while (true)
             {
                 // StringBuilder for 
-                StringBuilder sbDingFork = new StringBuilder(String.Format(RUNLOOP_HEADER, CleanUserCode(userCode.ToString())));
+                StringBuilder sbDingFork = new StringBuilder(FileHelper.WING_DING_FORK);
+                sbDingFork.Append(String.Format(RUNLOOP_HEADER, CleanUserCode(userCode.ToString())));
 
                 Console.WriteLine(sbDingFork);
 

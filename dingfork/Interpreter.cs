@@ -153,7 +153,7 @@ namespace Interpreter
                 // Time in seconds until the program is killed
                 int timeout = 3;
 
-                Console.WriteLine("\nRunning Program:\n{0} \n\n[timeout: {1}s]\n\n", input.Replace("|", ""), timeout);
+                Console.WriteLine("\nRunning Program:\n{0} \n\n[timeout: {1}s]\n\n", input.Replace(FileHelper.INSTRUCTION_DELIM, ""), timeout);
 
                 for (globalInstructionIt = 0; globalInstructionIt < instructions.Length; globalInstructionIt++)
                 {

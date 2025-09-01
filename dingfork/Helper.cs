@@ -6,6 +6,15 @@ namespace Helper
         public static string USER_INPUT_ARROW = " ⮚ ";
         public static string INSTRUCTION_DELIM = "|";
 
+        public static string WING_DING_FORK = """
+        __        ___             ____  _             _____          _    
+        \ \      / (_)_ __   __ _|  _ \(_)_ __   __ _|  ___|__  _ __| | __
+         \ \ /\ / /| | '_ \ / _` | | | | | '_ \ / _` | |_ / _ \| '__| |/ /
+          \ V  V / | | | | | (_| | |_| | | | | | (_| |  _| (_) | |  |   < 
+           \_/\_/  |_|_| |_|\__, |____/|_|_| |_|\__, |_|  \___/|_|  |_|\_\
+                            |___/               |___/                     
+
+        """;
         static public Dictionary<string, string> ParseYAML(string filepath)
         {
 
