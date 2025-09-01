@@ -15,20 +15,19 @@ namespace dingfork
 
         const string MAINLOOP_HEADER = """
 
-            Loaded configuration: {0}
+            Loaded configuration ⮚ {0}
 
-            <1>: Code New WingDing
-            <2>: Paste new WingDing
-            <3>: Load WingDing from file
-            <2>: Change configuration
-            <3>: Configuration info
-            <4>: Run Tests 
-            <0>: Exit
+            1 ⮚ Code New WingDing
+            2 ⮚ Paste new WingDing
+            3 ⮚ Load WingDing from file
+            2 ⮚ Change configuration
+            3 ⮚ Configuration info
+            0 ⮚ Exit
 
         """;
         // Indexed Method names -- should match the order of above options
         // TODO: make this dynamic
-        public string[] mainMthdOptions = ["Quit", "RunLoop", "PasteCode", "LoadCode","ChangeConfig", "PrintConfig", "TestLoop"];
+        public string[] mainMthdOptions = ["Quit", "RunLoop", "PasteCode", "LoadCode","ChangeConfig", "PrintConfig"];
 
 
         /*
@@ -38,12 +37,12 @@ namespace dingfork
         
         code ⮚ {0}
 
-        <1>: Run [code]
-        <2>: Delete last instruction
-        <3>: Clear all instructions
-        <4>: Save as subroutine
-        <5>: Main Menu
-        <0>: Quit
+        1 ⮚ Run [code]
+        2 ⮚ Delete last instruction
+        3 ⮚ Clear all instructions
+        4 ⮚ Save as subroutine
+        5 ⮚ Main Menu
+        0 ⮚ Quit
 
         """;
         // Indexed Method names -- should match the order of above options
