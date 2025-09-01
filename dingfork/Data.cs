@@ -59,7 +59,10 @@ namespace Data
                 }
 
                 // HACK: csv to dict for wingdings -> key^method_name
+                // TODO: make this readable
                 keymapFile = String.Format("{0}/{1}/keymap", dataDirectory, dataConfigName);
+
+                // Temp dictionary for parsing 
                 Dictionary<string, string> tmpWingDingMap = File.ReadLines(keymapFile).Select(line => line.Replace(" ", "").Split('|')).ToDictionary(line => line[0], line => line[1]);
 
                 // Parse the keys and method names from keymap data
@@ -109,21 +112,23 @@ namespace Data
             Console.Write("Saving code: {0}\nEnter subroutine name: ", userCode);
             subroutineName = Console.ReadLine();
 
-            Console.WriteLine("Confirm subroutine name: {0}\nEnter (y/n)", subroutineName);
+            Console.Write("\nConfirm (y/n) subroutine name: {0} ? ", subroutineName);
 
             if (!UserOpts.YesNoOpt()) // Get a y/n from the user
             {
+                Console.Clear();
                 return;
             }
 
             // Get The subroutine wingding from the user
-            Console.Write("Saving subroutine: {0}\nEnter subroutine WingDing: ", subroutineName);
+            Console.Write("\nSaving subroutine: {0}\n\nEnter subroutine WingDing: ", subroutineName);
             subroutineWingDing = Console.ReadLine();
 
-            Console.WriteLine("Confirm subroutine WingDing: {0}\nEnter (y/n)", subroutineWingDing);
+            Console.Write("\nConfirm (y/n) subroutine WingDing: {0} ? ", subroutineWingDing);
 
             if (!UserOpts.YesNoOpt()) // Get a y/n from the user
             {
+                Console.Clear();
                 return;
             }
 
@@ -131,7 +136,7 @@ namespace Data
             if (!wingDingsToKeys.ContainsKey(subroutineName))
             {
                 // Create a new mapping
-                Console.Write("\nEnter shortcut key for {0}: ", subroutineName);
+                Console.Write("\nNo existing shortcut found in keymap...\nEnter shortcut key for {0}: ", subroutineName);
                 string shortcut = Console.ReadLine();
 
                 using (StreamWriter sw = File.AppendText(keymapFile))
@@ -159,7 +164,7 @@ namespace Data
         }
 
       
-        public string getDing(string wing)
+        public string GetDing(string wing)
         {
             if (keysToWingDings.ContainsKey(wing))
             {

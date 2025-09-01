@@ -28,9 +28,15 @@ namespace dingfork
             <1>: New WingDing
             <2>: Change configuration
             <3>: Configuration info
+            <4>: run TestLoop
             <0>: Exit
 
         """;
+        // Indexed Method names -- should match the order of above options
+        // TODO: make this dynamic
+        public string[] mainMthdOptions = ["Quit", "RunLoop",  "ChangeConfig", "PrintConfig", "TestLoop"];
+
+
         /*
             TODO: validate that loaded keymap does not overlap this instruction set
         */
@@ -45,6 +51,10 @@ namespace dingfork
         <0>: Quit
 
         """;
+        // Indexed Method names -- should match the order of above options
+        // TODO: make this dynamic
+        public string[] runMthdOptions = ["Quit", "Run", "Pop", "Clear","Save"];
+
         private Dictionary<string, string> configMap = new Dictionary<string, string>();
 
         private static DataLoader dataLoader = new DataLoader("default");
@@ -53,6 +63,16 @@ namespace dingfork
 
         static string ParseSubroutines(string userCode)
         {
+            /*
+                Parses files in the subroutines directory of the current data config, ie: data/default/subroutines/
+                    
+                    Expects a single key/value pair in the following format:
+                        
+                        wingding:🕿
+                        code:👇 🐵 👇 👇 👇 👉 👆 👈 🐟 👉 👇 👍
+
+                TODO: Make this a single subroutines file
+            */
             string subroutineCode = userCode;
             string prevSubroutineCode = "";
 
@@ -158,7 +178,6 @@ namespace dingfork
 
         public void MainLoop()
         {
-            string[] mthdOptions = ["Quit", "RunLoop", "ChangeConfig", "PrintConfig"];
 
             // Load config.yml (fake yml read for now)
             string configPath = String.Format("{0}/config.yml", DataLoader.dataDirectory);
@@ -183,9 +202,9 @@ namespace dingfork
                 // If the user entered an available option [0..mthdOptions.Length]
                 if (int.TryParse(userKey, out int option))
                 {
-                    if (option <= mthdOptions.Length)
+                    if (option <= mainMthdOptions.Length)
                     {
-                        GetType().GetMethod(mthdOptions[option]).Invoke(this, []);
+                        GetType().GetMethod(mainMthdOptions[option]).Invoke(this, []);
                     }
                 }
                 else
@@ -197,7 +216,6 @@ namespace dingfork
 
         public void RunLoop()
         {
-            string[] mthdOptions = ["Quit", "Run", "Pop", "Clear","Save" ];
             
             // Main loop for multiple code entries
             Console.Clear();
@@ -215,9 +233,9 @@ namespace dingfork
                 // If the user entered an available option [0..mthdOptions.Length]
                 if (int.TryParse(userKey, out int option))
                 {
-                    if (option <= mthdOptions.Length)
+                    if (option <= runMthdOptions.Length)
                     {
-                        GetType().GetMethod(mthdOptions[option]).Invoke(this, []);
+                        GetType().GetMethod(runMthdOptions[option]).Invoke(this, []);
                     }
                 }
                 else
@@ -225,7 +243,7 @@ namespace dingfork
                     Console.WriteLine("{0} is not a recognized option", userKey);
                 }
  
-                string wingDing = dataLoader.getDing(userKey);
+                string wingDing = dataLoader.GetDing(userKey);
 
                 if (wingDing == "")
                 {
@@ -233,7 +251,7 @@ namespace dingfork
                 }
 
                 // Use | as delimeter
-                // --> certain characters have a Length of 2, ie 👇.Length,
+                // --> certain characters have a Length of 2, ie 👇.Length, 👍
                 //  can't iterate one string length at a time and uncertainty of user input length.
                 userCode.Append(wingDing + "|");
 
@@ -241,7 +259,13 @@ namespace dingfork
             }
         }
 
+        public void TestLoop()
+        {
+            // Try to gather some info on how/when WingDings are rendered correctly
+        }
     }
+
+    
 
     class MainClass // Runs DingFork.MainLoop
     {
@@ -251,6 +275,7 @@ namespace dingfork
             Console.OutputEncoding = System.Text.Encoding.UTF8;
             // Start the Main program loop
             DingFork df = new DingFork();
+           
             df.MainLoop();
         }
     }
