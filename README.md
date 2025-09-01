@@ -1,15 +1,6 @@
 # WingDingFork
 A BrainFuck interpreter but it's WingDings
 
-### Resources
-```
-Emoji List
-https://en.wikipedia.org/wiki/List_of_emojis
-
-Brainfuck
-https://en.wikipedia.org/wiki/Brainfuck
-```
-
 ### Running:
 ```
 .\app\dingfork.exe
@@ -52,3 +43,12 @@ INSTRUCTIONS:
 
 
 ![Example1](./ref/example3.png)
+
+### Resources
+```
+Emoji List
+https://en.wikipedia.org/wiki/List_of_emojis
+
+Brainfuck
+https://en.wikipedia.org/wiki/Brainfuck
+```
