@@ -43,6 +43,11 @@ INSTRUCTIONS:
 
 ![Example1](./ref/output2.png)
 
+![Example1](./ref/code2.png)
+
+![Example1](./ref/output3.png)
+
+
 #### Saving
 ![Example1](./ref/saving1.png)
 
