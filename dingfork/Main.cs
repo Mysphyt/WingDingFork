@@ -20,8 +20,8 @@ namespace dingfork
             1 ⮚ Code New WingDing
             2 ⮚ Paste new WingDing
             3 ⮚ Load WingDing from file
-            2 ⮚ Change configuration
-            3 ⮚ Configuration info
+            4 ⮚ Change configuration
+            5 ⮚ Configuration info
             0 ⮚ Exit
 
         """;
