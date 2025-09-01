@@ -13,8 +13,6 @@ namespace dingfork
     public class DingFork
     {
 
-        // TODO: make headers
-
         const string MAINLOOP_HEADER = """
 
         __        ___             ____  _             _____          _    
@@ -29,7 +27,7 @@ namespace dingfork
             <1>: New WingDing
             <2>: Change configuration
             <3>: Configuration info
-            <4>: run TestLoop
+            <4>: Run Tests 
             <0>: Exit
 
         """;
@@ -59,7 +57,9 @@ namespace dingfork
 
         private Dictionary<string, string> configMap = new Dictionary<string, string>();
 
+        // Class for loading and storing data files
         private static DataLoader dataLoader = new DataLoader("default");
+
         // StringBuilders for user input
         private StringBuilder userCode = new StringBuilder();
 
@@ -87,6 +87,7 @@ namespace dingfork
                     string subroutineWingDing = subroutine.Key;
 
                     // HACK: Super hacky way of adding | (or re-adding) delimiters and reducing even and odd number of spaces to a single space
+                    // TODO: create static string values for delimiters
                     subroutineCode = subroutine.Value.Replace("  ", " ").Replace("   ", " ").Replace(" ", "|");
 
                     userCode = userCode.Replace(subroutineWingDing, subroutineCode);
@@ -125,7 +126,6 @@ namespace dingfork
             System.Environment.Exit(1);
         }
 
-        // TODO: clean up messy control flow
         public void Run()
         { // Run the current code
             InterpretWingDingCode(userCode.ToString());
@@ -167,14 +167,20 @@ namespace dingfork
 
         public void ChangeConfig()
         {
-            Console.WriteLine("Enter new config name: ");
-            string newConfig = Console.ReadLine();
+            /*
+                Change the current data configuration 
+            */
+            Console.WriteLine("Enter config name: ");
+            var newConfig = Console.ReadLine();
+            if (newConfig == null) { return; }
             // TODO: validate the new config
+            // TODO: change the data folder without creating a new DataLoader
             dataLoader = new DataLoader(newConfig);
         }
 
         public void PrintConfig()
         {
+            // TODO: print config debug info
             Console.WriteLine("TODO");
         }
 
@@ -207,7 +213,7 @@ namespace dingfork
                     if (option <= mainMthdOptions.Length)
                     {
                         // Invoke the option method
-                        GetType().GetMethod(mainMthdOptions[option]).Invoke(this, []);
+                        GetType().GetMethod(mainMthdOptions[option])?.Invoke(this, []);
                     }
                 }
                 else
@@ -242,7 +248,7 @@ namespace dingfork
                         if (runMthdOptions[option] == "MainLoop") { return; }
 
                         // Invoke the option method
-                        GetType().GetMethod(runMthdOptions[option]).Invoke(this, []);
+                        GetType().GetMethod(runMthdOptions[option])?.Invoke(this, []);
                     }
                 }
                 else
@@ -268,41 +274,81 @@ namespace dingfork
 
         public void TestLoop()
         {
-            // Create a character array.
-            string gkNumber = Char.ConvertFromUtf32(0x10154);
-            char[] chars = new char[] { 'z', 'a', '\u0306', '\u01FD', '\u03B2',
-                                  gkNumber[0], gkNumber[1] };
+            // TODO: break out unit tests
+            /*
+            UTF CONVERSION/INPUT TEST:
 
-            // Get UTF-8 and UTF-16 encoders.
-            Encoding utf8 = Encoding.UTF8;
-            Encoding utf16 = Encoding.Unicode;
+                Comparing 👇 to user input (ReadLine)
+                _____________________________
+                Testing: 👇
+                Original UTF-16 code units:
+                3D D8 47 DC
 
-            // Display the original characters' code units.
-            Console.WriteLine("Original UTF-16 code units:");
-            byte[] utf16Bytes = utf16.GetBytes(chars);
-            foreach (var utf16Byte in utf16Bytes)
-                Console.Write("{0:X2} ", utf16Byte);
-            Console.WriteLine();
+                Exact number of bytes required: 4
+                Maximum number of bytes required: 9
 
-            // Display the number of bytes required to encode the array.
-            int reqBytes = utf8.GetByteCount(chars);
-            Console.WriteLine("\nExact number of bytes required: {0}",
-                          reqBytes);
+                UTF-8-encoded code units:
+                F0 9F 91 87
 
-            // Display the maximum byte count.
-            int maxBytes = utf8.GetMaxByteCount(chars.Length);
-            Console.WriteLine("Maximum number of bytes required: {0}\n",
-                              maxBytes);
+                _____________________________
+                Testing: ??
+                Original UTF-16 code units:
+                3F 00 3F 00
 
-            // Encode the array of chars.
-            byte[] utf8Bytes = utf8.GetBytes(chars);
+                Exact number of bytes required: 2
+                Maximum number of bytes required: 9
 
-            // Display all the UTF-8-encoded bytes.
-            Console.WriteLine("UTF-8-encoded code units:");
-            foreach (var utf8Byte in utf8Bytes)
-                Console.Write("{0:X2} ", utf8Byte);
-            Console.WriteLine();
+                UTF-8-encoded code units:
+                3F 3F
+            */
+            Console.WriteLine("""
+            === TESTING UTF8 CONVERSION & RENDERING ===
+            """);
+            Console.WriteLine("Copy and Paste test string:\n👇");
+            var utfUserInput = Console.ReadLine();
+            string[] inputStrings = ["👇", utfUserInput];
+            Console.WriteLine("\nComparing 👇 to user input (ReadLine)");
+            foreach (string utfInput in inputStrings)
+            {
+                Console.WriteLine("\n\n_____________________________");
+                Console.WriteLine("Testing: {0}", utfInput);
+                // Create a character array.
+                string gkNumber = Char.ConvertFromUtf32(0x10154);
 
+                char[] chars = utfInput.ToCharArray();
+
+                // char[] chars = new char[] { 'z', 'a', '\u0306', '\u01FD', '\u03B2',gkNumber[0], gkNumber[1] };
+
+                // Get UTF-8 and UTF-16 encoders.
+                Encoding utf8 = Encoding.UTF8;
+                Encoding utf16 = Encoding.Unicode;
+
+                // Display the original characters' code units.
+                Console.WriteLine("Original UTF-16 code units:");
+                byte[] utf16Bytes = utf16.GetBytes(chars);
+                foreach (var utf16Byte in utf16Bytes)
+                    Console.Write("{0:X2} ", utf16Byte);
+                Console.WriteLine();
+
+                // Display the number of bytes required to encode the array.
+                int reqBytes = utf8.GetByteCount(chars);
+                Console.WriteLine("\nExact number of bytes required: {0}",
+                              reqBytes);
+
+                // Display the maximum byte count.
+                int maxBytes = utf8.GetMaxByteCount(chars.Length);
+                Console.WriteLine("Maximum number of bytes required: {0}\n",
+                                  maxBytes);
+
+                // Encode the array of chars.
+                byte[] utf8Bytes = utf8.GetBytes(chars);
+
+                // Display all the UTF-8-encoded bytes.
+                Console.WriteLine("UTF-8-encoded code units:");
+                foreach (var utf8Byte in utf8Bytes)
+                    Console.Write("{0:X2} ", utf8Byte);
+
+            }
             Console.WriteLine("\nPress any key to continue... ");
             Console.ReadKey();
         }

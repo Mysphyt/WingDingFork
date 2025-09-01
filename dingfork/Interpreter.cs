@@ -47,8 +47,6 @@ namespace Interpreter
             instructionMthdMap = strInstructionMap;
         }
 
-        // TODO: break out instructions
-
         public void inc_data()
         {
             pointer++;
@@ -154,7 +152,7 @@ namespace Interpreter
                 // Time in seconds until the program is killed
                 int timeout = 3;
 
-                Console.WriteLine("\nRunning Program... \n\n[timeout: {0}s]\n\n", timeout);
+                Console.WriteLine("\nRunning Program:\n{0} \n\n[timeout: {1}s]\n\n", input.Replace("|", ""), timeout);
 
                 for (globalInstructionIt = 0; globalInstructionIt < instructions.Length; globalInstructionIt++)
                 {
