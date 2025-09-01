@@ -2,6 +2,7 @@
     WingDingFork
 */
 
+using System.Diagnostics;
 using System.Text;
 using Interpreter;
 using Data;
@@ -14,7 +15,7 @@ namespace dingfork
 
         // TODO: make headers
 
-        const string WINGDINGFORK_HEADER = """
+        const string MAINLOOP_HEADER = """
 
         __        ___             ____  _             _____          _    
         \ \      / (_)_ __   __ _|  _ \(_)_ __   __ _|  ___|__  _ __| | __
@@ -34,13 +35,13 @@ namespace dingfork
         """;
         // Indexed Method names -- should match the order of above options
         // TODO: make this dynamic
-        public string[] mainMthdOptions = ["Quit", "RunLoop",  "ChangeConfig", "PrintConfig", "TestLoop"];
+        public string[] mainMthdOptions = ["Quit", "RunLoop", "ChangeConfig", "PrintConfig", "TestLoop"];
 
 
         /*
             TODO: validate that loaded keymap does not overlap this instruction set
         */
-        const string INTERFACE_STRING = """
+        const string RUNLOOP_HEADER = """
 
         code ⮚ {0}
 
@@ -48,12 +49,13 @@ namespace dingfork
         <2>: Delete last instruction
         <3>: Clear all instructions
         <4>: Save as subroutine
+        <5>: Main Menu
         <0>: Quit
 
         """;
         // Indexed Method names -- should match the order of above options
         // TODO: make this dynamic
-        public string[] runMthdOptions = ["Quit", "Run", "Pop", "Clear","Save"];
+        public string[] runMthdOptions = ["Quit", "Run", "Pop", "Clear", "Save", "MainLoop"];
 
         private Dictionary<string, string> configMap = new Dictionary<string, string>();
 
@@ -93,7 +95,7 @@ namespace dingfork
             return userCode;
         }
 
-       private static string CleanUserCode(string userCode)
+        private static string CleanUserCode(string userCode)
         {
             string cleanUserCode = userCode;
 
@@ -188,11 +190,11 @@ namespace dingfork
             {
                 dataLoader = new DataLoader(configMap["dataConfigName"]);
             }
-            
+
             while (true)
             {
                 // StringBuilder for 
-                StringBuilder sbDingFork = new StringBuilder(String.Format(WINGDINGFORK_HEADER, dataLoader.dataConfigName));
+                StringBuilder sbDingFork = new StringBuilder(String.Format(MAINLOOP_HEADER, dataLoader.dataConfigName));
 
                 Console.WriteLine(sbDingFork);
 
@@ -204,6 +206,7 @@ namespace dingfork
                 {
                     if (option <= mainMthdOptions.Length)
                     {
+                        // Invoke the option method
                         GetType().GetMethod(mainMthdOptions[option]).Invoke(this, []);
                     }
                 }
@@ -216,14 +219,14 @@ namespace dingfork
 
         public void RunLoop()
         {
-            
+
             // Main loop for multiple code entries
             Console.Clear();
 
             while (true)
             {
                 // StringBuilder for 
-                StringBuilder sbDingFork = new StringBuilder(String.Format(INTERFACE_STRING, CleanUserCode(userCode.ToString())));
+                StringBuilder sbDingFork = new StringBuilder(String.Format(RUNLOOP_HEADER, CleanUserCode(userCode.ToString())));
 
                 Console.WriteLine(sbDingFork);
 
@@ -235,6 +238,10 @@ namespace dingfork
                 {
                     if (option <= runMthdOptions.Length)
                     {
+                        // HACK: Return instead of recursievly calling MainLoop()
+                        if (runMthdOptions[option] == "MainLoop") { return; }
+
+                        // Invoke the option method
                         GetType().GetMethod(runMthdOptions[option]).Invoke(this, []);
                     }
                 }
@@ -242,7 +249,7 @@ namespace dingfork
                 {
                     Console.WriteLine("{0} is not a recognized option", userKey);
                 }
- 
+
                 string wingDing = dataLoader.GetDing(userKey);
 
                 if (wingDing == "")
@@ -261,11 +268,47 @@ namespace dingfork
 
         public void TestLoop()
         {
-            // Try to gather some info on how/when WingDings are rendered correctly
+            // Create a character array.
+            string gkNumber = Char.ConvertFromUtf32(0x10154);
+            char[] chars = new char[] { 'z', 'a', '\u0306', '\u01FD', '\u03B2',
+                                  gkNumber[0], gkNumber[1] };
+
+            // Get UTF-8 and UTF-16 encoders.
+            Encoding utf8 = Encoding.UTF8;
+            Encoding utf16 = Encoding.Unicode;
+
+            // Display the original characters' code units.
+            Console.WriteLine("Original UTF-16 code units:");
+            byte[] utf16Bytes = utf16.GetBytes(chars);
+            foreach (var utf16Byte in utf16Bytes)
+                Console.Write("{0:X2} ", utf16Byte);
+            Console.WriteLine();
+
+            // Display the number of bytes required to encode the array.
+            int reqBytes = utf8.GetByteCount(chars);
+            Console.WriteLine("\nExact number of bytes required: {0}",
+                          reqBytes);
+
+            // Display the maximum byte count.
+            int maxBytes = utf8.GetMaxByteCount(chars.Length);
+            Console.WriteLine("Maximum number of bytes required: {0}\n",
+                              maxBytes);
+
+            // Encode the array of chars.
+            byte[] utf8Bytes = utf8.GetBytes(chars);
+
+            // Display all the UTF-8-encoded bytes.
+            Console.WriteLine("UTF-8-encoded code units:");
+            foreach (var utf8Byte in utf8Bytes)
+                Console.Write("{0:X2} ", utf8Byte);
+            Console.WriteLine();
+
+            Console.WriteLine("\nPress any key to continue... ");
+            Console.ReadKey();
         }
     }
 
-    
+
 
     class MainClass // Runs DingFork.MainLoop
     {
@@ -275,7 +318,7 @@ namespace dingfork
             Console.OutputEncoding = System.Text.Encoding.UTF8;
             // Start the Main program loop
             DingFork df = new DingFork();
-           
+
             df.MainLoop();
         }
     }
