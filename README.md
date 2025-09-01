@@ -34,19 +34,19 @@ INSTRUCTIONS:
 ### Example Program:
 
 #### Main Menu
-![Example2](./ref/example1.png)
+![Example2](./ref/main_menu.png)
 
 #### Running
-![Example1](./ref/example2.png)
+![Example1](./ref/code.png)
 
-![Example1](./ref/example3.png)
+![Example1](./ref/output1.png)
 
-![Example1](./ref/example6.png)
+![Example1](./ref/output2.png)
 
 #### Saving
-![Example1](./ref/example5.png)
+![Example1](./ref/saving1.png)
 
-![Example1](./ref/example4.png)
+![Example1](./ref/saving2.png)
 
 ### Resources
 ```
