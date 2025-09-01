@@ -30,10 +30,6 @@ INSTRUCTIONS:
 
 ```
 
-* You may create or save "subroutines", just make sure to add the name of the subroutine (ex: 🕿) to keymap.csv`
-   - This is currently buggy when combining subroutines
-
-
 ### Example Program:
 
 #### Main Menu
