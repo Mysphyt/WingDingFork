@@ -13,8 +13,9 @@ A BrainFuck interpreter but it's WingDings
 ```
   dataConfigName : name of the keymap and subroutine directory in data
 ```
-* [keymap](./dingfork/data/default/keymap): maps keyboard keys to WingDing symbols and instructions
-   * Additional instruction for resetting memory [cls_tape]
+* [keymap](./dingfork/data/default/keymap): maps keyboard keys to WingDing symbols and instructions.
+   * Includes subroutine key mappings as [`sb_instr`] 
+   * Additional instruction for resetting memory [`cls_tape`]
 ```
 INSTRUCTIONS:
    
