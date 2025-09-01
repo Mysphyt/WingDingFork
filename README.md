@@ -52,3 +52,13 @@ https://en.wikipedia.org/wiki/List_of_emojis
 Brainfuck
 https://en.wikipedia.org/wiki/Brainfuck
 ```
+### TODO
+#### Features
+- [ ] Convert text to WingDings, including subroutines
+  - Text(file) -> BrainFuck -> WingDings -> SubWingDings
+- [ ] Dynamic menus
+#### Bugs
+- [ ] Fix user entered wingdings not being rendered
+ - Saving subroutines, or other user entered WingDings that don't go through the filesystem
+ - Reading wingdings from files or hardcoded seems to work 
+
