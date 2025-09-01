@@ -1,5 +1,5 @@
 # WingDingFork
-A BrainFuck interpreter but it's WingDings
+A [BrainFuck](https://en.wikipedia.org/wiki/Brainfuck) interpreter but it's [WingDings](https://en.wikipedia.org/wiki/Wingdings)
 
 ### Running:
 ```
