@@ -149,7 +149,7 @@ namespace Data
             code: {1}
             """;
 
-            File.WriteAllText(subroutinePath, String.Format(subroutineUnformatted, subroutineWingDing, userCode.ToString()));
+            File.WriteAllText(subroutinePath, String.Format(subroutineUnformatted, subroutineWingDing, userCode.ToString().Replace(" ", "|")));
 
             Console.WriteLine("\n\nCurrent code saved to: subroutines/{0}\n\nPress any key to continue...", subroutineName);
             Console.ReadKey();

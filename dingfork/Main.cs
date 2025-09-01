@@ -129,11 +129,10 @@ namespace dingfork
 
             Console.Write("\n\nNew WingDing? (y/n): ");
 
-            bool yesNo = UserOpts.YesNoOpt();
-
             // User decides to exit or run another program
-            if (yesNo)
+            if (UserOpts.YesNoOpt())
             {
+                Console.Clear();
                 return;
             }
             else
@@ -184,10 +183,12 @@ namespace dingfork
             /*
                 Get WingDing code from a pasted string
             */
-            Console.WriteLine("Paste your code, then hit enter:\n");
+            Console.WriteLine(FileHelper.WING_DING_FORK);
+            Console.WriteLine("\n*code must be | delimited wingdings*\nPaste your code, then hit enter:\n");
             string pastedCode = Console.ReadLine();
 
-            // TODO: parse/sanitize pasted code for available instructions
+            // TODO: Parse/sanitize pasted code for available instructions
+            //       Allow for non-delmited code or code in keybindings (+-^<>... etc)
             userCode = new StringBuilder(pastedCode);
             RunLoop();
         }
