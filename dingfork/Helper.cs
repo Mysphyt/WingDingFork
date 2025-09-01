@@ -3,6 +3,9 @@ namespace Helper
 {
     public static class FileHelper
     {
+        public static string USER_INPUT_ARROW = " ⮚ ";
+        public static string INSTRUCTION_DELIM = "|";
+
         static public Dictionary<string, string> ParseYAML(string filepath)
         {
 

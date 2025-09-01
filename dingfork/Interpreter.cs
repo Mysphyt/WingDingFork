@@ -5,6 +5,7 @@ using System.Reflection;
 using System.Diagnostics;
 using System.Text;
 using System.ComponentModel.DataAnnotations;
+using Helper;
 
 namespace Interpreter
 {
@@ -144,7 +145,7 @@ namespace Interpreter
 
             try
             {
-                instructions = input.Split("|");
+                instructions = input.Split(FileHelper.INSTRUCTION_DELIM);
 
                 // Nothing to do
                 if (instructions.Length == 0) { return; }

@@ -2,6 +2,7 @@
 
 using System.Data;
 using Helper;
+using System.Text;
 
 namespace Data
 {
@@ -98,8 +99,6 @@ namespace Data
 
         public void SaveSubroutine(string userCode)
         {
-            Console.OutputEncoding = System.Text.Encoding.UTF8;
-
             string subroutineUnformatted = """
             wingding: {0}
             code: {1}
@@ -141,7 +140,7 @@ namespace Data
 
                 using (StreamWriter sw = File.AppendText(keymapFile))
                 {
-                    sw.WriteLine("\n" + subroutineName + "|" + shortcut + "^sb_instr");
+                    sw.WriteLine("\n" + subroutineWingDing + FileHelper.INSTRUCTION_DELIM + shortcut + "^sb_instr");
                 }
                 return;
             }
@@ -169,6 +168,10 @@ namespace Data
             if (keysToWingDings.ContainsKey(wing))
             {
                 return keysToWingDings[wing];
+            }
+            else if (keysToWingDings.ContainsValue(wing))
+            {
+                return wing;
             }
 
             return "";

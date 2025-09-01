@@ -24,7 +24,9 @@ namespace dingfork
 
             Loaded configuration: {0}
 
-            <1>: New WingDing
+            <1>: Code New WingDing
+            <2>: Paste new WingDing
+            <3>: Load WingDing from file
             <2>: Change configuration
             <3>: Configuration info
             <4>: Run Tests 
@@ -33,14 +35,14 @@ namespace dingfork
         """;
         // Indexed Method names -- should match the order of above options
         // TODO: make this dynamic
-        public string[] mainMthdOptions = ["Quit", "RunLoop", "ChangeConfig", "PrintConfig", "TestLoop"];
+        public string[] mainMthdOptions = ["Quit", "RunLoop", "PasteCode", "LoadCode","ChangeConfig", "PrintConfig", "TestLoop"];
 
 
         /*
             TODO: validate that loaded keymap does not overlap this instruction set
         */
         const string RUNLOOP_HEADER = """
-
+        
         code ⮚ {0}
 
         <1>: Run [code]
@@ -88,7 +90,7 @@ namespace dingfork
 
                     // HACK: Super hacky way of adding | (or re-adding) delimiters and reducing even and odd number of spaces to a single space
                     // TODO: create static string values for delimiters
-                    subroutineCode = subroutine.Value.Replace("  ", " ").Replace("   ", " ").Replace(" ", "|");
+                    subroutineCode = subroutine.Value.Replace("  ", " ").Replace("   ", " ").Replace(" ", FileHelper.INSTRUCTION_DELIM);
 
                     userCode = userCode.Replace(subroutineWingDing, subroutineCode);
                 }
@@ -184,6 +186,22 @@ namespace dingfork
             Console.WriteLine("TODO");
         }
 
+        public void PasteCode()
+        {
+            /*
+                Get WingDing code from a pasted string
+            */
+            Console.WriteLine("Paste your code, then hit enter:\n");
+            string pastedCode = Console.ReadLine();
+            RunLoop(pastedCode);
+        }
+
+        public void LoadCode()
+        {
+            // TODO: Load code from a file then call RunLoop(loadedCode)
+            Console.WriteLine("TODO");
+        }
+
         public void MainLoop()
         {
 
@@ -204,6 +222,7 @@ namespace dingfork
 
                 Console.WriteLine(sbDingFork);
 
+                Console.Write(FileHelper.USER_INPUT_ARROW);
                 string userKey = Console.ReadKey().KeyChar.ToString();
                 Console.Clear();
 
@@ -223,12 +242,17 @@ namespace dingfork
             }
         }
 
-        public void RunLoop()
+        public void RunLoop(string loadedCode)
         {
+            /*
+                Loop for running WingDing code
 
-            // Main loop for multiple code entries
+                   loadedCode: passed in the case of code from the clipboard or a file
+            */
+
+            // Refresh userCode and clear the console
+            userCode = new StringBuilder(loadedCode);
             Console.Clear();
-
             while (true)
             {
                 // StringBuilder for 
@@ -239,6 +263,7 @@ namespace dingfork
                 string userKey = Console.ReadKey().KeyChar.ToString();
                 Console.Clear();
 
+                // TODO: validate keymap doesn't contain option menu numeric keys
                 // If the user entered an available option [0..mthdOptions.Length]
                 if (int.TryParse(userKey, out int option))
                 {
@@ -250,10 +275,10 @@ namespace dingfork
                         // Invoke the option method
                         GetType().GetMethod(runMthdOptions[option])?.Invoke(this, []);
                     }
-                }
-                else
-                {
-                    Console.WriteLine("{0} is not a recognized option", userKey);
+                    else // Not in the options range
+                    {
+                        Console.WriteLine("{0} is not a recognized option", userKey);
+                    }
                 }
 
                 string wingDing = dataLoader.GetDing(userKey);
@@ -266,7 +291,7 @@ namespace dingfork
                 // Use | as delimeter
                 // --> certain characters have a Length of 2, ie 👇.Length, 👍
                 //  can't iterate one string length at a time and uncertainty of user input length.
-                userCode.Append(wingDing + "|");
+                userCode.Append(wingDing + FileHelper.INSTRUCTION_DELIM);
 
                 Console.Clear();
             }
@@ -275,6 +300,22 @@ namespace dingfork
         public void TestLoop()
         {
             // TODO: break out unit tests
+
+            /*
+            Console.OutputEncoding = Encoding.Unicode;
+
+            while (true)
+            {
+                string s = Console.ReadLine();
+
+                if (!string.IsNullOrEmpty(s))
+                {
+                    Debug.WriteLine(s);
+
+                    Console.WriteLine(s);
+                }
+            }
+            */
             /*
             UTF CONVERSION/INPUT TEST:
 
@@ -301,6 +342,9 @@ namespace dingfork
                 UTF-8-encoded code units:
                 3F 3F
             */
+            Console.OutputEncoding = System.Text.Encoding.UTF8;
+            Console.InputEncoding = Encoding.Unicode;
+
             Console.WriteLine("""
             === TESTING UTF8 CONVERSION & RENDERING ===
             """);
@@ -313,11 +357,8 @@ namespace dingfork
                 Console.WriteLine("\n\n_____________________________");
                 Console.WriteLine("Testing: {0}", utfInput);
                 // Create a character array.
-                string gkNumber = Char.ConvertFromUtf32(0x10154);
 
                 char[] chars = utfInput.ToCharArray();
-
-                // char[] chars = new char[] { 'z', 'a', '\u0306', '\u01FD', '\u03B2',gkNumber[0], gkNumber[1] };
 
                 // Get UTF-8 and UTF-16 encoders.
                 Encoding utf8 = Encoding.UTF8;
@@ -361,7 +402,10 @@ namespace dingfork
         static void Main()
         {
             // Allows unicode characters to be printed to the console 
-            Console.OutputEncoding = System.Text.Encoding.UTF8;
+            Console.OutputEncoding = System.Text.Encoding.Unicode;
+            Console.InputEncoding = Encoding.Unicode;
+
+
             // Start the Main program loop
             DingFork df = new DingFork();
 
