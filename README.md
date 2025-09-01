@@ -57,6 +57,7 @@ https://en.wikipedia.org/wiki/Brainfuck
 - [ ] Convert text to WingDings, including subroutines
   - Text(file) -> BrainFuck -> WingDings -> SubWingDings
 - [ ] Dynamic menus
+- [ ] Dynamic unit tests
 #### Bugs
 - [ ] Fix user entered wingdings not being rendered
  - Saving subroutines, or other user entered WingDings that don't go through the filesystem
