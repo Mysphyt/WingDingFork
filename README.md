@@ -44,9 +44,9 @@ INSTRUCTIONS:
 ![Example1](./ref/example6.png)
 
 #### Saving
-![Example1](./ref/example4.png)
-
 ![Example1](./ref/example5.png)
+
+![Example1](./ref/example4.png)
 
 ### Resources
 ```
