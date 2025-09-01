@@ -22,7 +22,7 @@ https://en.wikipedia.org/wiki/Brainfuck
 ```
   dataConfigName : name of the keymap and subroutine directory in data
 ```
-* [keymap](./dingfork/data/default/keymap.csv): maps keyboard keys to WingDing symbols and instructions
+* [keymap](./dingfork/data/default/keymap): maps keyboard keys to WingDing symbols and instructions
    * Additional instruction for resetting memory [cls_tape]
 ```
 INSTRUCTIONS:
