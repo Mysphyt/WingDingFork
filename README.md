@@ -58,8 +58,9 @@ https://en.wikipedia.org/wiki/Brainfuck
   - Text(file) -> BrainFuck -> WingDings -> SubWingDings
 - [ ] Dynamic menus
 - [ ] Dynamic unit tests
+- [ ] Global Unicode and UTF8 modes 
 #### Bugs
-- [ ] Fix user entered wingdings not being rendered
+- [x] Fix user entered wingdings not being rendered
  - Saving subroutines, or other user entered WingDings that don't go through the filesystem
  - Reading wingdings from files or hardcoded seems to work 
 
