@@ -183,12 +183,27 @@ namespace dingfork
             /*
                 Change the current data configuration 
             */
-            Console.WriteLine("Enter config name: ");
+            Console.WriteLine(FileHelper.WING_DING_FORK);
+            Console.WriteLine("{0} Enter config name: ", FileHelper.USER_INPUT_ARROW);
             var newConfig = Console.ReadLine();
+
             if (newConfig == null) { return; }
-            // TODO: validate the new config
-            // TODO: change the data folder without creating a new DataLoader
-            dataLoader = new DataLoader(newConfig);
+
+            string configDir = String.Format("{0}/{1}", DataLoader.dataDirectory, newConfig);
+
+            if (!Directory.Exists(configDir))
+            {
+                Console.WriteLine("Config directory not found: {0}", configDir);
+                UserOpts.PressAnyKey();
+                // Go back to the main menu
+                return;
+            }
+
+            // TODO: Create method DataLoader.SetConfig
+            dataLoader.dataConfigName = newConfig;
+            dataLoader.LoadSubroutines();
+            dataLoader.LoadKeymap();
+
             Console.Clear();
         }
 
@@ -413,8 +428,8 @@ namespace dingfork
                     Console.Write("{0:X2} ", utf8Byte);
 
             }
-            Console.WriteLine("\nPress any key to continue... ");
-            Console.ReadKey();
+            // Wait for user input
+            UserOpts.PressAnyKey();
         }
     }
 

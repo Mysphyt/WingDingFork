@@ -45,6 +45,13 @@ namespace Helper
     // Namespace for 
     static class UserOpts
     {
+
+        static public void PressAnyKey()
+        {
+            Console.WriteLine("\nPress any key to continue...");
+            Console.ReadKey();
+        }
+
         static public bool YesNoOpt()
         {
             while (true)

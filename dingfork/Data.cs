@@ -44,10 +44,8 @@ namespace Data
                 string hotkey = wingDingsToKeys[subroutine.Key];
                 Console.WriteLine("{0} {2}\n wingding: {1}\n hotkey: {3}", FileHelper.USER_INPUT_ARROW, subroutine.Key, subroutine.Value, hotkey);
             }
-
-            // TODO: abstract "press any key" pattern
-            Console.WriteLine("Press any key to continue...");
-            Console.ReadKey();
+            // Wait for any user input
+            UserOpts.PressAnyKey();
         }
 
         public void PrintKeymap()
@@ -93,6 +91,12 @@ namespace Data
                 string subroutinesConfigDirectory = String.Format(subroutinesDirectory, dataConfigName);
                 string[] files = Directory.GetFiles(subroutinesConfigDirectory, "*", SearchOption.AllDirectories);
 
+                // Create the subroutines directory if it doesn't exist
+                if (!Directory.Exists(subroutinesConfigDirectory))
+                {
+                    Directory.CreateDirectory(subroutinesConfigDirectory);
+                }
+               
                 Dictionary<string, string> subroutineArgs = new Dictionary<string, string>();
                 // Load subroutines
                 foreach (string subroutineFile in files)
@@ -142,9 +146,8 @@ namespace Data
             }
             catch (Exception e)
             {
-                Console.WriteLine("!!!!!!! Error loading keymap !!!!!!!!\n got: {0}\nPress any key to quit.", e.ToString());
-                // Enter any key        
-                Console.ReadKey();
+                Console.WriteLine("!!!!!!! Error loading keymap !!!!!!!!\n got: {0}", e.ToString());
+                UserOpts.PressAnyKey();
                 // Exit the program
                 System.Environment.Exit(1);
             }
@@ -216,9 +219,9 @@ namespace Data
 
             File.WriteAllText(subroutinePath, String.Format(subroutineUnformatted, subroutineWingDing, userCode.ToString()));
 
-            Console.WriteLine("\n\nCurrent code saved to: subroutines/{0}\n\nPress any key to continue...", subroutineName);
-
-            Console.ReadKey();
+            Console.WriteLine("\n\nCurrent code saved to: subroutines/{0}\n", subroutineName);
+            // Wait for user input
+            UserOpts.PressAnyKey();
 
             // Re-load the subroutines and keymap
             LoadSubroutines();
