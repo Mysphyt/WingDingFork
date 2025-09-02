@@ -95,7 +95,9 @@ namespace Data
             // Reset keymap dictionaries
             wingDingsToInstructions = new Dictionary<string, string>();
             instructionsToWingDings = new Dictionary<string, string>();
+
             wingDingsToKeys = new Dictionary<string, string>();
+            keysToWingDings = new Dictionary<string, string>();
 
             // Parse the keys and method names from keymap data
             foreach (var keyToMthd in tmpWingDingMap)

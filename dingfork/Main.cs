@@ -30,7 +30,13 @@ namespace dingfork
         """;
         // Indexed Method names -- should match the order of above options
         // TODO: make this dynamic
-        public string[] mainMthdOptions = ["Quit", "RunLoop", "PasteCode", "LoadCode", "ChangeConfig", "PrintConfig"];
+        public string[] mainMthdOptions = ["Quit",
+            "RunLoop",
+            "PasteCode",
+            "LoadCode",
+            "ChangeConfig",
+            "PrintConfig"
+        ];
 
 
         /*
