@@ -170,20 +170,33 @@ namespace dingfork
 
         public void Clear()
         {
+            /*
+                Clears the current userCode
+            */ 
             userCode.Clear();
+            Console.Clear();
         }
 
         public void Pop()
         {
-            if (userCode.Length == 0) { return; } // Nothing to remove
+            /*
+                Removes the last instruction from userCode()
+            */
+            // Split instructions by the delim 
+            string[] instructions = userCode.ToString().Split(FileHelper.INSTRUCTION_DELIM);
 
-            // Trim kerning whitespace
-            while (userCode[userCode.Length - 1] == ' ')
+            if (instructions.Length > 1)
             {
-                userCode.Remove(userCode.Length - 1, 1);
+                // Re-build the code without the trailing instruction
+                // Add trailing delimiter
+                string newCode = string.Join(FileHelper.INSTRUCTION_DELIM, instructions.Take(instructions.Length - 2))+FileHelper.INSTRUCTION_DELIM;
+                userCode = new StringBuilder(newCode);
             }
-            // Remove the wingding
-            userCode.Remove(userCode.Length - 1, 1);
+            else
+            {
+                return;
+            }
+
         }
 
         public void ChangeConfig()

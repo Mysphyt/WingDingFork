@@ -183,8 +183,6 @@ namespace Interpreter
                     // Check against avail instructions
                     if (!availInstructions.Contains(instructionMthdMap[instruction]))
                     {
-                        Console.WriteLine(instruction);
-                        Console.ReadKey();
                         continue;
                     }
                     // Call the instruction method

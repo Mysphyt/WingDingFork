@@ -43,10 +43,10 @@ namespace Data
             Console.Clear();
             Console.WriteLine(FileHelper.WING_DING_FORK);
             Console.WriteLine("\nAvailable key mappings from {0}/keymap:", dataConfigName);
-            foreach (var keymap in wingDingsToKeys)
+            foreach (var keymap in instructionsToWingDings)
             {
-                string instruction = wingDingsToInstructions[keymap.Key];
-                Console.WriteLine("{0} {1}:\n  wingding: {2}\n  hotkey: {3}\n", FileHelper.USER_INPUT_ARROW, instruction, keymap.Key, keymap.Value);
+                string hotkey = wingDingsToKeys[keymap.Value];
+                Console.WriteLine("{0} {1}:\n  wingding: {2}\n  hotkey: {3}\n", FileHelper.USER_INPUT_ARROW, keymap.Key, keymap.Value, hotkey);
             }
             // Wait for any user input
             UserOpts.PressAnyKey();
@@ -77,7 +77,20 @@ namespace Data
             keymapFile = String.Format("{0}/{1}/keymap", dataDirectory, dataConfigName);
 
             // Temp dictionary for parsing 
-            Dictionary<string, string> tmpWingDingMap = File.ReadLines(keymapFile).Select(line => line.Replace(" ", "").Split('|')).ToDictionary(line => line[0], line => line[1]);
+            var keymapLines = File.ReadLines(keymapFile);
+
+            Dictionary<string, string> tmpWingDingMap = new Dictionary<string, string>();
+
+            foreach (var line in keymapLines)
+            {
+                // Remove spaces and split on the isntruction delimiter
+                var args = line.Replace(" ", "").Split(FileHelper.INSTRUCTION_DELIM);
+                if (args.Length != 2)
+                {
+                    continue;
+                }
+                tmpWingDingMap.Add(args[0], args[1]);
+            }
 
             // Reset keymap dictionaries
             wingDingsToInstructions = new Dictionary<string, string>();
@@ -164,9 +177,9 @@ namespace Data
             }
             catch (Exception e)
             {
-                Console.WriteLine("!!!!!!!! Error loading subroutines !!!!!!!!\n got: {0}\nPress any key to quit.", e.ToString());
-                // Enter any key        
-                Console.ReadKey();
+                Console.WriteLine("!!!!!!!! Error loading subroutines !!!!!!!!\n got: {0}", e.ToString());
+                // Wait for user input
+                UserOpts.PressAnyKey();
                 // Exit the program
                 System.Environment.Exit(1);
             }

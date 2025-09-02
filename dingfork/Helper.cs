@@ -48,12 +48,15 @@ namespace Helper
 
         static public void PressAnyKey()
         {
+            // Prompts the user to press a key
             Console.WriteLine("\nPress any key to continue...");
             Console.ReadKey();
+            Console.Clear();
         }
 
         static public bool YesNoOpt()
         {
+            // Asks the user to enter y/n to continue
             while (true)
             {
                 string optKey = Console.ReadKey().KeyChar.ToString().ToLower();
