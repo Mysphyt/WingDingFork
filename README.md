@@ -6,9 +6,7 @@ A [BrainFuck](https://en.wikipedia.org/wiki/Brainfuck) interpreter, but it's [Wi
 .\app\dingfork.exe
 ```
 
-### Usage:
-
-#### Enter or paste your [code] from the following (default) instructions, or modify the mapping file with different WingDings.
+### Configuration:
 * [config](./dingfork/data/config.yml): configuration setttings
 ```
   dataConfigName : name of the keymap and subroutine directory in data
