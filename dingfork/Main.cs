@@ -38,20 +38,30 @@ namespace dingfork
         */
         const string RUNLOOP_HEADER = """
         
-        code ⮚ {0}
+        enter your code ⮚ {0}
 
-        1 ⮚ Run [code]
+        1 ⮚ Run
         2 ⮚ Delete last instruction
         3 ⮚ Clear all instructions
         4 ⮚ Save as subroutine
         5 ⮚ List subroutines
-        6 ⮚ Main Menu
+        6 ⮚ List hotkeys
+        7 ⮚ Main Menu
         0 ⮚ Quit
 
         """;
         // Indexed Method names -- should match the order of above options
         // TODO: make this dynamic
-        public string[] runMthdOptions = ["Quit", "Run", "Pop", "Clear", "Save", "ListSubroutines", "MainLoop"];
+        public string[] runMthdOptions = [
+             "Quit",
+             "Run",
+             "Pop",
+             "Clear",
+             "Save",
+             "ListSubroutines",
+             "ListHotkeys",
+             "MainLoop"
+       ];
 
         private Dictionary<string, string> configMap = new Dictionary<string, string>();
 
@@ -61,7 +71,7 @@ namespace dingfork
         // StringBuilders for user input
         private StringBuilder userCode = new StringBuilder();
 
-        static string ParseSubroutines(string userCode)
+        static string ParseSubroutines(string userCode, bool delimSubroutinesFlag = true)
         {
             /*
                 Renders subroutine instructions in userCode
@@ -83,13 +93,21 @@ namespace dingfork
             while (subroutineCode != prevSubroutineCode)
             {
                 prevSubroutineCode = subroutineCode;
-                foreach (var subroutine in dataLoader.subroutineCodeMap)
+                foreach (var subroutine in dataLoader.wingDingsToCode)
                 {
                     string subroutineWingDing = subroutine.Key;
 
-                    // HACK: Super hacky way of adding | (or re-adding) delimiters and reducing even and odd number of spaces to a single space
+                    // HACK: Super hacky way of adding | delimiters and reducing even and odd number of spaces to a single space
                     // TODO: create static string values for delimiters
-                    subroutineCode = subroutine.Value.Replace("  ", " ").Replace("   ", " ").Replace(" ", FileHelper.INSTRUCTION_DELIM);
+                    // subroutineCode = subroutine.Value.Replace("  ", " ").Replace("   ", " ").Replace(" ", FileHelper.INSTRUCTION_DELIM);
+
+                    // Ignore above, assume subroutine contains the correct delimiters
+                    // TODO: validate subroutine
+                    subroutineCode = subroutine.Value;
+                    if (delimSubroutinesFlag)
+                    {
+                        subroutineCode += String.Format("|{0}", dataLoader.instructionsToWingDings["cls_tape"]);
+                    }
 
                     userCode = userCode.Replace(subroutineWingDing, subroutineCode);
                 }
@@ -120,7 +138,7 @@ namespace dingfork
 
             var interpreter = new Runner();
 
-            interpreter.LoadInstructionMap(dataLoader.instructionMap);
+            interpreter.LoadInstructionMap(dataLoader.wingDingsToInstructions);
 
             interpreter.Run(parsedCode);
         }
@@ -128,6 +146,10 @@ namespace dingfork
         public void Save()
         {
             dataLoader.SaveSubroutine(userCode.ToString());
+        }
+        public void ListHotkeys()
+        {
+            dataLoader.PrintKeymap();
         }
 
         public void ListSubroutines()
@@ -143,21 +165,7 @@ namespace dingfork
         public void Run()
         { // Run the current code
             InterpretWingDingCode(userCode.ToString());
-
-            userCode.Clear();
-
-            Console.Write("\n\nNew WingDing? (y/n): ");
-
-            // User decides to exit or run another program
-            if (UserOpts.YesNoOpt())
-            {
-                Console.Clear();
-                return;
-            }
-            else
-            {
-                System.Environment.Exit(1);
-            }
+            UserOpts.PressAnyKey();
         }
 
         public void Clear()

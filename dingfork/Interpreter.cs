@@ -196,11 +196,11 @@ namespace Interpreter
                         throw new Exception(String.Format("Uh-oh! Infinite loop detected... program took longer than 3 seconds to execute\nFailed at: {1}  |  {2}", instruction, globalInstructionIt));
                     }
                 }
-                Console.WriteLine("=================== Output =================== \n\n{0}\n\n==============================================\n", output.ToString());
+                Console.WriteLine("Output >>>>>>\n\n{1}\n\n<<<<<<\n", FileHelper.USER_INPUT_ARROW, output.ToString());
             }
             catch (Exception e)
             {
-                Console.WriteLine("\nError in [code]: {0}\n", e.ToString());
+                Console.WriteLine("\nError in code: {0}\n", e.ToString());
             }
             finally
             {

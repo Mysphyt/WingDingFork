@@ -16,21 +16,43 @@ namespace Data
         public static string dataDirectory = dingforkDirectory + "/data/";
         public static string subroutinesDirectory = dingforkDirectory + "/data/{0}/subroutines/";
 
-        public string dataConfigName;
-        public string keymapFile;
+        public string dataConfigName = "";
+        public string keymapFile = "";
+
+        // TODO: Clean up / consolidate these mappings
 
         // wingding -> key
         public Dictionary<string, string> wingDingsToKeys = new Dictionary<string, string>();
         // key -> wingding
         public Dictionary<string, string> keysToWingDings = new Dictionary<string, string>();
         // wingding -> wingding[] instruction list
-        public Dictionary<string, string> subroutineCodeMap = new Dictionary<string, string>();
+        public Dictionary<string, string> wingDingsToCode = new Dictionary<string, string>();
         // wingding -> subroutine name
-        public Dictionary<string, string> subroutineNameMap = new Dictionary<string, string>();
+        public Dictionary<string, string> wingDingsToSubroutine = new Dictionary<string, string>();
         // wingding -> interpreter instruction method name
-        public Dictionary<string, string> instructionMap = new Dictionary<string, string>();
+        public Dictionary<string, string> wingDingsToInstructions = new Dictionary<string, string>();
+        // instruction -> wingding
+        public Dictionary<string, string> instructionsToWingDings = new Dictionary<string, string>();
 
 
+        public void PrintKeymap()
+        {
+            /*
+                Print current subroutines
+            */
+            Console.Clear();
+            Console.WriteLine(FileHelper.WING_DING_FORK);
+            Console.WriteLine("\nAvailable key mappings from {0}/keymap:", dataConfigName);
+            foreach (var keymap in wingDingsToKeys)
+            {
+                string instruction = wingDingsToInstructions[keymap.Key];
+                Console.WriteLine("{0} {1}:\n  wingding: {2}\n  hotkey: {3}\n", FileHelper.USER_INPUT_ARROW, instruction, keymap.Key, keymap.Value);
+            }
+            // Wait for any user input
+            UserOpts.PressAnyKey();
+        }
+
+       
         public void PrintSubroutines()
         {
             /*
@@ -39,18 +61,13 @@ namespace Data
             Console.Clear();
             Console.WriteLine(FileHelper.WING_DING_FORK);
             Console.WriteLine("\nAvailable Subroutines in {0}:", dataConfigName);
-            foreach (var subroutine in subroutineNameMap)
+            foreach (var subroutine in wingDingsToSubroutine)
             {
                 string hotkey = wingDingsToKeys[subroutine.Key];
                 Console.WriteLine("{0} {2}\n wingding: {1}\n hotkey: {3}", FileHelper.USER_INPUT_ARROW, subroutine.Key, subroutine.Value, hotkey);
             }
             // Wait for any user input
             UserOpts.PressAnyKey();
-        }
-
-        public void PrintKeymap()
-        {
-            // TODO
         }
 
         public void LoadKeymap()
@@ -62,6 +79,11 @@ namespace Data
             // Temp dictionary for parsing 
             Dictionary<string, string> tmpWingDingMap = File.ReadLines(keymapFile).Select(line => line.Replace(" ", "").Split('|')).ToDictionary(line => line[0], line => line[1]);
 
+            // Reset keymap dictionaries
+            wingDingsToInstructions = new Dictionary<string, string>();
+            instructionsToWingDings = new Dictionary<string, string>();
+            wingDingsToKeys = new Dictionary<string, string>();
+
             // Parse the keys and method names from keymap data
             foreach (var keyToMthd in tmpWingDingMap)
             {
@@ -71,7 +93,11 @@ namespace Data
                 string mthdName = keyMthd[1];
                 string wingDing = keyToMthd.Key;
 
-                instructionMap.Add(wingDing, mthdName);
+                if (mthdName != "sb_instr") // Skip substring instructions, not needed for this mapping
+                {
+                    instructionsToWingDings.Add(mthdName, wingDing);
+                }
+                wingDingsToInstructions.Add(wingDing, mthdName);
                 wingDingsToKeys.Add(wingDing, keyName);
             }
 
@@ -87,38 +113,42 @@ namespace Data
 
         public void LoadSubroutines()
         {
-                // Parses subroutines/ folder
-                string subroutinesConfigDirectory = String.Format(subroutinesDirectory, dataConfigName);
-                string[] files = Directory.GetFiles(subroutinesConfigDirectory, "*", SearchOption.AllDirectories);
+            // Parses subroutines/ folder
+            string subroutinesConfigDirectory = String.Format(subroutinesDirectory, dataConfigName);
+            string[] files = Directory.GetFiles(subroutinesConfigDirectory, "*", SearchOption.AllDirectories);
 
-                // Create the subroutines directory if it doesn't exist
-                if (!Directory.Exists(subroutinesConfigDirectory))
+            // Create the subroutines directory if it doesn't exist
+            if (!Directory.Exists(subroutinesConfigDirectory))
+            {
+                Directory.CreateDirectory(subroutinesConfigDirectory);
+            }
+
+            Dictionary<string, string> subroutineArgs;
+
+            // Reset the code and name map for subroutines
+            wingDingsToCode = new Dictionary<string, string>();
+            wingDingsToSubroutine = new Dictionary<string, string>();
+            // Load subroutines
+            foreach (string subroutineFile in files)
+            {
+                try
                 {
-                    Directory.CreateDirectory(subroutinesConfigDirectory);
+                    subroutineArgs = FileHelper.ParseYAML(subroutineFile);
+
+                    string subroutineName = subroutineFile.Split('/')[^1];
+                    string subroutineWingDing = subroutineArgs["wingding"];
+                    string subroutineCode = subroutineArgs["code"];
+
+                    wingDingsToCode.Add(subroutineWingDing, subroutineCode);
+                    wingDingsToSubroutine.Add(subroutineWingDing, subroutineName);
                 }
-               
-                Dictionary<string, string> subroutineArgs = new Dictionary<string, string>();
-                // Load subroutines
-                foreach (string subroutineFile in files)
+                catch (Exception e)
                 {
-                    try
-                    {
-                        subroutineArgs = FileHelper.ParseYAML(subroutineFile);
-
-                        string subroutineName = subroutineFile.Split('/')[^1];
-                        string subroutineWingDing = subroutineArgs["wingding"];
-                        string subroutineCode = subroutineArgs["code"];
-
-                        subroutineCodeMap.Add(subroutineWingDing, subroutineCode);
-                        subroutineNameMap.Add(subroutineWingDing, subroutineName);
-                    }
-                    catch (Exception e)
-                    {
-                        Console.WriteLine("\nFailed to parse subroutine: {0}\n\nError: {1}", subroutineFile, e.ToString());
-                        continue;
-                    }
-
+                    Console.WriteLine("\nFailed to parse subroutine: {0}\n\nError: {1}", subroutineFile, e.ToString());
+                    continue;
                 }
+
+            }
 
         }
 
@@ -140,7 +170,8 @@ namespace Data
                 // Exit the program
                 System.Environment.Exit(1);
             }
-            try {
+            try
+            {
                 // Load keymap file
                 LoadKeymap();
             }
@@ -230,14 +261,14 @@ namespace Data
 
         public string GetSubroutine(string id)
         {
-            if (subroutineCodeMap.ContainsKey(id))
+            if (wingDingsToCode.ContainsKey(id))
             {
-                return subroutineCodeMap[id];
+                return wingDingsToCode[id];
             }
             return "";
         }
 
-      
+
         public string GetDing(string wing)
         {
             if (keysToWingDings.ContainsKey(wing))
