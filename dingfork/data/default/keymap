@@ -7,16 +7,4 @@
 👆|+^inc_byte
 👇|-^dec_byte
 💣|!^cls_tape
-📞|/^sb_instr
-🕿|~^sb_instr
-☀️|0^sb_instr
-🧙|`^sb_instr
-♑︎|h^sb_instr
-🥷|o^sb_instr
-⌘|n^sb_instr
-⁉️|m^sb_instr
-‼️|b^sb_instr
-ℹ️|e^sb_instr
-☘️|i^sb_instr
-♾️|u^sb_instr
-⭐️|a^sb_instr
+🐻|b^buffalo_bill

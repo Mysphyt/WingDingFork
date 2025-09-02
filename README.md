@@ -12,7 +12,7 @@ A [BrainFuck](https://en.wikipedia.org/wiki/Brainfuck) interpreter, but it's [Wi
   dataConfigName : name of the keymap and subroutine directory in data
 ```
 * [keymap](./dingfork/data/default/keymap): maps keyboard keys to WingDing symbols and instructions.
-   * Includes subroutine key mappings as [`sb_instr`] 
+   * Includes subroutine key mappings as [wingding|key^subroutine_name] 
    * Additional instruction for resetting memory [`cls_tape`]
 ```
 INSTRUCTIONS:

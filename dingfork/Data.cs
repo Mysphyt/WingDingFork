@@ -1,3 +1,4 @@
+using System.ComponentModel;
 using System.Data;
 using Helper;
 
@@ -99,6 +100,9 @@ namespace Data
             wingDingsToKeys = new Dictionary<string, string>();
             keysToWingDings = new Dictionary<string, string>();
 
+            // foreach (var keyvar in tmpWingDingMap) { Console.WriteLine(keyvar.Key + keyvar.Value); }
+            // UserOpts.PressAnyKey();
+            
             // Parse the keys and method names from keymap data
             foreach (var keyToMthd in tmpWingDingMap)
             {
@@ -108,12 +112,9 @@ namespace Data
                 string mthdName = keyMthd[1];
                 string wingDing = keyToMthd.Key;
 
-                if (mthdName != "sb_instr") // Skip substring instructions, not needed for this mapping
-                {
-                    instructionsToWingDings.Add(mthdName, wingDing);
-                }
-                wingDingsToInstructions.Add(wingDing, mthdName);
-                wingDingsToKeys.Add(wingDing, keyName);
+                instructionsToWingDings[mthdName] = wingDing;
+                wingDingsToInstructions[wingDing] = mthdName;
+                wingDingsToKeys[wingDing] = keyName;
             }
 
             foreach (var wingKey in wingDingsToKeys)
@@ -148,11 +149,9 @@ namespace Data
             {
                 try
                 {
-                    subroutineArgs = FileHelper.ParseYAML(subroutineFile);
-
                     string subroutineName = subroutineFile.Split('/')[^1];
-                    string subroutineWingDing = subroutineArgs["wingding"];
-                    string subroutineCode = subroutineArgs["code"];
+                    string subroutineWingDing = instructionsToWingDings[subroutineName];
+                    string subroutineCode = File.ReadAllText(subroutineFile);
 
                     wingDingsToCode.Add(subroutineWingDing, subroutineCode);
                     wingDingsToSubroutine.Add(subroutineWingDing, subroutineName);
@@ -160,11 +159,18 @@ namespace Data
                 catch (Exception e)
                 {
                     Console.WriteLine("\nFailed to parse subroutine: {0}\n\nError: {1}", subroutineFile, e.ToString());
+                    UserOpts.PressAnyKey();
                     continue;
                 }
 
             }
 
+        }
+
+        public void LoadData()
+        {
+            LoadKeymap();
+            LoadSubroutines();
         }
         public string ParseSubroutines(string userCode, bool delimSubroutinesFlag = true)
         {
@@ -173,11 +179,6 @@ namespace Data
                     
                 Args:
                     userCode: Input code that may include subroutines to be rendered/replaced with subroutine code
-
-                Expects a single key/value pair in the following format:
-                        
-                        wingding:🕿
-                        code:👇 🐵 👇 👇 👇 👉 👆 👈 🐟 👉 👇 👍
 
                 TODO: Make this a single subroutines file?
             */
@@ -199,6 +200,7 @@ namespace Data
                     // Ignore above, assume subroutine contains the correct delimiters
                     // TODO: validate subroutine
                     subroutineCode = subroutine.Value;
+
                     if (delimSubroutinesFlag)
                     {
                         subroutineCode += String.Format("|{0}", instructionsToWingDings["cls_tape"]);
@@ -217,6 +219,7 @@ namespace Data
             try // Try to load data files
             {
                 // Load subroutines folder
+                LoadKeymap();
                 LoadSubroutines();
             }
             catch (Exception e)
@@ -293,27 +296,21 @@ namespace Data
 
                 using (StreamWriter sw = File.AppendText(keymapFile))
                 {
-                    sw.WriteLine("\n" + subroutineWingDing + FileHelper.INSTRUCTION_DELIM + shortcut + "^sb_instr");
+                    sw.WriteLine("\n" + subroutineWingDing + FileHelper.INSTRUCTION_DELIM + shortcut + "^" + subroutineName);
                 }
             }
 
             // Write the subroutine 
             string subroutinePath = String.Format(subroutinesDirectory, dataConfigName) + subroutineName;
 
-            string subroutineUnformatted = """
-            wingding: {0}
-            code: {1}
-            """;
-
-            File.WriteAllText(subroutinePath, String.Format(subroutineUnformatted, subroutineWingDing, userCode.ToString()));
+            File.WriteAllText(subroutinePath, userCode.ToString());
 
             Console.WriteLine("\n\nCurrent code saved to: subroutines/{0}\n", subroutineName);
             // Wait for user input
             UserOpts.PressAnyKey();
 
             // Re-load the subroutines and keymap
-            LoadSubroutines();
-            LoadKeymap();
+            LoadData();
         }
 
         public string GetSubroutine(string id)

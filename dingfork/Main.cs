@@ -184,8 +184,7 @@ namespace dingfork
 
             // TODO: Create method DataLoader.SetConfig
             dataLoader.dataConfigName = newConfig;
-            dataLoader.LoadSubroutines();
-            dataLoader.LoadKeymap();
+            dataLoader.LoadData();
 
             Console.Clear();
         }
