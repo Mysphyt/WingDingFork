@@ -10,7 +10,7 @@ A [BrainFuck](https://en.wikipedia.org/wiki/Brainfuck) interpreter, but it's [Wi
 ```
   dataConfigName : name of the keymap and subroutine directory in data
 ```
-* `Subroutines` are lists of instructions saved in the configured data folder (ie [default/subroutines/](./dingfork/data/default/subroutines/) )
+* [subroutines/](./dingfork/data/default/subroutines/) are lists of instructions saved in the configured data folder
   * The name of each subroutine file corresponds with the instruction name in [keymap](./dingfork/data/default/keymap)
     * The line "`🐻|b^buffalo_bill`" maps the key wingding "`🐻`" to the keyboard shortbut "`b`" and the subroutine instruction "`buffalo_bill`"
 * [keymap](./dingfork/data/default/keymap): maps keyboard keys to WingDing symbols and instructions.
