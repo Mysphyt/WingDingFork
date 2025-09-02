@@ -47,11 +47,8 @@ INSTRUCTIONS:
 
 ### Resources
 ```
-Emoji List
-https://en.wikipedia.org/wiki/List_of_emojis
+[Wikipedia Emoji List](https://en.wikipedia.org/wiki/List_of_emojis)
 
-Brainfuck
-https://en.wikipedia.org/wiki/Brainfuck
 ```
 ### TODO
 #### Features
