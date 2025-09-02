@@ -1,11 +1,12 @@
-
-
 using System.Data;
 using Helper;
-using System.Text;
 
 namespace Data
 {
+    /*
+        Namespace for data related classes
+    */
+
     public class DataLoader
     {
         // HACK: get dingfork/ directory
@@ -22,18 +23,72 @@ namespace Data
         public Dictionary<string, string> wingDingsToKeys = new Dictionary<string, string>();
         // key -> wingding
         public Dictionary<string, string> keysToWingDings = new Dictionary<string, string>();
-        // wingding -> wingding[]
-        public Dictionary<string, string> wingDingSubRoutines = new Dictionary<string, string>();
+        // wingding -> wingding[] instruction list
+        public Dictionary<string, string> subroutineCodeMap = new Dictionary<string, string>();
+        // wingding -> subroutine name
+        public Dictionary<string, string> subroutineNameMap = new Dictionary<string, string>();
         // wingding -> interpreter instruction method name
         public Dictionary<string, string> instructionMap = new Dictionary<string, string>();
 
-        public DataLoader(string _dataConfigName)
-        {
-            // TODO: break out load methods for each Map
-            dataConfigName = _dataConfigName;
 
-            try // Try to load data files
+        public void PrintSubroutines()
+        {
+            /*
+                Print current subroutines
+            */
+            Console.Clear();
+            Console.WriteLine(FileHelper.WING_DING_FORK);
+            Console.WriteLine("\nAvailable Subroutines in {0}:", dataConfigName);
+            foreach (var subroutine in subroutineNameMap)
             {
+                string hotkey = wingDingsToKeys[subroutine.Key];
+                Console.WriteLine("{0} {2}\n wingding: {1}\n hotkey: {3}", FileHelper.USER_INPUT_ARROW, subroutine.Key, subroutine.Value, hotkey);
+            }
+
+            // TODO: abstract "press any key" pattern
+            Console.WriteLine("Press any key to continue...");
+            Console.ReadKey();
+        }
+
+        public void PrintKeymap()
+        {
+            // TODO
+        }
+
+        public void LoadKeymap()
+        {
+            // HACK: csv to dict for wingdings -> key^method_name
+            // TODO: make this readable
+            keymapFile = String.Format("{0}/{1}/keymap", dataDirectory, dataConfigName);
+
+            // Temp dictionary for parsing 
+            Dictionary<string, string> tmpWingDingMap = File.ReadLines(keymapFile).Select(line => line.Replace(" ", "").Split('|')).ToDictionary(line => line[0], line => line[1]);
+
+            // Parse the keys and method names from keymap data
+            foreach (var keyToMthd in tmpWingDingMap)
+            {
+                string[] keyMthd = keyToMthd.Value.Split("^");
+
+                string keyName = keyMthd[0];
+                string mthdName = keyMthd[1];
+                string wingDing = keyToMthd.Key;
+
+                instructionMap.Add(wingDing, mthdName);
+                wingDingsToKeys.Add(wingDing, keyName);
+            }
+
+            foreach (var wingKey in wingDingsToKeys)
+            {
+                if (!keysToWingDings.ContainsKey(wingKey.Value))
+                {
+                    keysToWingDings.Add(wingKey.Value.Replace(" ", ""), wingKey.Key.Replace(" ", ""));
+                }
+            }
+
+        }
+
+        public void LoadSubroutines()
+        {
                 // Parses subroutines/ folder
                 string subroutinesConfigDirectory = String.Format(subroutinesDirectory, dataConfigName);
                 string[] files = Directory.GetFiles(subroutinesConfigDirectory, "*", SearchOption.AllDirectories);
@@ -50,42 +105,31 @@ namespace Data
                         string subroutineWingDing = subroutineArgs["wingding"];
                         string subroutineCode = subroutineArgs["code"];
 
-                        wingDingSubRoutines.Add(subroutineWingDing, subroutineCode);
+                        subroutineCodeMap.Add(subroutineWingDing, subroutineCode);
+                        subroutineNameMap.Add(subroutineWingDing, subroutineName);
                     }
                     catch (Exception e)
                     {
                         Console.WriteLine("\nFailed to parse subroutine: {0}\n\nError: {1}", subroutineFile, e.ToString());
                         continue;
                     }
+
                 }
 
-                // HACK: csv to dict for wingdings -> key^method_name
-                // TODO: make this readable
-                keymapFile = String.Format("{0}/{1}/keymap", dataDirectory, dataConfigName);
+        }
 
-                // Temp dictionary for parsing 
-                Dictionary<string, string> tmpWingDingMap = File.ReadLines(keymapFile).Select(line => line.Replace(" ", "").Split('|')).ToDictionary(line => line[0], line => line[1]);
+        public DataLoader(string _dataConfigName)
+        {
+            // TODO: break out load methods for each Map
+            dataConfigName = _dataConfigName;
 
-                // Parse the keys and method names from keymap data
-                foreach (var keyToMthd in tmpWingDingMap)
-                {
-                    string[] keyMthd = keyToMthd.Value.Split("^");
+            try // Try to load data files
+            {
+                // Load subroutines folder
+                LoadSubroutines();
 
-                    string keyName = keyMthd[0];
-                    string mthdName = keyMthd[1];
-                    string wingDing = keyToMthd.Key;
-
-                    instructionMap.Add(wingDing, mthdName);
-                    wingDingsToKeys.Add(wingDing, keyName);
-                }
-
-                foreach (var wingKey in wingDingsToKeys)
-                {
-                    if (!keysToWingDings.ContainsKey(wingKey.Value))
-                    {
-                        keysToWingDings.Add(wingKey.Value.Replace(" ", ""), wingKey.Key.Replace(" ", ""));
-                    }
-                }
+                // Load keymap file
+                LoadKeymap();
             }
             catch (Exception e)
             {
@@ -99,13 +143,25 @@ namespace Data
 
         public void SaveSubroutine(string userCode)
         {
+            /*
+                Save a new subroutine 
+
+                args: 
+                    userCode: Code (in wingdings) to save.
+
+                TODO:
+                    - Accept wingding symbol and key binding args
+                    - Use dynamic menus
+            */
+
             string subroutineName = "";
             string subroutineWingDing = "";
 
             Console.WriteLine(FileHelper.WING_DING_FORK);
 
             // Get the subroutine name from the user
-            Console.Write("Saving code: {0}\nEnter subroutine name: ", userCode);
+            Console.WriteLine("Saving code: {0}", userCode.Replace(FileHelper.INSTRUCTION_DELIM, ""));
+            Console.Write("\n\nEnter subroutine name: ");
             subroutineName = Console.ReadLine();
 
             Console.Write("\nConfirm (y/n) subroutine name: {0} ? ", subroutineName);
@@ -149,17 +205,22 @@ namespace Data
             code: {1}
             """;
 
-            File.WriteAllText(subroutinePath, String.Format(subroutineUnformatted, subroutineWingDing, userCode.ToString().Replace(" ", "|")));
+            File.WriteAllText(subroutinePath, String.Format(subroutineUnformatted, subroutineWingDing, userCode.ToString()));
 
             Console.WriteLine("\n\nCurrent code saved to: subroutines/{0}\n\nPress any key to continue...", subroutineName);
+
             Console.ReadKey();
+
+            // Re-load the subroutines and keymap
+            LoadSubroutines();
+            LoadKeymap();
         }
 
         public string GetSubroutine(string id)
         {
-            if (wingDingSubRoutines.ContainsKey(id))
+            if (subroutineCodeMap.ContainsKey(id))
             {
-                return wingDingSubRoutines[id];
+                return subroutineCodeMap[id];
             }
             return "";
         }

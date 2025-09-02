@@ -1,16 +1,19 @@
-/*
-    WingDingFork
-*/
-using System.Reflection;
 using System.Diagnostics;
 using System.Text;
-using System.ComponentModel.DataAnnotations;
 using Helper;
 
 namespace Interpreter
 {
+    /*
+        Namespace for Interpreter classes
+    */
     public class Runner
     {
+        /*
+            WingDing code executor
+
+            TODO: break out Runner class
+        */
         public byte[] tape;
         public int pointer;
         public int unmatchedBracketCounter = 0;
@@ -129,23 +132,31 @@ namespace Interpreter
         }
 
 
-        public void Run(Dictionary<string, string> keymap, string input)
+        public void Run(string inputCode)
         {
-            if (input == "") { return; } // Nothing to run
+            /*
+                Method for running wingding code
+
+                Args:
+                    input: Code string to interpret and run.
+
+            */
+
+            if (inputCode == "") { return; } // Nothing to run
 
             //...
             var stopwatch = new Stopwatch();
             stopwatch.Start();
 
             // Trim whitespace
-            input = input.Replace(" ", "");
+            inputCode = inputCode.Replace(" ", "");
 
             // Remove whitespace in input string
-            input = input.Remove(input.Length - 1).Replace(" ", "");
+            inputCode = inputCode.Remove(inputCode.Length - 1).Replace(" ", "");
 
             try
             {
-                instructions = input.Split(FileHelper.INSTRUCTION_DELIM);
+                instructions = inputCode.Split(FileHelper.INSTRUCTION_DELIM);
 
                 // Nothing to do
                 if (instructions.Length == 0) { return; }
@@ -153,7 +164,8 @@ namespace Interpreter
                 // Time in seconds until the program is killed
                 int timeout = 3;
 
-                Console.WriteLine("\nRunning Program:\n{0} \n\n[timeout: {1}s]\n\n", input.Replace(FileHelper.INSTRUCTION_DELIM, ""), timeout);
+                Console.WriteLine(FileHelper.WING_DING_FORK);
+                Console.WriteLine("\nRunning Program:\n{0} \n\n[timeout: {1}s]\n\n", inputCode.Replace(FileHelper.INSTRUCTION_DELIM, ""), timeout);
 
                 for (globalInstructionIt = 0; globalInstructionIt < instructions.Length; globalInstructionIt++)
                 {

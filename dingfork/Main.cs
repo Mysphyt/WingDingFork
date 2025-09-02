@@ -10,6 +10,9 @@ using Helper;
 
 namespace dingfork
 {
+    /*
+        Main program namespace
+    */
     public class DingFork
     {
 
@@ -27,7 +30,7 @@ namespace dingfork
         """;
         // Indexed Method names -- should match the order of above options
         // TODO: make this dynamic
-        public string[] mainMthdOptions = ["Quit", "RunLoop", "PasteCode", "LoadCode","ChangeConfig", "PrintConfig"];
+        public string[] mainMthdOptions = ["Quit", "RunLoop", "PasteCode", "LoadCode", "ChangeConfig", "PrintConfig"];
 
 
         /*
@@ -41,13 +44,14 @@ namespace dingfork
         2 ⮚ Delete last instruction
         3 ⮚ Clear all instructions
         4 ⮚ Save as subroutine
-        5 ⮚ Main Menu
+        5 ⮚ List subroutines
+        6 ⮚ Main Menu
         0 ⮚ Quit
 
         """;
         // Indexed Method names -- should match the order of above options
         // TODO: make this dynamic
-        public string[] runMthdOptions = ["Quit", "Run", "Pop", "Clear", "Save", "MainLoop"];
+        public string[] runMthdOptions = ["Quit", "Run", "Pop", "Clear", "Save", "ListSubroutines", "MainLoop"];
 
         private Dictionary<string, string> configMap = new Dictionary<string, string>();
 
@@ -60,14 +64,17 @@ namespace dingfork
         static string ParseSubroutines(string userCode)
         {
             /*
-                Parses files in the subroutines directory of the current data config, ie: data/default/subroutines/
+                Renders subroutine instructions in userCode
                     
-                    Expects a single key/value pair in the following format:
+                Args:
+                    userCode: Input code that may include subroutines to be rendered/replaced with subroutine code
+
+                Expects a single key/value pair in the following format:
                         
                         wingding:🕿
                         code:👇 🐵 👇 👇 👇 👉 👆 👈 🐟 👉 👇 👍
 
-                TODO: Make this a single subroutines file
+                TODO: Make this a single subroutines file?
             */
             string subroutineCode = userCode;
             string prevSubroutineCode = "";
@@ -76,7 +83,7 @@ namespace dingfork
             while (subroutineCode != prevSubroutineCode)
             {
                 prevSubroutineCode = subroutineCode;
-                foreach (var subroutine in dataLoader.wingDingSubRoutines)
+                foreach (var subroutine in dataLoader.subroutineCodeMap)
                 {
                     string subroutineWingDing = subroutine.Key;
 
@@ -92,9 +99,16 @@ namespace dingfork
 
         private static string CleanUserCode(string userCode)
         {
+            /*
+                Currently just replaces instruction delimiters with empty strings
+                    Used for printing without delimiters
+
+                Args:
+                    userCode: Code to be "cleaned" for printing
+            */
             string cleanUserCode = userCode;
 
-            cleanUserCode = cleanUserCode.Replace(FileHelper.INSTRUCTION_DELIM, " ");
+            cleanUserCode = cleanUserCode.Replace(FileHelper.INSTRUCTION_DELIM, "");
 
             return cleanUserCode;
         }
@@ -108,13 +122,19 @@ namespace dingfork
 
             interpreter.LoadInstructionMap(dataLoader.instructionMap);
 
-            interpreter.Run(dataLoader.wingDingsToKeys, parsedCode);
+            interpreter.Run(parsedCode);
         }
 
         public void Save()
         {
-            dataLoader.SaveSubroutine(CleanUserCode(userCode.ToString()));
+            dataLoader.SaveSubroutine(userCode.ToString());
         }
+
+        public void ListSubroutines()
+        {
+            dataLoader.PrintSubroutines();
+        }
+
         public void Quit()
         { // quit the program
             System.Environment.Exit(1);
@@ -169,6 +189,7 @@ namespace dingfork
             // TODO: validate the new config
             // TODO: change the data folder without creating a new DataLoader
             dataLoader = new DataLoader(newConfig);
+            Console.Clear();
         }
 
         public void PrintConfig()
@@ -297,6 +318,10 @@ namespace dingfork
 
         public void TestLoop()
         {
+            /*
+                Method for running unit tests
+            */
+
             // TODO: break out unit tests
 
             /*
@@ -397,6 +422,9 @@ namespace dingfork
 
     class MainClass // Runs DingFork.MainLoop
     {
+        /*
+            Main method
+        */
         static void Main()
         {
             // Allows unicode characters to be printed to the console 
