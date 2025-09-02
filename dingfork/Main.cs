@@ -77,50 +77,6 @@ namespace dingfork
         // StringBuilders for user input
         private StringBuilder userCode = new StringBuilder();
 
-        static string ParseSubroutines(string userCode, bool delimSubroutinesFlag = true)
-        {
-            /*
-                Renders subroutine instructions in userCode
-                    
-                Args:
-                    userCode: Input code that may include subroutines to be rendered/replaced with subroutine code
-
-                Expects a single key/value pair in the following format:
-                        
-                        wingding:🕿
-                        code:👇 🐵 👇 👇 👇 👉 👆 👈 🐟 👉 👇 👍
-
-                TODO: Make this a single subroutines file?
-            */
-            string subroutineCode = userCode;
-            string prevSubroutineCode = "";
-
-            // While there are still subroutines
-            while (subroutineCode != prevSubroutineCode)
-            {
-                prevSubroutineCode = subroutineCode;
-                foreach (var subroutine in dataLoader.wingDingsToCode)
-                {
-                    string subroutineWingDing = subroutine.Key;
-
-                    // HACK: Super hacky way of adding | delimiters and reducing even and odd number of spaces to a single space
-                    // TODO: create static string values for delimiters
-                    // subroutineCode = subroutine.Value.Replace("  ", " ").Replace("   ", " ").Replace(" ", FileHelper.INSTRUCTION_DELIM);
-
-                    // Ignore above, assume subroutine contains the correct delimiters
-                    // TODO: validate subroutine
-                    subroutineCode = subroutine.Value;
-                    if (delimSubroutinesFlag)
-                    {
-                        subroutineCode += String.Format("|{0}", dataLoader.instructionsToWingDings["cls_tape"]);
-                    }
-
-                    userCode = userCode.Replace(subroutineWingDing, subroutineCode);
-                }
-            }
-            return userCode;
-        }
-
         private static string CleanUserCode(string userCode)
         {
             /*
@@ -140,13 +96,13 @@ namespace dingfork
         static void InterpretWingDingCode(string userCode)
         {
             // Parse any subroutines
-            string parsedCode = ParseSubroutines(userCode);
+            string parsedCode = dataLoader.ParseSubroutines(userCode);
 
             var interpreter = new Runner();
 
             interpreter.LoadInstructionMap(dataLoader.wingDingsToInstructions);
 
-            interpreter.Run(parsedCode);
+            interpreter.Run(parsedCode, userCode);
         }
 
         public void Save()
@@ -164,7 +120,7 @@ namespace dingfork
         }
 
         public void Quit()
-        { // quit the program
+        {
             System.Environment.Exit(1);
         }
 

@@ -166,7 +166,49 @@ namespace Data
             }
 
         }
+        public string ParseSubroutines(string userCode, bool delimSubroutinesFlag = true)
+        {
+            /*
+                Renders subroutine instructions in userCode
+                    
+                Args:
+                    userCode: Input code that may include subroutines to be rendered/replaced with subroutine code
 
+                Expects a single key/value pair in the following format:
+                        
+                        wingding:🕿
+                        code:👇 🐵 👇 👇 👇 👉 👆 👈 🐟 👉 👇 👍
+
+                TODO: Make this a single subroutines file?
+            */
+            string subroutineCode = userCode;
+            string prevSubroutineCode = "";
+
+            // While there are still subroutines
+            while (subroutineCode != prevSubroutineCode)
+            {
+                prevSubroutineCode = subroutineCode;
+                foreach (var subroutine in wingDingsToCode)
+                {
+                    string subroutineWingDing = subroutine.Key;
+
+                    // HACK: Super hacky way of adding | delimiters and reducing even and odd number of spaces to a single space
+                    // TODO: create static string values for delimiters
+                    // subroutineCode = subroutine.Value.Replace("  ", " ").Replace("   ", " ").Replace(" ", FileHelper.INSTRUCTION_DELIM);
+
+                    // Ignore above, assume subroutine contains the correct delimiters
+                    // TODO: validate subroutine
+                    subroutineCode = subroutine.Value;
+                    if (delimSubroutinesFlag)
+                    {
+                        subroutineCode += String.Format("|{0}", instructionsToWingDings["cls_tape"]);
+                    }
+
+                    userCode = userCode.Replace(subroutineWingDing, subroutineCode);
+                }
+            }
+            return userCode;
+        }
         public DataLoader(string _dataConfigName)
         {
             // TODO: break out load methods for each Map

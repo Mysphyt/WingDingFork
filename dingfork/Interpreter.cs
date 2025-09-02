@@ -132,7 +132,7 @@ namespace Interpreter
         }
 
 
-        public void Run(string inputCode)
+        public void Run(string parsedCode, string userCode)
         {
             /*
                 Method for running wingding code
@@ -142,21 +142,21 @@ namespace Interpreter
 
             */
 
-            if (inputCode == "") { return; } // Nothing to run
+            if (parsedCode == "") { return; } // Nothing to run
 
             //...
             var stopwatch = new Stopwatch();
             stopwatch.Start();
 
             // Trim whitespace
-            inputCode = inputCode.Replace(" ", "");
+            parsedCode = parsedCode.Replace(" ", "");
 
             // Remove whitespace in input string
-            inputCode = inputCode.Remove(inputCode.Length - 1).Replace(" ", "");
+            parsedCode = parsedCode.Remove(parsedCode.Length - 1).Replace(" ", "");
 
             try
             {
-                instructions = inputCode.Split(FileHelper.INSTRUCTION_DELIM);
+                instructions = parsedCode.Split(FileHelper.INSTRUCTION_DELIM);
 
                 // Nothing to do
                 if (instructions.Length == 0) { return; }
@@ -165,7 +165,7 @@ namespace Interpreter
                 int timeout = 3;
 
                 Console.WriteLine(FileHelper.WING_DING_FORK);
-                Console.WriteLine("\nRunning Program:\n{0} \n\n[timeout: {1}s]\n\n", inputCode.Replace(FileHelper.INSTRUCTION_DELIM, ""), timeout);
+                Console.WriteLine("\nRunning Program:\n{0} \n\n[timeout: {1}s]\n\n", userCode.Replace(FileHelper.INSTRUCTION_DELIM, ""), timeout);
 
                 for (globalInstructionIt = 0; globalInstructionIt < instructions.Length; globalInstructionIt++)
                 {
