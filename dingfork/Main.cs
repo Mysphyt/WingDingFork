@@ -7,6 +7,7 @@ using System.Text;
 using Interpreter;
 using Data;
 using Helper;
+using Translator;
 
 namespace dingfork
 {
@@ -428,11 +429,11 @@ namespace dingfork
             Console.OutputEncoding = System.Text.Encoding.Unicode;
             Console.InputEncoding = Encoding.Unicode;
 
-
             // Start the Main program loop
             DingFork df = new DingFork();
 
             df.MainLoop();
+            // BrainfuckConverter.Translate();
         }
     }
 

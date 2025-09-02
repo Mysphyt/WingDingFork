@@ -23,7 +23,7 @@ namespace Helper
 
             using (StreamReader reader = new StreamReader(filepath))
             {
-                string line;
+                string line = "";
                 while ((line = reader.ReadLine()) != null)
                 {
                     // ignore lines without a mapping
@@ -45,7 +45,9 @@ namespace Helper
     // Namespace for 
     static class UserOpts
     {
-
+        /*
+            Class for common user input patterns
+        */
         static public void PressAnyKey()
         {
             // Prompts the user to press a key

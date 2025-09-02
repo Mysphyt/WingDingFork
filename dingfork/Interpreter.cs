@@ -198,7 +198,7 @@ namespace Interpreter
             }
             catch (Exception e)
             {
-                Console.WriteLine("\nError in code: {0}\n", e.ToString());
+                Console.WriteLine("\nPointer: {1}\nError in code: {0}\n", e.ToString(), pointer);
             }
             finally
             {
