@@ -33,8 +33,6 @@ INSTRUCTIONS:
 
 ### Example Programs:
 
-<Exampmles>
-
 #### Main Menu
 ![Example2](./ref/main_menu.png)
 
@@ -55,10 +53,6 @@ INSTRUCTIONS:
 
 ![Example1](./ref/saving2.png)
 
-</Examples>
-
-<summaryh> Example Screenshots </summary>
-*Note: may be outdated
 ### Resources
 ```
 Emoji List
