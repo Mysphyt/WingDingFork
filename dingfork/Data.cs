@@ -127,13 +127,22 @@ namespace Data
             {
                 // Load subroutines folder
                 LoadSubroutines();
-
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("!!!!!!!! Error loading subroutines !!!!!!!!\n got: {0}\nPress any key to quit.", e.ToString());
+                // Enter any key        
+                Console.ReadKey();
+                // Exit the program
+                System.Environment.Exit(1);
+            }
+            try {
                 // Load keymap file
                 LoadKeymap();
             }
             catch (Exception e)
             {
-                Console.WriteLine("Error loading dingfork/data/\n got: {0}\nPress any key to quit.", e.ToString());
+                Console.WriteLine("!!!!!!! Error loading keymap !!!!!!!!\n got: {0}\nPress any key to quit.", e.ToString());
                 // Enter any key        
                 Console.ReadKey();
                 // Exit the program
