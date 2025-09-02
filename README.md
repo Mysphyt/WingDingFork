@@ -1,5 +1,5 @@
 # WingDingFork
-A [BrainFuck](https://en.wikipedia.org/wiki/Brainfuck) interpreter, but it's [WingDings](https://en.wikipedia.org/wiki/Wingdings)
+A [BrainF*ck](https://en.wikipedia.org/wiki/Brainfuck) interpreter, but it's [WingDings](https://en.wikipedia.org/wiki/Wingdings)
 
 ### Running:
 ```
@@ -17,7 +17,7 @@ A [BrainFuck](https://en.wikipedia.org/wiki/Brainfuck) interpreter, but it's [Wi
    * Includes `subroutine` key mappings as [wingding|key^subroutine_name] 
    * Additional instruction for resetting memory [`cls_tape`]
 ```
-INSTRUCTIONS:
+#### Base Instruction Set:
    
    inc_data : Increment the data pointer by one (to point to the next cell to the right).
    dec_data : Decrement the data pointer by one (to point to the next cell to the left).
