@@ -2,69 +2,28 @@ using System.Text;
 
 namespace Translator
 {
-    class BrainfuckConverter
+    static class BFConverter
     {
-        static string CharToBF(char c)
+        public static string ConvertTextToBF(string text)
         {
-            StringBuilder buffer = new StringBuilder("[-]>[-]<");
-            int ascii = (int)c;
+            // Simplest text to BF converter using no loops
+            StringBuilder bf = new StringBuilder();
+            int prev = 0;
 
-            buffer.Append(new string('+', ascii / 10));
-            buffer.Append("[>++++++++++<-]>");
-            buffer.Append(new string('+', ascii % 10));
-            buffer.Append(".<");
-
-            return buffer.ToString();
-        }
-
-        static string DeltaToBF(int delta)
-        {
-            StringBuilder buffer = new StringBuilder();
-
-            buffer.Append(new string('+', Math.Abs(delta) / 10));
-
-            if (delta > 0)
-                buffer.Append("[>++++++++++<-]>");
-            else
-                buffer.Append("[>----------<-]>");
-
-            buffer.Append(new string(delta > 0 ? '+' : '-', Math.Abs(delta) % 10));
-            buffer.Append(".<");
-
-            return buffer.ToString();
-        }
-
-        static string StringToBF(string input)
-        {
-            if (string.IsNullOrEmpty(input))
-                return "";
-
-            StringBuilder buffer = new StringBuilder();
-
-            for (int i = 0; i < input.Length; i++)
+            foreach (char c in text)
             {
-                if (i == 0)
-                {
-                    buffer.Append(CharToBF(input[i]));
-                }
+                int diff = c - prev;
+
+                if (diff > 0)
+                    bf.Append(new string('+', diff));
                 else
-                {
-                    int delta = input[i] - input[i - 1];
-                    buffer.Append(DeltaToBF(delta));
-                }
+                    bf.Append(new string('-', -diff));
+
+                bf.Append('.');
+                prev = c;
             }
 
-            return buffer.ToString();
-        }
-
-        public static void Translate()
-        {
-            Console.Write("Enter a string to convert to Brainfuck: ");
-            string input = Console.ReadLine();
-
-            string bfCode = StringToBF(input);
-            Console.WriteLine("\nGenerated Brainfuck code:\n");
-            Console.WriteLine(bfCode);
+            return bf.ToString();
         }
     }
 }

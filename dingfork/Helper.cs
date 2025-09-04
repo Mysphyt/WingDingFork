@@ -48,10 +48,10 @@ namespace Helper
         /*
             Class for common user input patterns
         */
-        static public void PressAnyKey()
+        static public void PressAnyKey(string prompt = "\nPress any key to continue...")
         {
             // Prompts the user to press a key
-            Console.WriteLine("\nPress any key to continue...");
+            Console.WriteLine(prompt);
             Console.ReadKey();
             Console.Clear();
         }

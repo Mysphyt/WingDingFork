@@ -2,7 +2,6 @@
     WingDingFork
 */
 
-using System.Diagnostics;
 using System.Text;
 using Interpreter;
 using Data;
@@ -21,11 +20,12 @@ namespace dingfork
 
             Loaded configuration ⮚ {0}
 
-            1 ⮚ Code New WingDing
-            2 ⮚ Paste new WingDing
-            3 ⮚ Load WingDing from file
-            4 ⮚ Change configuration
-            5 ⮚ Configuration info
+            1 ⮚ Code New wingding
+            2 ⮚ Convert text to wingding
+            3 ⮚ Paste new wingding
+            4 ⮚ Load BrainF*ck from file
+            5 ⮚ Change configuration
+            6 ⮚ Configuration info
             0 ⮚ Exit
 
         """;
@@ -33,6 +33,7 @@ namespace dingfork
         // TODO: make this dynamic
         public string[] mainMthdOptions = ["Quit",
             "RunLoop",
+            "ConvertText",
             "PasteCode",
             "LoadCode",
             "ChangeConfig",
@@ -196,6 +197,33 @@ namespace dingfork
             Console.WriteLine("TODO");
         }
 
+        public void UpdateUserCodeFromBF(string bfCode)
+        {
+            userCode = new StringBuilder();
+            foreach (char c in bfCode)
+            {
+                string instruction = dataLoader.GetDing(c.ToString()) + FileHelper.INSTRUCTION_DELIM;
+                userCode.Append(instruction);
+            }
+        }
+
+        public void ConvertText()
+        {
+            Console.WriteLine(FileHelper.WING_DING_FORK);
+            Console.Write("Enter text to convert: ");
+
+            // Get the text to convert and update UserCode
+            string inputText = Console.ReadLine();
+            string convertedBFCode = BFConverter.ConvertTextToBF(inputText);
+            UpdateUserCodeFromBF(convertedBFCode); 
+
+            Console.WriteLine("Updated code to:\n {0}", userCode.ToString());
+            UserOpts.PressAnyKey("\nPress any key to Run...\n");
+
+            // Start the run loop with the new code
+            RunLoop();
+        }
+
         public void PasteCode()
         {
             /*
@@ -213,8 +241,18 @@ namespace dingfork
 
         public void LoadCode()
         {
-            // TODO: Load code from a file then call RunLoop(loadedCode)
-            Console.WriteLine("TODO");
+            Console.Write(FileHelper.WING_DING_FORK);
+            Console.Write("Enter file path: ");
+
+            string codeFilepath = Console.ReadLine();
+            string bfCode = File.ReadAllText(codeFilepath);
+            UpdateUserCodeFromBF(bfCode); 
+
+            Console.WriteLine("Updated code to:\n {0}", userCode.ToString());
+            UserOpts.PressAnyKey("\nPress any key to Run...\n");
+
+            // Start the run loop with the new code
+            RunLoop();
         }
 
 

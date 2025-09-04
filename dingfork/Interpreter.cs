@@ -39,7 +39,7 @@ namespace Interpreter
             ,"loop_end"
             ,"cls_tape"
         ];
-        
+
         public Runner()
         {
             tape = new byte[60000];
@@ -87,9 +87,13 @@ namespace Interpreter
             if (tape[pointer] == 0)
             {
                 unmatchedBracketCounter++;
-                while (instructionMthdMap[instructions[globalInstructionIt]] != "loop_bgn"|| unmatchedBracketCounter != 0)
+                while (instructionMthdMap[instructions[globalInstructionIt]] != "loop_bgn" || unmatchedBracketCounter != 0)
                 {
                     globalInstructionIt++;
+                    if (globalInstructionIt >= instructions.Length)
+                    {
+                        return;   
+                    }
 
                     if (instructionMthdMap[instructions[globalInstructionIt]] == "loop_bgn")
                     {
@@ -112,7 +116,10 @@ namespace Interpreter
                 while (instructionMthdMap[instructions[globalInstructionIt]] != "loop_bgn" || unmatchedBracketCounter != 0)
                 {
                     globalInstructionIt--;
-
+                    if (globalInstructionIt < 0)
+                    {
+                        return;   
+                    }
                     if (instructionMthdMap[instructions[globalInstructionIt]] == "loop_end")
                     {
                         unmatchedBracketCounter++;
@@ -198,7 +205,7 @@ namespace Interpreter
             }
             catch (Exception e)
             {
-                Console.WriteLine("\nPointer: {1}\nError in code: {0}\n", e.ToString(), pointer);
+                Console.WriteLine("\nError in code: {0}\n", e.ToString());
             }
             finally
             {

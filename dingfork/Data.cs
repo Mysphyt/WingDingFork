@@ -323,15 +323,15 @@ namespace Data
         }
 
 
-        public string GetDing(string wing)
+        public string GetDing(string key)
         {
-            if (keysToWingDings.ContainsKey(wing))
+            if (keysToWingDings.ContainsKey(key))
             {
-                return keysToWingDings[wing];
+                return keysToWingDings[key];
             }
-            else if (keysToWingDings.ContainsValue(wing))
+            else if (keysToWingDings.ContainsValue(key))
             {
-                return wing;
+                return key;
             }
 
             return "";
