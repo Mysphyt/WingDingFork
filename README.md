@@ -1,9 +1,8 @@
 # WingDingFork
 A [BrainF*ck](https://en.wikipedia.org/wiki/Brainfuck) interpreter, but it's [WingDings](https://en.wikipedia.org/wiki/Wingdings)
+* Converts BrainF*ck code from the clipboard, files, or user input to runnable unicode instructions and subroutines.
 
-### Features
-
-### Running:
+## Running:
 ```
 .\app\dingfork.exe
 ```
