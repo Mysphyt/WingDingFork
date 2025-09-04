@@ -46,7 +46,9 @@ namespace dingfork
         */
         const string RUNLOOP_HEADER = """
         
-        enter your code ⮚ {0}
+        code   ⮚ {0}
+
+        output ⮚ {1}
 
         1 ⮚ Run
         2 ⮚ Delete last instruction
@@ -77,6 +79,9 @@ namespace dingfork
         // StringBuilders for user input
         private StringBuilder userCode = new StringBuilder();
 
+        // Current code output
+        private string codeOutput = "";
+
         private static string CleanUserCode(string userCode)
         {
             /*
@@ -93,7 +98,7 @@ namespace dingfork
             return cleanUserCode;
         }
 
-        static void InterpretWingDingCode(string userCode)
+        static string InterpretWingDingCode(string userCode)
         {
             // Parse any subroutines
             string parsedCode = dataLoader.ParseSubroutines(userCode);
@@ -102,7 +107,7 @@ namespace dingfork
 
             interpreter.LoadInstructionMap(dataLoader.wingDingsToInstructions);
 
-            interpreter.Run(parsedCode, userCode);
+            return interpreter.Run(parsedCode, userCode);
         }
 
         public void Save()
@@ -124,18 +129,18 @@ namespace dingfork
             System.Environment.Exit(1);
         }
 
-        public void Run()
+        public string Run()
         { // Run the current code
-            InterpretWingDingCode(userCode.ToString());
-            UserOpts.PressAnyKey();
+            return InterpretWingDingCode(userCode.ToString());
         }
 
         public void Clear()
         {
             /*
-                Clears the current userCode
+                Clears the current code and output
             */ 
             userCode.Clear();
+            codeOutput = "";
             Console.Clear();
         }
 
@@ -215,7 +220,7 @@ namespace dingfork
             string convertedBFCode = BFConverter.ConvertTextToBF(inputText);
             UpdateUserCodeFromBF(convertedBFCode); 
 
-            Console.WriteLine("Updated code to:\n {0}", userCode.ToString());
+            Console.WriteLine("Updated code to:\n {0}", CleanUserCode(userCode.ToString()));
             UserOpts.PressAnyKey("\nPress any key to Run...\n");
 
             // Start the run loop with the new code
@@ -251,7 +256,7 @@ namespace dingfork
             string bfCode = File.ReadAllText(codeFilepath);
             UpdateUserCodeFromBF(bfCode); 
 
-            Console.WriteLine("Updated code to:\n {0}", userCode.ToString());
+            Console.WriteLine("Updated code to:\n {0}", CleanUserCode(userCode.ToString()));
             UserOpts.PressAnyKey("\nPress any key to Run...\n");
 
             // Start the run loop with the new code
@@ -317,11 +322,13 @@ namespace dingfork
 
             // Refresh userCode and clear the console
             Console.Clear();
+
             while (true)
             {
-                // StringBuilder for 
                 StringBuilder sbDingFork = new StringBuilder(FileHelper.WING_DING_FORK);
-                sbDingFork.Append(String.Format(RUNLOOP_HEADER, CleanUserCode(userCode.ToString())));
+
+                // Append the formatted header to display
+                sbDingFork.Append(String.Format(RUNLOOP_HEADER, CleanUserCode(userCode.ToString()), codeOutput));
 
                 Console.WriteLine(sbDingFork);
 
@@ -335,10 +342,20 @@ namespace dingfork
                     if (option <= runMthdOptions.Length)
                     {
                         // HACK: Return instead of recursievly calling MainLoop()
-                        if (runMthdOptions[option] == "MainLoop") { return; }
+                        if (runMthdOptions[option] == "MainLoop")
+                        {
+                            // Back to main menu, preserve current userCode but reset the output
+                            codeOutput = "";
+                            return;
+                        }
 
                         // Invoke the option method
-                        GetType().GetMethod(runMthdOptions[option])?.Invoke(this, []);
+                        var optionOutput = GetType().GetMethod(runMthdOptions[option])?.Invoke(this, []);
+
+                        if (optionOutput is string && runMthdOptions[option] == "Run")
+                        {
+                            codeOutput = Convert.ToString(optionOutput);
+                        }
                     }
                     else // Not in the options range
                     {

@@ -139,7 +139,7 @@ namespace Interpreter
         }
 
 
-        public void Run(string parsedCode, string userCode)
+        public string Run(string parsedCode, string userCode)
         {
             /*
                 Method for running wingding code
@@ -149,7 +149,7 @@ namespace Interpreter
 
             */
 
-            if (parsedCode == "") { return; } // Nothing to run
+            if (parsedCode == "") { return ""; } // Nothing to run
 
             //...
             var stopwatch = new Stopwatch();
@@ -166,21 +166,16 @@ namespace Interpreter
                 instructions = parsedCode.Split(FileHelper.INSTRUCTION_DELIM);
 
                 // Nothing to do
-                if (instructions.Length == 0) { return; }
+                if (instructions.Length == 0) { return ""; }
 
                 // Time in seconds until the program is killed
                 int timeout = 3;
 
-                Console.WriteLine(FileHelper.WING_DING_FORK);
-                Console.WriteLine("\nRunning Program:\n{0} \n\n[timeout: {1}s]\n\n", userCode.Replace(FileHelper.INSTRUCTION_DELIM, ""), timeout);
-
                 for (globalInstructionIt = 0; globalInstructionIt < instructions.Length; globalInstructionIt++)
                 {
                     // Log current runtime
-                    // Console.WriteLine("[{0}s] Running Program... \n", stopwatch.ElapsedMilliseconds / 1000);
 
                     string instruction = instructions[globalInstructionIt];
-                    // Console.WriteLine(instruction+i);
 
                     if (!instructionMthdMap.ContainsKey(instruction))
                     {
@@ -201,11 +196,11 @@ namespace Interpreter
                         throw new Exception(String.Format("Uh-oh! Infinite loop detected... program took longer than 3 seconds to execute\nFailed at: {1}  |  {2}", instruction, globalInstructionIt));
                     }
                 }
-                Console.WriteLine("Output >>>>>>\n\n{1}\n\n<<<<<<\n", FileHelper.USER_INPUT_ARROW, output.ToString());
+                return output.ToString();
             }
             catch (Exception e)
             {
-                Console.WriteLine("\nError in code: {0}\n", e.ToString());
+                return e.ToString();  //Console.WriteLine("\nError in code: {0}\n", e.ToString());
             }
             finally
             {

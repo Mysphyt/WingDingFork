@@ -1,6 +1,8 @@
 # WingDingFork
 A [BrainF*ck](https://en.wikipedia.org/wiki/Brainfuck) interpreter, but it's [WingDings](https://en.wikipedia.org/wiki/Wingdings)
 
+### Features
+
 ### Running:
 ```
 .\app\dingfork.exe
@@ -31,17 +33,26 @@ A [BrainF*ck](https://en.wikipedia.org/wiki/Brainfuck) interpreter, but it's [Wi
 
 ```
 
-### Screenshots:
+### Screenshots
 
 #### Main Menu
-![Example2](./ref/main_menu.png)
 
-#### Running
-![Example1](./ref/code.png)
+!(Main Menu)[./ref/main_menu.png]
 
-![Example1](./ref/output1.png)
+#### Hello World
 
-![Example1](./ref/code2.png)
+!(Hello World)[./ref/hello_world.png]
 
-![Example1](./ref/output2.png)
+#### Saving nested subroutines
 
+!(Generating Basic BF from Text)[./ref/genr_alive.png]
+
+!(Running BF for "Am I alive?")[./ref/alive.png]
+
+!(Saving "Am I alive?" as a subroutine)[./ref/saving_alive.png]
+
+!(Combining subroutines)[./ref/hello_world_alive.png]
+
+!(Saving combined subroutines)[./ref/saving_hello_world_alive.png]
+
+!(Running the combined subroutine)[./ref/saving_hello_world_alive_sub.png]

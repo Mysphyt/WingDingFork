@@ -106,6 +106,13 @@ namespace Data
                 tmpWingDingMap.Add(args[0], args[1]);
             }
 
+            // If there were any duplicates
+            if (duplicateHotkeys.Length > 0)
+            {
+                // Display duplicate hotkey information to the user
+                UserOpts.PressAnyKey(String.Format("Duplicate hotkeys found: {0} \nPress any key to continue...", duplicateHotkeys));
+            }
+
             // Reset keymap dictionaries
             wingDingsToInstructions = new Dictionary<string, string>();
             instructionsToWingDings = new Dictionary<string, string>();
@@ -127,12 +134,6 @@ namespace Data
                 wingDingsToKeys[wingDing] = keyName;
             }
 
-            // If there were any duplicates
-            if (duplicateHotkeys.Length > 0)
-            {
-                // Display duplicate hotkey information to the user
-                UserOpts.PressAnyKey(String.Format("Duplicate hotkeys found: {0} \nPress any key to continue...", duplicateHotkeys));
-            }
 
             foreach (var wingKey in wingDingsToKeys)
             {

@@ -7,7 +7,8 @@
 👆|+^inc_byte
 👇|-^dec_byte
 💣|!^cls_tape
-🐻|b^buffalo_bill
 🌏|h^hello
-⌛️|s^buffalo_says_hello
 📫|w^newline
+🌀|v^space
+🙌|a^alive
+😀|e^hello_world_alive
