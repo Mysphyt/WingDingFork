@@ -31,7 +31,7 @@ A [BrainF*ck](https://en.wikipedia.org/wiki/Brainfuck) interpreter, but it's [Wi
 
 ```
 
-### Example Programs:
+### Screenshots:
 
 #### Main Menu
 ![Example2](./ref/main_menu.png)
@@ -44,24 +44,4 @@ A [BrainF*ck](https://en.wikipedia.org/wiki/Brainfuck) interpreter, but it's [Wi
 ![Example1](./ref/code2.png)
 
 ![Example1](./ref/output2.png)
-
-
-
-### Resources
-```
-[Wikipedia Emoji List](https://en.wikipedia.org/wiki/List_of_emojis)
-
-```
-### TODO
-#### Features
-- [ ] Convert text to WingDings, including subroutines
-  - Text(file) -> BrainFuck -> WingDings -> SubWingDings
-- [ ] Dynamic menus
-- [ ] Dynamic unit tests
-- [ ] Global Unicode and UTF8 modes
-- [ ] Load code from an arbitrary text file
-#### Bugs
-- [x] Fix user entered wingdings not being rendered
- - Saving subroutines, or other user entered WingDings that don't go through the filesystem
- - Reading wingdings from files or hardcoded seems to work 
 
