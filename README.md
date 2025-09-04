@@ -59,4 +59,4 @@ A [BrainF*ck](https://en.wikipedia.org/wiki/Brainfuck) interpreter, but it's [Wi
 
 ![Saving combined subroutines](./ref/saving_hello_world_alive.png)
 
-![Running the combined subroutine](./ref/saving_hello_world_alive_sub.png)
+![Running the combined subroutine](./ref/hello_world_alive_sub.png)
