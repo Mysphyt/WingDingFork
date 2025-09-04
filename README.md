@@ -47,6 +47,8 @@ A [BrainF*ck](https://en.wikipedia.org/wiki/Brainfuck) interpreter, but it's [Wi
 
 ![Generating Basic BF from Text](./ref/genr_alive.png)
 
+![Running basic BF code](./ref/running_alive.png)
+
 ![Saving "Am I alive?" as a subroutine](./ref/saving_alive.png)
 
 ![Running BF for "Am I alive?"](./ref/alive.png)
