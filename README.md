@@ -59,3 +59,13 @@ A [BrainF*ck](https://en.wikipedia.org/wiki/Brainfuck) interpreter, but it's [Wi
 ![Saving combined subroutines](./ref/saving_hello_world_alive.png)
 
 ![Running the combined subroutine](./ref/hello_world_alive_sub.png)
+
+#### Listing instructions from different configurations
+
+##### Default
+
+![Running the combined subroutine](./ref/listing_instructions.png)
+
+##### Alpha
+
+![Running the combined subroutine](./ref/listing_instructions_alpha.png)
