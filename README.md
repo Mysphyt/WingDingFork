@@ -43,13 +43,15 @@ A [BrainF*ck](https://en.wikipedia.org/wiki/Brainfuck) interpreter, but it's [Wi
 
 ![Hello World](./ref/hello_world.png)
 
-#### Saving nested subroutines
+#### Generating BrainF*ck instructions from text and saving as a subroutine
 
 ![Generating Basic BF from Text](./ref/genr_alive.png)
 
+![Saving "Am I alive?" as a subroutine](./ref/saving_alive.png)
+
 ![Running BF for "Am I alive?"](./ref/alive.png)
 
-![Saving "Am I alive?" as a subroutine](./ref/saving_alive.png)
+#### Saving nested subroutines
 
 ![Combining subroutines](./ref/hello_world_alive.png)
 
