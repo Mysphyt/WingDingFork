@@ -1,6 +1,7 @@
 # WingDingFork
 A [BrainF*ck](https://en.wikipedia.org/wiki/Brainfuck) interpreter, but it's [WingDings](https://en.wikipedia.org/wiki/Wingdings)
 * Converts BrainF*ck code from the clipboard, files, or user input to runnable unicode instructions and subroutines.
+* Quickly swap configurable key mappings for default instructions and subroutines.
 
 ## Running:
 ```
@@ -64,8 +65,8 @@ A [BrainF*ck](https://en.wikipedia.org/wiki/Brainfuck) interpreter, but it's [Wi
 
 ##### Default
 
-![Running the combined subroutine](./ref/listing_instructions.png)
+![default instructions](./ref/listing_instructions.png)
 
 ##### Alpha
 
-![Running the combined subroutine](./ref/listing_instructions_alpha.png)
+![alpha instructions](./ref/listing_instructions_alpha.png)
