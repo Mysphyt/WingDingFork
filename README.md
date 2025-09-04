@@ -34,8 +34,6 @@ A [BrainF*ck](https://en.wikipedia.org/wiki/Brainfuck) interpreter, but it's [Wi
    cls_tape : Resets memory (tape) to zeroed state.
 
 ```
-
-##### Alpha
 #### Hello World
 
 ![Hello World](./ref/hello_world.png)
