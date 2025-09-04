@@ -1,8 +1,5 @@
-using System.ComponentModel;
-using System.Data;
-using Helper;
 
-namespace Data
+namespace dingfork
 {
     /*
         Namespace for data related classes
@@ -89,7 +86,7 @@ namespace Data
             foreach (var line in keymapLines)
             {
                 // Remove spaces and split on the isntruction delimiter
-                var args = line.Replace(" ", "").Split(FileHelper.INSTRUCTION_DELIM);
+                var args = line.Split(FileHelper.INSTRUCTION_DELIM);
                 if (args.Length != 2)
                 {
                     continue;
@@ -140,7 +137,7 @@ namespace Data
                 if (!keysToWingDings.ContainsKey(wingKey.Value))
                 {
                     // TODO: allow spaces in keymap input
-                    keysToWingDings.Add(wingKey.Value.Replace(" ", ""), wingKey.Key.Replace(" ", ""));
+                    keysToWingDings.Add(wingKey.Value, wingKey.Key);
                 }
             }
 
@@ -318,6 +315,9 @@ namespace Data
                     sw.WriteLine("\n" + subroutineWingDing + FileHelper.INSTRUCTION_DELIM + shortcut + "^" + subroutineName);
                 }
             }
+
+            // Allow spaces and special characters
+            subroutineName = String.Format(@"{0}", subroutineName);
 
             // Write the subroutine 
             string subroutinePath = String.Format(subroutinesDirectory, dataConfigName) + subroutineName;

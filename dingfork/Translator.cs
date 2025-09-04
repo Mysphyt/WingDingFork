@@ -1,13 +1,13 @@
 using System.Text;
 
-namespace Translator
+namespace dingfork
 {
     static class BFConverter
     {
         public static string ConvertTextToBF(string text)
         {
             // Simplest text to BF converter using no loops
-            StringBuilder bf = new StringBuilder();
+            StringBuilder bf = new();
             int prev = 0;
 
             foreach (char c in text)

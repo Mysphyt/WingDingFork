@@ -1,8 +1,7 @@
 using System.Diagnostics;
 using System.Text;
-using Helper;
 
-namespace Interpreter
+namespace dingfork
 {
     /*
         Namespace for Interpreter classes
