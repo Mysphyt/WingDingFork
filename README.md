@@ -32,36 +32,4 @@ A [BrainF*ck](https://en.wikipedia.org/wiki/Brainfuck) interpreter, but it's [Wi
    loop_bgn : If the byte at the data pointer is zero, then instead of moving the instruction pointer forward to the next command, jump it forward to the command after the matching ] command.
    loop_end : If the byte at the data pointer is nonzero, then instead of moving the instruction pointer forward to the next command, jump it back to the command after the matching [ command.[a]
    cls_tape : Resets memory (tape) to zeroed state.
-
 ```
-#### Hello World
-
-![Hello World](./ref/hello_world.png)
-
-#### Generating BrainF*ck instructions from text and saving as a subroutine
-
-![Generating Basic BF from Text](./ref/genr_alive.png)
-
-![Running basic BF code](./ref/running_alive.png)
-
-![Saving "Am I alive?" as a subroutine](./ref/saving_alive.png)
-
-![Running BF for "Am I alive?"](./ref/alive.png)
-
-#### Saving nested subroutines
-
-![Combining subroutines](./ref/hello_world_alive.png)
-
-![Saving combined subroutines](./ref/saving_hello_world_alive.png)
-
-![Running the combined subroutine](./ref/hello_world_alive_sub.png)
-
-#### Listing instructions from different configurations
-
-##### Default
-
-![default instructions](./ref/listing_instructions.png)
-
-##### Alpha
-
-![alpha instructions](./ref/listing_instructions_alpha.png)
