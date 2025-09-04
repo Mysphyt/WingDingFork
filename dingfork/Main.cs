@@ -52,9 +52,8 @@ namespace dingfork
         2 ⮚ Delete last instruction
         3 ⮚ Clear all instructions
         4 ⮚ Save as subroutine
-        5 ⮚ List subroutines
-        6 ⮚ List hotkeys
-        7 ⮚ Main Menu
+        5 ⮚ List available instructions
+        6 ⮚ Main Menu
         0 ⮚ Quit
 
         """;
@@ -66,7 +65,6 @@ namespace dingfork
              "Pop",
              "Clear",
              "Save",
-             "ListSubroutines",
              "ListHotkeys",
              "MainLoop"
        ];
