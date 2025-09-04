@@ -6,6 +6,7 @@
         * Converting subroutines from other configurations
 */
 
+using System.Drawing;
 using System.Text;
 
 namespace dingfork
@@ -174,7 +175,7 @@ namespace dingfork
                 /*
                     Change the current data configuration 
                 */
-                Console.WriteLine(FileHelper.WING_DING_FORK);
+                FileHelper.print_wdf_header();
                 Console.WriteLine("{0} Enter config name: ", FileHelper.USER_INPUT_ARROW);
                 var newConfig = Console.ReadLine();
 
@@ -215,7 +216,7 @@ namespace dingfork
 
             public void ConvertText()
             {
-                Console.WriteLine(FileHelper.WING_DING_FORK);
+                FileHelper.print_wdf_header();
                 Console.Write("Enter text to convert: ");
 
                 // Get the text to convert and update UserCode
@@ -235,7 +236,7 @@ namespace dingfork
                 /*
                     Get WingDing code from a pasted string
                 */
-                Console.WriteLine(FileHelper.WING_DING_FORK);
+                FileHelper.print_wdf_header();
                 Console.WriteLine("\n*code must be | delimited wingdings*\nPaste your code, then hit enter:\n");
                 string pastedCode = Console.ReadLine();
 
@@ -247,7 +248,7 @@ namespace dingfork
 
             public void LoadCode()
             {
-                Console.Write(FileHelper.WING_DING_FORK);
+                FileHelper.print_wdf_header();
                 Console.Write("Enter file path: ");
 
                 string codeFilepath = Console.ReadLine();
@@ -283,9 +284,10 @@ namespace dingfork
                 while (true)
                 {
                     // StringBuilder for 
-                    StringBuilder sbDingFork = new StringBuilder(FileHelper.WING_DING_FORK);
+                    StringBuilder sbDingFork = new StringBuilder();
                     sbDingFork.Append(String.Format(MAINLOOP_HEADER, dataLoader.dataConfigName));
 
+                    FileHelper.print_wdf_header();
                     Console.WriteLine(sbDingFork);
 
                     Console.Write(FileHelper.USER_INPUT_ARROW);
@@ -328,11 +330,11 @@ namespace dingfork
 
                 while (true)
                 {
-                    StringBuilder sbDingFork = new StringBuilder(FileHelper.WING_DING_FORK);
+                    StringBuilder sbDingFork = new StringBuilder();
 
                     // Append the formatted header to display
                     sbDingFork.Append(String.Format(RUNLOOP_HEADER, CleanUserCode(userCode.ToString()), codeOutput));
-
+                    FileHelper.print_wdf_header();
                     Console.WriteLine(sbDingFork);
 
                     string userKey = Console.ReadKey().KeyChar.ToString();

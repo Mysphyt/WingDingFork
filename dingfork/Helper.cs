@@ -13,8 +13,26 @@ namespace dingfork
           \ V  V / | | | | | (_| | |_| | | | | | (_| |  _| (_) | |  |   < 
            \_/\_/  |_|_| |_|\__, |____/|_|_| |_|\__, |_|  \___/|_|  |_|\_\
                             |___/               |___/                     
-
         """;
+        public static void print_wdf_header()
+        {
+            // Print the above header in rainbow colors
+            System.ConsoleColor[] rainbow = [
+                System.ConsoleColor.Red,
+                System.ConsoleColor.Yellow,
+                System.ConsoleColor.Green,
+                System.ConsoleColor.Blue,
+                System.ConsoleColor.DarkMagenta
+            ];
+            int rainbowIt = 0;
+            foreach (string line in WING_DING_FORK.Split('\n')) {
+                Console.ForegroundColor = rainbow[rainbowIt];
+                Console.WriteLine(line);
+                rainbowIt++;
+                if(rainbowIt == rainbow.Length) { rainbowIt = 0; }
+            }
+            Console.ForegroundColor = System.ConsoleColor.White;
+        }
 
 
         static public Dictionary<string, string> ParseYAML(string filepath)

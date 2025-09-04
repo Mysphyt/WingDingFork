@@ -39,7 +39,7 @@ namespace dingfork
                 Print current subroutines
             */
             Console.Clear();
-            Console.WriteLine(FileHelper.WING_DING_FORK);
+            FileHelper.print_wdf_header();
             Console.WriteLine("\nAvailable key mappings from {0}/keymap:", dataConfigName);
             foreach (var keymap in instructionsToWingDings)
             {
@@ -57,7 +57,7 @@ namespace dingfork
                 Print current subroutines
             */
             Console.Clear();
-            Console.WriteLine(FileHelper.WING_DING_FORK);
+            FileHelper.print_wdf_header();
             Console.WriteLine("\nAvailable Subroutines in {0}:", dataConfigName);
             foreach (var subroutine in wingDingsToSubroutine)
             {
@@ -276,7 +276,7 @@ namespace dingfork
             string subroutineName = "";
             string subroutineWingDing = "";
 
-            Console.WriteLine(FileHelper.WING_DING_FORK);
+            FileHelper.print_wdf_header();
 
             // Get the subroutine name from the user
             Console.WriteLine("Saving code: {0}", userCode.Replace(FileHelper.INSTRUCTION_DELIM, ""));
