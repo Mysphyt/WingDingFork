@@ -1,5 +1,9 @@
 ﻿/*
     WingDingFork
+
+    TODO:
+        * Error handling for subroutine names as file names
+        * Converting subroutines from other configurations
 */
 
 using System.Text;
