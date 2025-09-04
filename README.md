@@ -3,6 +3,8 @@ A [BrainF*ck](https://en.wikipedia.org/wiki/Brainfuck) interpreter, but it's [Wi
 * Converts BrainF*ck code from the clipboard, files, or user input to runnable unicode instructions and subroutines.
 * Quickly swap configurable key mappings for default instructions and subroutines.
 
+![Main Menu](./ref/main_menu.png)
+
 ## Running:
 ```
 .\app\dingfork.exe
@@ -32,12 +34,6 @@ A [BrainF*ck](https://en.wikipedia.org/wiki/Brainfuck) interpreter, but it's [Wi
    cls_tape : Resets memory (tape) to zeroed state.
 
 ```
-
-### Screenshots
-
-#### Main Menu
-
-![Main Menu](./ref/main_menu.png)
 
 #### Hello World
 
