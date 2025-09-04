@@ -82,6 +82,9 @@ namespace Data
 
             Dictionary<string, string> tmpWingDingMap = new Dictionary<string, string>();
 
+            // String to track duplicate hotkeys
+            string duplicateHotkeys = "";
+            
             foreach (var line in keymapLines)
             {
                 // Remove spaces and split on the isntruction delimiter
@@ -90,6 +93,15 @@ namespace Data
                 {
                     continue;
                 }
+                string wingding = args[0];
+                string mapping = args[1];
+                if (tmpWingDingMap.ContainsKey(wingding))
+                {
+                    // Log duplicate hotkey
+                    duplicateHotkeys += "\n" + String.Format("{0} : {1}", wingding, mapping);
+                    continue;
+                }
+
                 tmpWingDingMap.Add(args[0], args[1]);
             }
 
@@ -100,9 +112,6 @@ namespace Data
             wingDingsToKeys = new Dictionary<string, string>();
             keysToWingDings = new Dictionary<string, string>();
 
-            // foreach (var keyvar in tmpWingDingMap) { Console.WriteLine(keyvar.Key + keyvar.Value); }
-            // UserOpts.PressAnyKey();
-            
             // Parse the keys and method names from keymap data
             foreach (var keyToMthd in tmpWingDingMap)
             {
@@ -117,10 +126,18 @@ namespace Data
                 wingDingsToKeys[wingDing] = keyName;
             }
 
+            // If there were any duplicates
+            if (duplicateHotkeys.Length > 0)
+            {
+                // Display duplicate hotkey information to the user
+                UserOpts.PressAnyKey(String.Format("Duplicate hotkeys found: {0} \nPress any key to continue...", duplicateHotkeys));
+            }
+
             foreach (var wingKey in wingDingsToKeys)
             {
                 if (!keysToWingDings.ContainsKey(wingKey.Value))
                 {
+                    // TODO: allow spaces in keymap input
                     keysToWingDings.Add(wingKey.Value.Replace(" ", ""), wingKey.Key.Replace(" ", ""));
                 }
             }
