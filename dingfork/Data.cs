@@ -73,8 +73,9 @@ namespace Data
 
         public void LoadKeymap()
         {
-            // HACK: csv to dict for wingdings -> key^method_name
-            // TODO: make this readable
+            /*
+                Loads/refreshes mappings from dingfork/data/{config}/keymap
+            */
             keymapFile = String.Format("{0}/{1}/keymap", dataDirectory, dataConfigName);
 
             // Temp dictionary for parsing 
@@ -146,7 +147,9 @@ namespace Data
 
         public void LoadSubroutines()
         {
-            // Parses subroutines/ folder
+            /*
+                Loads subroutine mappings from keymap and the dingfork/data/{config}/subroutines folder
+            */
             string subroutinesConfigDirectory = String.Format(subroutinesDirectory, dataConfigName);
             string[] files = Directory.GetFiles(subroutinesConfigDirectory, "*", SearchOption.AllDirectories);
 
@@ -186,13 +189,16 @@ namespace Data
 
         public void LoadData()
         {
+            /*
+                Calls DataLoader load methods
+            */
             LoadKeymap();
             LoadSubroutines();
         }
         public string ParseSubroutines(string userCode, bool delimSubroutinesFlag = true)
         {
             /*
-                Renders subroutine instructions in userCode
+                Parses subroutine instructions in userCode
                     
                 Args:
                     userCode: Input code that may include subroutines to be rendered/replaced with subroutine code
@@ -210,14 +216,9 @@ namespace Data
                 {
                     string subroutineWingDing = subroutine.Key;
 
-                    // HACK: Super hacky way of adding | delimiters and reducing even and odd number of spaces to a single space
-                    // TODO: create static string values for delimiters
-                    // subroutineCode = subroutine.Value.Replace("  ", " ").Replace("   ", " ").Replace(" ", FileHelper.INSTRUCTION_DELIM);
-
-                    // Ignore above, assume subroutine contains the correct delimiters
-                    // TODO: validate subroutine
                     subroutineCode = subroutine.Value;
 
+                    // Flag to append a cls_tape instruction to subroutines
                     if (delimSubroutinesFlag)
                     {
                         subroutineCode += String.Format("|{0}", instructionsToWingDings["cls_tape"]);

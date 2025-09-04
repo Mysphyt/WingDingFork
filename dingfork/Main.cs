@@ -243,6 +243,11 @@ namespace dingfork
             Console.Write("Enter file path: ");
 
             string codeFilepath = Console.ReadLine();
+            if (!File.Exists(codeFilepath))
+            {
+                UserOpts.PressAnyKey(String.Format("\nFile {0} does not exist.\nPress any key to continue...", codeFilepath));
+            }
+
             string bfCode = File.ReadAllText(codeFilepath);
             UpdateUserCodeFromBF(bfCode); 
 
@@ -284,8 +289,15 @@ namespace dingfork
                 {
                     if (option <= mainMthdOptions.Length)
                     {
-                        // Invoke the option method
-                        GetType().GetMethod(mainMthdOptions[option])?.Invoke(this, []);
+                        try
+                        {
+                            // Invoke the option method
+                            GetType().GetMethod(mainMthdOptions[option])?.Invoke(this, []);
+                        }
+                        catch (Exception e)
+                        {
+                            UserOpts.PressAnyKey(String.Format("\nOption {0} failed with:\n{1}\n\nPress any key to continue...", option, e.ToString()));
+                        }
                     }
                 }
                 else
