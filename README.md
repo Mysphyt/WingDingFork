@@ -37,22 +37,22 @@ A [BrainF*ck](https://en.wikipedia.org/wiki/Brainfuck) interpreter, but it's [Wi
 
 #### Main Menu
 
-!(Main Menu)[./ref/main_menu.png]
+![Main Menu](./ref/main_menu.png)
 
 #### Hello World
 
-!(Hello World)[./ref/hello_world.png]
+![Hello World](./ref/hello_world.png)
 
 #### Saving nested subroutines
 
-!(Generating Basic BF from Text)[./ref/genr_alive.png]
+![Generating Basic BF from Text](./ref/genr_alive.png)
 
-!(Running BF for "Am I alive?")[./ref/alive.png]
+![Running BF for "Am I alive?"](./ref/alive.png)
 
-!(Saving "Am I alive?" as a subroutine)[./ref/saving_alive.png]
+![Saving "Am I alive?" as a subroutine](./ref/saving_alive.png)
 
-!(Combining subroutines)[./ref/hello_world_alive.png]
+![Combining subroutines](./ref/hello_world_alive.png)
 
-!(Saving combined subroutines)[./ref/saving_hello_world_alive.png]
+![Saving combined subroutines](./ref/saving_hello_world_alive.png)
 
-!(Running the combined subroutine)[./ref/saving_hello_world_alive_sub.png]
+![Running the combined subroutine](./ref/saving_hello_world_alive_sub.png)
