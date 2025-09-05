@@ -1,12 +1,8 @@
 ﻿/*
     WingDingFork
 
-    TODO:
-        * Error handling for subroutine names as file names
-        * Converting subroutines from other configurations
 */
 
-using System.Drawing;
 using System.Text;
 
 namespace dingfork
@@ -14,8 +10,6 @@ namespace dingfork
     /*
         Main program namespace
     */
-    public class Menu
-    {
         public class DingFork
         {
 
@@ -507,5 +501,4 @@ namespace dingfork
             }
         }
 
-    }
 }
