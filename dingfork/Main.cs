@@ -24,26 +24,11 @@ namespace dingfork
 
             Loaded configuration ⮚ {0}
 
-            1 ⮚ Code New wingding
-            2 ⮚ Convert text to wingding
-            3 ⮚ Paste new wingding
-            4 ⮚ Load BrainF*ck from file
-            5 ⮚ Change configuration
-            6 ⮚ Configuration info
-            0 ⮚ Exit
-
             """;
 
         // Indexed Method names -- should match the order of above options
         // TODO: make this dynamic
-        public string[] mainMthdOptions = ["Quit",
-            "RunLoop",
-            "ConvertText",
-            "PasteCode",
-            "LoadCode",
-            "ChangeConfig",
-            "PrintConfig"
-        ];
+
 
 
         /*
@@ -66,16 +51,6 @@ namespace dingfork
 
         // Indexed Method names -- should match the order of above options
         // TODO: make this dynamic
-        public string[] runMthdOptions = [
-             "Quit",
-             "Run",
-             "Pop",
-             "Clear",
-             "Save",
-             "ListHotkeys",
-             "MainLoop"
-       ];
-
         private Dictionary<string, string> configMap = new Dictionary<string, string>();
 
         // Class for loading and storing data files
@@ -268,10 +243,39 @@ namespace dingfork
             RunLoop();
         }
 
+        private static string[] mainMenuOptions = [
+            "Run|Run current code",
+            "Pop|Delete last instruction",
+            "Clear|Clear all instructions",
+            "Save|Save code as subroutine",
+            "ConvertText|Convert text to code",
+            "PasteCode|Paste code",
+            "LoadCode|Load code from a file",
+            "ChangeConfig|Change current configuration",
+            "ListHotkeys|List key mappings",
+            "Quit|Quit" 
+        ];
+
+        static string unformattedCodeOutput = """
+
+            code   ⮚ {0}
+            output ⮚ {1}
+
+        """;
 
         public void MainLoop()
         {
-
+            // New menu for this loop
+            Menu mainMenu = new Menu
+            {
+                menuHeader = "Menu"
+            };
+            // Populate main menu options
+            for (int optionIt = 0; optionIt < mainMenuOptions.Length; optionIt++)
+            {
+                string[] optionArgs = mainMenuOptions[optionIt].Split("|");
+                mainMenu.AddOption(optionArgs[0], optionArgs[1]);
+            }
             // Load config.yml (fake yml read for now)
             string configPath = String.Format("{0}/config.yml", DataLoader.dataDirectory);
 
@@ -284,36 +288,47 @@ namespace dingfork
 
             while (true)
             {
-                // StringBuilder for 
-                StringBuilder sbDingFork = new StringBuilder();
-                sbDingFork.Append(String.Format(MAINLOOP_HEADER, dataLoader.dataConfigName));
-
+                // Print mainMenu info
                 FileHelper.print_wdf_header();
-                Console.WriteLine(sbDingFork);
+                Console.WriteLine(String.Format(unformattedCodeOutput, CleanUserCode(userCode.ToString()), codeOutput));
+                mainMenu.PrintMenu();
 
-                Console.Write(FileHelper.USER_INPUT_ARROW);
                 string userKey = Console.ReadKey().KeyChar.ToString();
                 Console.Clear();
 
                 // If the user entered an available option [0..mthdOptions.Length]
                 if (int.TryParse(userKey, out int option))
                 {
-                    if (option <= mainMthdOptions.Length)
+                    try
                     {
-                        try
+                        // Invoke the option method
+                        var optionOutput = GetType().GetMethod(mainMenu.GetOptionMethodName(option))?.Invoke(this, []);
+                        // Invoke the option method
+
+                        if (optionOutput is string && mainMenu.GetOptionMethodName(option) == "Run")
                         {
-                            // Invoke the option method
-                            GetType().GetMethod(mainMthdOptions[option])?.Invoke(this, []);
+                            codeOutput = Convert.ToString(optionOutput);
                         }
-                        catch (Exception e)
-                        {
-                            UserOpts.PressAnyKey(String.Format("\nOption {0} failed with:\n{1}\n\nPress any key to continue...", option, e.ToString()));
-                        }
+
+                    }
+                    catch (Exception e)
+                    {
+                        UserOpts.PressAnyKey(String.Format("\nOption {0} failed with:\n{1}\n\nPress any key to continue...", option, e.ToString()));
                     }
                 }
                 else
                 {
-                    Console.WriteLine("{0} is not a recognized option", userKey);
+                    string wingDing = dataLoader.GetDing(userKey);
+
+                    if (wingDing == "")
+                    {
+                        continue;
+                    }
+
+                    // Use | as delimeter
+                    // --> certain characters have a Length of 2, ie 👇.Length, 👍
+                    //  can't iterate one string length at a time and uncertainty of user input length.
+                    userCode.Append(wingDing + FileHelper.INSTRUCTION_DELIM);
                 }
             }
         }
@@ -327,19 +342,13 @@ namespace dingfork
             */
 
             // Refresh userCode and clear the console
+            /*
             Console.Clear();
 
             while (true)
             {
-                StringBuilder sbDingFork = new StringBuilder();
-
                 // Append the formatted header to display
-                sbDingFork.Append(String.Format(RUNLOOP_HEADER, CleanUserCode(userCode.ToString()), codeOutput));
-                FileHelper.print_wdf_header();
-                Console.WriteLine(sbDingFork);
-
                 string userKey = Console.ReadKey().KeyChar.ToString();
-                Console.Clear();
 
                 // TODO: validate keymap doesn't contain option menu numeric keys
                 // If the user entered an available option [0..mthdOptions.Length]
@@ -383,6 +392,7 @@ namespace dingfork
 
                 Console.Clear();
             }
+            */
         }
 
         public void TestLoop()

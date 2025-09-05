@@ -4,6 +4,7 @@ namespace dingfork
     public static class FileHelper
     {
         public static string USER_INPUT_ARROW = " ⮚ ";
+
         public static string INSTRUCTION_DELIM = "|";
 
         public static string WING_DING_FORK = """
