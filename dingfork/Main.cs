@@ -204,7 +204,7 @@ namespace dingfork
             UserOpts.PressAnyKey("\nPress any key to Run...\n");
 
             // Start the run loop with the new code
-            RunLoop();
+            MainLoop();
         }
 
         public void PasteCode()
@@ -219,7 +219,8 @@ namespace dingfork
             // TODO: Parse/sanitize pasted code for available instructions
             //       Allow for non-delmited code or code in keybindings (+-^<>... etc)
             userCode = new StringBuilder(pastedCode);
-            RunLoop();
+            Run();
+            MainLoop();
         }
 
         public void LoadCode()
@@ -240,10 +241,12 @@ namespace dingfork
             UserOpts.PressAnyKey("\nPress any key to Run...\n");
 
             // Start the run loop with the new code
-            RunLoop();
+            Run();
+            MainLoop();
         }
 
         private static string[] mainMenuOptions = [
+            "Quit|Quit",
             "Run|Run current code",
             "Pop|Delete last instruction",
             "Clear|Clear all instructions",
@@ -252,13 +255,13 @@ namespace dingfork
             "PasteCode|Paste code",
             "LoadCode|Load code from a file",
             "ChangeConfig|Change current configuration",
-            "ListHotkeys|List key mappings",
-            "Quit|Quit" 
+            "ListHotkeys|List key mappings"
         ];
 
         static string unformattedCodeOutput = """
 
             code   ⮚ {0}
+
             output ⮚ {1}
 
         """;
@@ -333,169 +336,7 @@ namespace dingfork
             }
         }
 
-        public void RunLoop()
-        {
-            /*
-                Loop for running WingDing code
-
-                   loadedCode: passed in the case of code from the clipboard or a file
-            */
-
-            // Refresh userCode and clear the console
-            /*
-            Console.Clear();
-
-            while (true)
-            {
-                // Append the formatted header to display
-                string userKey = Console.ReadKey().KeyChar.ToString();
-
-                // TODO: validate keymap doesn't contain option menu numeric keys
-                // If the user entered an available option [0..mthdOptions.Length]
-                if (int.TryParse(userKey, out int option))
-                {
-                    if (option <= runMthdOptions.Length)
-                    {
-                        // HACK: Return instead of recursievly calling MainLoop()
-                        if (runMthdOptions[option] == "MainLoop")
-                        {
-                            // Back to main menu, preserve current userCode but reset the output
-                            codeOutput = "";
-                            return;
-                        }
-
-                        // Invoke the option method
-                        var optionOutput = GetType().GetMethod(runMthdOptions[option])?.Invoke(this, []);
-
-                        if (optionOutput is string && runMthdOptions[option] == "Run")
-                        {
-                            codeOutput = Convert.ToString(optionOutput);
-                        }
-                    }
-                    else // Not in the options range
-                    {
-                        Console.WriteLine("{0} is not a recognized option", userKey);
-                    }
-                }
-
-                string wingDing = dataLoader.GetDing(userKey);
-
-                if (wingDing == "")
-                {
-                    continue;
-                }
-
-                // Use | as delimeter
-                // --> certain characters have a Length of 2, ie 👇.Length, 👍
-                //  can't iterate one string length at a time and uncertainty of user input length.
-                userCode.Append(wingDing + FileHelper.INSTRUCTION_DELIM);
-
-                Console.Clear();
-            }
-            */
-        }
-
-        public void TestLoop()
-        {
-            /*
-                Method for running unit tests
-            */
-
-            // TODO: break out unit tests
-
-            /*
-            Console.OutputEncoding = Encoding.Unicode;
-
-            while (true)
-            {
-                string s = Console.ReadLine();
-
-                if (!string.IsNullOrEmpty(s))
-                {
-                    Debug.WriteLine(s);
-
-                    Console.WriteLine(s);
-                }
-            }
-            */
-            /*
-            UTF CONVERSION/INPUT TEST:
-
-                Comparing 👇 to user input (ReadLine)
-                _____________________________
-                Testing: 👇
-                Original UTF-16 code units:
-                3D D8 47 DC
-
-                Exact number of bytes required: 4
-                Maximum number of bytes required: 9
-
-                UTF-8-encoded code units:
-                F0 9F 91 87
-
-                _____________________________
-                Testing: ??
-                Original UTF-16 code units:
-                3F 00 3F 00
-
-                Exact number of bytes required: 2
-                Maximum number of bytes required: 9
-
-                UTF-8-encoded code units:
-                3F 3F
-            */
-            Console.OutputEncoding = System.Text.Encoding.UTF8;
-            Console.InputEncoding = Encoding.Unicode;
-
-            Console.WriteLine("""
-            === TESTING UTF8 CONVERSION & RENDERING ===
-            """);
-            Console.WriteLine("Copy and Paste test string:\n👇");
-            var utfUserInput = Console.ReadLine();
-            string[] inputStrings = ["👇", utfUserInput];
-            Console.WriteLine("\nComparing 👇 to user input (ReadLine)");
-            foreach (string utfInput in inputStrings)
-            {
-                Console.WriteLine("\n\n_____________________________");
-                Console.WriteLine("Testing: {0}", utfInput);
-                // Create a character array.
-
-                char[] chars = utfInput.ToCharArray();
-
-                // Get UTF-8 and UTF-16 encoders.
-                Encoding utf8 = Encoding.UTF8;
-                Encoding utf16 = Encoding.Unicode;
-
-                // Display the original characters' code units.
-                Console.WriteLine("Original UTF-16 code units:");
-                byte[] utf16Bytes = utf16.GetBytes(chars);
-                foreach (var utf16Byte in utf16Bytes)
-                    Console.Write("{0:X2} ", utf16Byte);
-                Console.WriteLine();
-
-                // Display the number of bytes required to encode the array.
-                int reqBytes = utf8.GetByteCount(chars);
-                Console.WriteLine("\nExact number of bytes required: {0}",
-                              reqBytes);
-
-                // Display the maximum byte count.
-                int maxBytes = utf8.GetMaxByteCount(chars.Length);
-                Console.WriteLine("Maximum number of bytes required: {0}\n",
-                                  maxBytes);
-
-                // Encode the array of chars.
-                byte[] utf8Bytes = utf8.GetBytes(chars);
-
-                // Display all the UTF-8-encoded bytes.
-                Console.WriteLine("UTF-8-encoded code units:");
-                foreach (var utf8Byte in utf8Bytes)
-                    Console.Write("{0:X2} ", utf8Byte);
-
-            }
-            // Wait for user input
-            UserOpts.PressAnyKey();
-        }
-    }
+   }
 
 
 

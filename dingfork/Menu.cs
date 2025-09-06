@@ -20,7 +20,7 @@ namespace dingfork
     {
         public string menuHeader { get; set; }
 
-        private int currentOptionIt = 0;
+        private int currentOptionIt = -1;
         private System.ConsoleColor optionHighlightColor = System.ConsoleColor.DarkCyan;
         private System.ConsoleColor defaultHighlightColor = System.ConsoleColor.White;
 
@@ -54,11 +54,11 @@ namespace dingfork
         public void PrintMenu()
         {
             Console.WriteLine(menuHeader);
-
-            int optionIt = 0;
-            foreach (MenuOption option in menuOptions)
+            // HACK: Start with 1 and move 0 to the end of the list to match keyboard layout order
+            int optionIt = 1;
+            while(true)
             {
-                string optionOutput = String.Format("{0} {1} {2}", optionIt, FileHelper.USER_INPUT_ARROW, option.optionDescription);
+                string optionOutput = String.Format("{0} {1} {2}", optionIt, FileHelper.USER_INPUT_ARROW, menuOptions[optionIt].optionDescription);
                 if (optionIt == currentOptionIt)
                 {
                     Console.ForegroundColor = optionHighlightColor;
@@ -68,8 +68,12 @@ namespace dingfork
                 else
                 {
                     Console.WriteLine(optionOutput);
-                } 
+                }
+                // 
+                if(optionIt == 0) { break; } // Break out of the loop
                 optionIt++;
+                // HACK: Set the current option to 0 when it gets to the end of the list, see above comment
+                if(optionIt == menuOptions.Count) { optionIt = 0; }
             }
         }
     }
