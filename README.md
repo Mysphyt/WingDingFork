@@ -9,10 +9,10 @@ A [BrainF*ck](https://en.wikipedia.org/wiki/Brainfuck) interpreter, but it's [Wi
 * Swap configurable key mappings for default instructions and subroutines.
 * Share subroutines for a given configuration while preserving your personal key mappings.
 
-
+#### Requirements:
+* [Microsoft .net framework 9.0](https://dotnet.microsoft.com/en-us/download/dotnet/9.0)
 #### Running:
 ```
-# requires .net framework
 .\app\dingfork.exe
 ```
 #### Configuration:
