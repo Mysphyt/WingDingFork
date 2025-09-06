@@ -167,6 +167,11 @@ namespace dingfork
                     int delimIndex = unparsedSubroutine.IndexOf(FileHelper.INSTRUCTION_DELIM);
                     // Read subroutine name from the first index of the delimited string
                     string subroutineName = unparsedSubroutine.Substring(0, delimIndex);
+                    // Make sure there is a key mapping for this subroutine
+                    if (!instructionsToWingDings.ContainsKey(subroutineName))
+                    {
+                        continue;
+                    }
                     // Read code from the remainder of the line
                     int codeLength = unparsedSubroutine.Length - (subroutineName.Length + 1);
                     string subroutineCode = unparsedSubroutine.Substring(delimIndex, codeLength);
