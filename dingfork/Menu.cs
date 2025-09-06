@@ -53,12 +53,12 @@ namespace dingfork
 
         public void PrintMenu()
         {
-            Console.WriteLine(menuHeader);
+            Console.WriteLine("    {0}", menuHeader);
             // HACK: Start with 1 and move 0 to the end of the list to match keyboard layout order
             int optionIt = 1;
             while(true)
             {
-                string optionOutput = String.Format("{0} {1} {2}", optionIt, FileHelper.USER_INPUT_ARROW, menuOptions[optionIt].optionDescription);
+                string optionOutput = String.Format("    {0} {1} {2}", optionIt, FileHelper.USER_INPUT_ARROW, menuOptions[optionIt].optionDescription);
                 if (optionIt == currentOptionIt)
                 {
                     Console.ForegroundColor = optionHighlightColor;

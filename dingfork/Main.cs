@@ -2,8 +2,7 @@
     WingDingFork
 
     TODO:
-        * Re-write Menu system to be dynamic and OO
-            > Consolidate menus, should be one menu with current code and output
+        * Add programmable background music
         * Add "password" protected messages with required input bytes
         * Detect BrainF*ck vs. Hotkey vs. WingDing code input
             > Allow for any type of code input when loading from files or pasting
@@ -152,7 +151,8 @@ namespace dingfork
                 Change the current data configuration 
             */
             FileHelper.print_wdf_header();
-            Console.WriteLine("{0} Enter config name: ", FileHelper.USER_INPUT_ARROW);
+            Console.WriteLine("Current config {0} {1}", FileHelper.USER_INPUT_ARROW, dataLoader.dataConfigName);
+            Console.Write("\nEnter existing config name {0} ", FileHelper.USER_INPUT_ARROW);
             var newConfig = Console.ReadLine();
 
             if (newConfig == null) { return; }
@@ -252,7 +252,7 @@ namespace dingfork
             "Clear|Clear all instructions",
             "Save|Save code as subroutine",
             "ConvertText|Convert text to code",
-            "PasteCode|Paste code",
+            // "PasteCode|Paste code", Deprecated for now. Should be replaced by auto-detected pasted instruction type
             "LoadCode|Load code from a file",
             "ChangeConfig|Change current configuration",
             "ListHotkeys|List key mappings"
@@ -271,7 +271,7 @@ namespace dingfork
             // New menu for this loop
             Menu mainMenu = new Menu
             {
-                menuHeader = "Menu"
+                menuHeader = "menu"
             };
             // Populate main menu options
             for (int optionIt = 0; optionIt < mainMenuOptions.Length; optionIt++)
@@ -293,7 +293,7 @@ namespace dingfork
             {
                 // Print mainMenu info
                 FileHelper.print_wdf_header();
-                Console.WriteLine(String.Format(unformattedCodeOutput, CleanUserCode(userCode.ToString()), codeOutput));
+                Console.WriteLine(String.Format(unformattedCodeOutput, CleanUserCode(userCode.ToString()), codeOutput, dataLoader.dataConfigName));
                 mainMenu.PrintMenu();
 
                 string userKey = Console.ReadKey().KeyChar.ToString();
@@ -355,7 +355,6 @@ namespace dingfork
             DingFork df = new DingFork();
 
             df.MainLoop();
-            // BrainfuckConverter.Translate();
         }
     }
 

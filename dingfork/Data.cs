@@ -12,7 +12,8 @@ namespace dingfork
         // --> remove path to .net folder in debug
         public static string dingforkDirectory = System.AppDomain.CurrentDomain.BaseDirectory.Split("dingfork")[0].Replace("\\app\\", "") + "\\dingfork\\";
         public static string dataDirectory = dingforkDirectory + "/data/";
-        public static string subroutinesDirectory = dingforkDirectory + "/data/{0}/subroutines/";
+        public static string subroutinesFile = dingforkDirectory + "/data/{0}/subroutines";
+
 
         public string dataConfigName = "";
         public string keymapFile = "";
@@ -148,35 +149,37 @@ namespace dingfork
             /*
                 Loads subroutine mappings from keymap and the dingfork/data/{config}/subroutines folder
             */
-            string subroutinesConfigDirectory = String.Format(subroutinesDirectory, dataConfigName);
-            string[] files = Directory.GetFiles(subroutinesConfigDirectory, "*", SearchOption.AllDirectories);
-
-            // Create the subroutines directory if it doesn't exist
-            if (!Directory.Exists(subroutinesConfigDirectory))
+            if (!File.Exists(String.Format(subroutinesFile, dataConfigName)))
             {
-                Directory.CreateDirectory(subroutinesConfigDirectory);
+                return;
             }
-
-            Dictionary<string, string> subroutineArgs;
 
             // Reset the code and name map for subroutines
             wingDingsToCode = new Dictionary<string, string>();
             wingDingsToSubroutine = new Dictionary<string, string>();
+
             // Load subroutines
-            foreach (string subroutineFile in files)
+            foreach (string unparsedSubroutine in File.ReadLines(String.Format(subroutinesFile, dataConfigName)))
             {
                 try
                 {
-                    string subroutineName = subroutineFile.Split('/')[^1];
+                    // Index of the first delimiter
+                    int delimIndex = unparsedSubroutine.IndexOf(FileHelper.INSTRUCTION_DELIM);
+                    // Read subroutine name from the first index of the delimited string
+                    string subroutineName = unparsedSubroutine.Substring(0, delimIndex);
+                    // Read code from the remainder of the line
+                    int codeLength = unparsedSubroutine.Length - (subroutineName.Length + 1);
+                    string subroutineCode = unparsedSubroutine.Substring(delimIndex, codeLength);
+
+                    // Look up the wingding for this subroutine
                     string subroutineWingDing = instructionsToWingDings[subroutineName];
-                    string subroutineCode = File.ReadAllText(subroutineFile);
 
                     wingDingsToCode.Add(subroutineWingDing, subroutineCode);
                     wingDingsToSubroutine.Add(subroutineWingDing, subroutineName);
                 }
                 catch (Exception e)
                 {
-                    Console.WriteLine("\nFailed to parse subroutine: {0}\n\nError: {1}", subroutineFile, e.ToString());
+                    Console.WriteLine("\nFailed to parse subroutine: {0}\n\nError: {1}", String.Format(subroutinesFile, dataConfigName), e.ToString());
                     UserOpts.PressAnyKey();
                     continue;
                 }
@@ -291,12 +294,28 @@ namespace dingfork
             if (!wingDingsToKeys.ContainsKey(subroutineWingDing))
             {
                 // Create a new mapping
-                Console.Write("\n\nNo existing shortcut found in keymap...\n\nEnter shortcut key for {0}: ", subroutineName);
-                string shortcut = Console.ReadLine();
+                Console.Write("\n\nNo existing shortcut found in keymap...\n");
+                // Hacky way of getting a non-restricted shortcut from the user
+                string[] restrictedShortcuts = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "^", "|"];
+                string shortcut = "";
+                while (true)
+                {
+                    Console.Write("\nEnter shortcut key for {0}: ", subroutineName);
+                    // Readline, but only takes the first character. Prevents errors from pasted input when using readkey.
+                    shortcut = Console.ReadLine().Substring(0, 1);
+                    if (restrictedShortcuts.Contains(shortcut) || keysToWingDings.ContainsKey(shortcut))
+                    {
+                        Console.WriteLine("{0} is already a keymap or menu option.", shortcut);
+                    }
+                    else
+                    {
+                        break; // Accepted shortcut
+                    }
+                }
 
                 using (StreamWriter sw = File.AppendText(keymapFile))
                 {
-                    sw.WriteLine("\n" + subroutineWingDing + FileHelper.INSTRUCTION_DELIM + shortcut + "^" + subroutineName);
+                    sw.Write("\n" + subroutineWingDing + FileHelper.INSTRUCTION_DELIM + shortcut + "^" + subroutineName);
                 }
             }
 
@@ -304,11 +323,15 @@ namespace dingfork
             subroutineName = String.Format(@"{0}", subroutineName);
 
             // Write the subroutine 
-            string subroutinePath = String.Format(subroutinesDirectory, dataConfigName) + subroutineName;
+            string subroutinePath = String.Format(subroutinesFile, dataConfigName);
 
-            File.WriteAllText(subroutinePath, userCode.ToString());
+            // File.WriteAllText(subroutinePath, userCode.ToString());
+            using (StreamWriter sw = File.AppendText(subroutinePath))
+            {
+                sw.Write("\n" + subroutineName + FileHelper.INSTRUCTION_DELIM + userCode.ToString());
+            }
 
-            Console.WriteLine("\n\nCurrent code saved to: subroutines/{0}\n", subroutineName);
+            Console.WriteLine("\n\nCurrent code saved to: subroutines:{0}\n", subroutineName);
             // Wait for user input
             UserOpts.PressAnyKey();
 

@@ -7,12 +7,6 @@
 👆|+^inc_byte
 👇|-^dec_byte
 💣|!^cls_tape
-🌏|\^hello
-📫|=^newline
-🌀|@^space
-🙌|'^alive
-😀|{^hello_world_alive
-♊︎|"^hello x3!
 🞴|a^a
 🞳|b^b
 🞲|c^c
@@ -39,13 +33,6 @@
 ⯋| ^spc
 🞅|r^r
 ⯌|s^s
-
 ⯍|t^t
-
-⮽|)^saving
-
 🖡|?^prd
-
-🞚|*^saving_is_fun
-
-☾|&^saving_test
+🌏|\^hello_world
