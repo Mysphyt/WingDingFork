@@ -1,13 +1,16 @@
 # WingDingFork
 A [BrainF*ck](https://en.wikipedia.org/wiki/Brainfuck) interpreter, but it's [WingDings](https://en.wikipedia.org/wiki/Wingdings)
+
+![Main Menu](./ref/main_menu2.png)
+
 * Generates runnable unicode BrainF*ck code from files and user input.
 * Includes interpreter with programmable instructions.
 * Generates and saves nested BrainF*ck code as subroutines.
 * Swap configurable key mappings for default instructions and subroutines.
 * Share subroutines for a given configuration while preserving your personal key mappings.
 
-![Main Menu](./ref/main_menu.png)
-
+#### Requirements:
+* [Microsoft .net framework 9.0](https://dotnet.microsoft.com/en-us/download/dotnet/9.0)
 #### Running:
 ```
 .\app\dingfork.exe
