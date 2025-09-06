@@ -283,25 +283,9 @@ namespace dingfork
             Console.Write("\n\nEnter subroutine name: ");
             subroutineName = Console.ReadLine();
 
-            Console.Write("\nConfirm (y/n) subroutine name: {0} ? ", subroutineName);
-
-            if (!UserOpts.YesNoOpt()) // Get a y/n from the user
-            {
-                Console.Clear();
-                return;
-            }
-
             // Get The subroutine wingding from the user
             Console.Write("\n\nSaving subroutine: {0}\n\nEnter subroutine WingDing: ", subroutineName);
             subroutineWingDing = Console.ReadLine();
-
-            Console.Write("\nConfirm (y/n) subroutine WingDing: {0} ? ", subroutineWingDing);
-
-            if (!UserOpts.YesNoOpt()) // Get a y/n from the user
-            {
-                Console.Clear();
-                return;
-            }
 
             // Make sure there is an existing key mapping
             if (!wingDingsToKeys.ContainsKey(subroutineWingDing))
