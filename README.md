@@ -6,7 +6,7 @@ A [BrainF*ck](https://en.wikipedia.org/wiki/Brainfuck) interpreter, but it's [Wi
 * Swap configurable key mappings for default instructions and subroutines.
 * Share subroutines for a given configuration while preserving your personal key mappings.
 
-![Main Menu](./ref/main_menu.png)
+![Main Menu](./ref/main_menu2.png)
 
 #### Running:
 ```
