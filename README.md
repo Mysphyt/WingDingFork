@@ -4,6 +4,7 @@ A [BrainF*ck](https://en.wikipedia.org/wiki/Brainfuck) interpreter, but it's [Wi
 * Includes interpreter with programmable instructions.
 * Generates and saves nested BrainF*ck code as subroutines.
 * Swap configurable key mappings for default instructions and subroutines.
+* Share subroutines for a given configuration while preserving your personal key mappings.
 
 ![Main Menu](./ref/main_menu.png)
 
@@ -16,11 +17,12 @@ A [BrainF*ck](https://en.wikipedia.org/wiki/Brainfuck) interpreter, but it's [Wi
 ```
   dataConfigName : name of the keymap and subroutine directory in data
 ```
-* [subroutines/](./dingfork/data/default/subroutines/) are lists of instructions saved in the configured data folder
-  * The name of each subroutine file corresponds with the instruction name in [keymap](./dingfork/data/default/keymap)
-    * The line "`🐻|b^buffalo_bill`" maps the key wingding "`🐻`" to the keyboard shortbut "`b`" and the subroutine instruction "`buffalo_bill`"
+* [subroutines/](./dingfork/data/default/subroutines) are lists of instructions saved in the configured data folder
+   * Subroutine names begin each line of the file, following with delimited instructions corresponding to that subroutine
+   * Subroutines require a corresponding mapping in the keymap file
 * [keymap](./dingfork/data/default/keymap): maps keyboard keys to WingDing symbols and instructions.
-   * Includes `subroutine` key mappings as [wingding|key^subroutine_name] 
+   * Current syntax: [wingding|key^instruction]
+   * Includes `subroutine` key mappings using the subroutine name as the instruction 
    * Additional instruction for resetting memory [`cls_tape`]
 ```
 #### Base Instruction Set:
