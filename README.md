@@ -8,11 +8,11 @@ A [BrainF*ck](https://en.wikipedia.org/wiki/Brainfuck) interpreter, but it's [Wi
 
 ![Main Menu](./ref/main_menu.png)
 
-## Running:
+#### Running:
 ```
 .\app\dingfork.exe
 ```
-### Configuration:
+#### Configuration:
 * [config](./dingfork/data/config.yml): configuration setttings
 ```
   dataConfigName : name of the keymap and subroutine directory in data
