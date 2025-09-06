@@ -11,8 +11,8 @@ A [BrainF*ck](https://en.wikipedia.org/wiki/Brainfuck) interpreter, but it's [Wi
 
 
 #### Running:
-* __Requires .net framework__
 ```
+# requires .net framework
 .\app\dingfork.exe
 ```
 #### Configuration:
