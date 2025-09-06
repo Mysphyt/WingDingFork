@@ -4,6 +4,7 @@ A [BrainF*ck](https://en.wikipedia.org/wiki/Brainfuck) interpreter, but it's [Wi
 * Includes interpreter with programmable instructions.
 * Generates and saves nested BrainF*ck code as subroutines.
 * Swap configurable key mappings for default instructions and subroutines.
+* Share subroutines while preserving your personal key mappings.
 
 ![Main Menu](./ref/main_menu.png)
 
