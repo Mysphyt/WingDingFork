@@ -33,6 +33,8 @@ namespace dingfork
         // instruction -> wingding
         public Dictionary<string, string> instructionsToWingDings = new Dictionary<string, string>();
 
+        // Hacky list of restricted shortcuts for menus and delimiters
+        public static string[] restrictedShortcuts = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "^", "|"];
 
         public void PrintKeymap()
         {
@@ -45,7 +47,7 @@ namespace dingfork
             foreach (var keymap in instructionsToWingDings)
             {
                 string hotkey = wingDingsToKeys[keymap.Value];
-                Console.WriteLine("{0} {1}:\n  wingding: {2}\n  hotkey: {3}\n", FileHelper.USER_INPUT_ARROW, keymap.Key, keymap.Value, hotkey);
+                Console.WriteLine("{0} {1} {2} [{3}]", hotkey, FileHelper.USER_INPUT_ARROW, keymap.Value, keymap.Key);
             }
             // Wait for any user input
             UserOpts.PressAnyKey();
@@ -301,7 +303,6 @@ namespace dingfork
                 // Create a new mapping
                 Console.Write("\n\nNo existing shortcut found in keymap...\n");
                 // Hacky way of getting a non-restricted shortcut from the user
-                string[] restrictedShortcuts = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "^", "|"];
                 string shortcut = "";
                 while (true)
                 {

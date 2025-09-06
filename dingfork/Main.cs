@@ -2,11 +2,17 @@
     WingDingFork
 
     TODO:
-        * Add programmable background music
+        * Replace user input logic with key events
+            > backspace to delete last instruction
+            > escape to quit
+            > live typing or pasting without switching "modes"
         * Add "password" protected messages with required input bytes
         * Detect BrainF*ck vs. Hotkey vs. WingDing code input
-            > Allow for any type of code input when loading from files or pasting
-                . Allows directly pasting wingdings or brainfuck into the interpreter
+             > Allow for any type of code input when loading from files or pasting
+                 . Allows directly pasting wingdings or brainfuck into the interpreter
+        * Add programmable background music
+        * Animate rainbow WingDingFork logo
+ 
 */
 
 using System.Text;
@@ -18,38 +24,15 @@ namespace dingfork
     */
     public class DingFork
     {
-
-        const string MAINLOOP_HEADER = """
-
-            Loaded configuration ⮚ {0}
-
-            """;
-
-        // Indexed Method names -- should match the order of above options
-        // TODO: make this dynamic
-
-
-
-        /*
-            TODO: validate that loaded keymap does not overlap this instruction set
-        */
-        const string RUNLOOP_HEADER = """
-        
-            code   ⮚ {0}
-
-            output ⮚ {1}
-
-            1 ⮚ Run
-            2 ⮚ Delete last instruction
-            3 ⮚ Clear all instructions
-            4 ⮚ Save as subroutine
-            5 ⮚ List available instructions
-            6 ⮚ Main Menu
-            0 ⮚ Quit
-            """;
-
-        // Indexed Method names -- should match the order of above options
-        // TODO: make this dynamic
+        private enum UserInputType //
+        {
+            hotkey,
+            wingding,
+            restricted,
+            unknown
+            // TODO: default Brainf*ck
+        };
+        // Config variable mapping
         private Dictionary<string, string> configMap = new Dictionary<string, string>();
 
         // Class for loading and storing data files
@@ -77,9 +60,32 @@ namespace dingfork
             return cleanUserCode;
         }
 
+        private UserInputType DetectUserInputType(string userInput)
+        {
+            if (DataLoader.restrictedShortcuts.Contains(userInput))
+            {
+                // This is a restricted or menu option
+                return UserInputType.restricted;
+            }
+            else if (dataLoader.keysToWingDings.ContainsKey(userInput))
+            {
+                // User input is a loaded hotkey
+                return UserInputType.hotkey;
+            }
+            else if (dataLoader.wingDingsToInstructions.ContainsKey(userInput))
+            {
+                // User input is a loaded wingding
+                return UserInputType.wingding;
+            }
+            // Unknown input type
+            return UserInputType.unknown;
+        }
+
         static string InterpretWingDingCode(string userCode)
         {
             // Parse any subroutines
+            //      returns the wingding code output
+
             string parsedCode = dataLoader.ParseSubroutines(userCode);
 
             var interpreter = new Runner();
@@ -91,10 +97,12 @@ namespace dingfork
 
         public void Save()
         {
+            // Save the current userCode as a new subroutine
             dataLoader.SaveSubroutine(userCode.ToString());
         }
         public void ListHotkeys()
         {
+            // Display current key mappings
             dataLoader.PrintKeymap();
         }
 
@@ -182,16 +190,23 @@ namespace dingfork
 
         public void UpdateUserCodeFromBF(string bfCode)
         {
+            /*
+                Convert BrainF*ck code to wingding code
+                *Note: Assumes current configuration is set up with default BF instructions as hotkeys
+            */
             userCode = new StringBuilder();
-            foreach (char c in bfCode)
+            foreach (char bfInstruction in bfCode)
             {
-                string instruction = dataLoader.GetDing(c.ToString()) + FileHelper.INSTRUCTION_DELIM;
+                string instruction = dataLoader.GetDing(bfInstruction.ToString()) + FileHelper.INSTRUCTION_DELIM;
                 userCode.Append(instruction);
             }
         }
 
         public void ConvertText()
         {
+            /*
+                Converts text to wingding BrainF*ck instructions
+            */
             FileHelper.print_wdf_header();
             Console.Write("Enter text to convert: ");
 
@@ -210,6 +225,7 @@ namespace dingfork
         public void PasteCode()
         {
             /*
+                DEPRECATED
                 Get WingDing code from a pasted string
             */
             FileHelper.print_wdf_header();
@@ -225,6 +241,11 @@ namespace dingfork
 
         public void LoadCode()
         {
+            /*
+                Loads wingdings or hotkeys from a file
+                *Note: currently only loads hotkey instructions
+                TODO: allow loading non-delimited wingding code
+            */
             FileHelper.print_wdf_header();
             Console.Write("Enter file path: ");
 
@@ -321,11 +342,25 @@ namespace dingfork
                 }
                 else
                 {
-                    string wingDing = dataLoader.GetDing(userKey);
+                    string wingDing = "";
 
-                    if (wingDing == "")
+                    // Parse the type of input the user entered
+                    UserInputType inputType = DetectUserInputType(userKey);
+                    if (inputType == UserInputType.hotkey)
+                    {
+                        wingDing = dataLoader.GetDing(userKey);
+                        if (wingDing == "")
+                        {
+                            continue;
+                        }
+                    }
+                    else if (inputType == UserInputType.restricted)
                     {
                         continue;
+                    }
+                    else if (inputType == UserInputType.wingding)
+                    {
+                        wingDing = userKey;
                     }
 
                     // Use | as delimeter
