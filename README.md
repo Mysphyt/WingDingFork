@@ -8,11 +8,11 @@ A [BrainF*ck](https://en.wikipedia.org/wiki/Brainfuck) interpreter, but it's [Wi
 
 ![Main Menu](./ref/main_menu.png)
 
-## Running:
+#### Running:
 ```
 .\app\dingfork.exe
 ```
-### Configuration:
+#### Configuration:
 * [config](./dingfork/data/config.yml): configuration setttings
 ```
   dataConfigName : name of the keymap and subroutine directory in data
@@ -24,9 +24,9 @@ A [BrainF*ck](https://en.wikipedia.org/wiki/Brainfuck) interpreter, but it's [Wi
    * Current syntax: [wingding|key^instruction]
    * Includes `subroutine` key mappings using the subroutine name as the instruction 
    * Additional instruction for resetting memory [`cls_tape`]
-```
+
 #### Base Instruction Set:
-   
+```
    inc_data : Increment the data pointer by one (to point to the next cell to the right).
    dec_data : Decrement the data pointer by one (to point to the next cell to the left).
    inc_byte : Increment the byte at the data pointer by one.
