@@ -2,6 +2,8 @@
     WingDingFork
 
     TODO: 
+        ! Fix casting user input to lowercase, currently messing up special character input ({}!@#$&*$.. etc, not allowing for caps hotkeys)
+
         * Add "password" protected messages with required input bytes
         * ~Detect BrainF*ck vs. Hotkey vs. WingDing code input~
              > Allow for any type of code input when loading from files or pasting
