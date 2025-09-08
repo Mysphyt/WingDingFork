@@ -1,9 +1,9 @@
 Run|Run current code|enter
 Pop|Delete last instruction|backspace
-Clear|Clear all instructions|0
-Save|Save code as subroutine|1
-ConvertText|Convert text to code|2
-LoadCode|Load code from a file|3
-ChangeConfig|Change current configuration|4
-ListHotkeys|List key mappings|5
-Quit|Quit|q
+Clear|Clear all instructions|1
+Save|Save code as subroutine|2
+ConvertText|Convert text to code|3
+LoadCode|Load code from a file|4
+ChangeConfig|Change current configuration|5
+ListHotkeys|List key mappings|6
+Quit|Quit|0
