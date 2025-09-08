@@ -32,10 +32,6 @@ namespace dingfork
         public Dictionary<string, string> wingDingsToInstructions = new Dictionary<string, string>();
         // instruction -> wingding
         public Dictionary<string, string> instructionsToWingDings = new Dictionary<string, string>();
-
-        // Hacky list of restricted shortcuts for menus and delimiters
-        public static string[] restrictedShortcuts = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "^", "|"];
-
         public void PrintKeymap()
         {
             /*
@@ -270,7 +266,7 @@ namespace dingfork
             }
         }
 
-        public void SaveSubroutine(string userCode)
+        public void SaveSubroutine(string userCode, List<string> restrictedShortcuts)
         {
             /*
                 Save a new subroutine 

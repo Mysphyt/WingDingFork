@@ -2,64 +2,76 @@
     Menu related classes
 */
 using System.Runtime.InteropServices;
+using System.Text;
 
 namespace dingfork
 {
-    public class MenuOption
+    public class MenuOption()
     {
         // Name of the method this option invokes
-        public string optionMethodName { get; set; }
+        public string optionMethodName { get; set; } = "";
 
         // Description of the option to be displayed
-        public string optionDescription { get; set; }
+        public string optionDescription { get; set; } = "";
 
-        public MenuOption() { }
     }
 
-    public class Menu
+    public class Menu()
     {
-        public string menuHeader { get; set; }
+        public string menuHeader { get; set; } = "";
 
-        private int currentOptionIt = -1;
+        private string currentOptionSelection = "";
         private System.ConsoleColor optionHighlightColor = System.ConsoleColor.DarkCyan;
         private System.ConsoleColor defaultHighlightColor = System.ConsoleColor.White;
-
-        private List<MenuOption> menuOptions = new List<MenuOption>();
-        // Default constructor
-        public Menu() { }
-
-        public string GetOptionMethodName(int optionIndex)
+        private Dictionary<string, MenuOption> menuOptions = new Dictionary<string, MenuOption>();
+        int longestOptionForKerning = 0;
+        public string GetOptionMethodName(string optionHotkey)
         {
-            if (optionIndex >= menuOptions.Count)
+            if (menuOptions.ContainsKey(optionHotkey) && currentOptionSelection == optionHotkey)
             {
-                // Invalid option 
-                return "";
-            }
-            else if (optionIndex == currentOptionIt)
-            {
-                return menuOptions[optionIndex].optionMethodName;
+                return menuOptions[optionHotkey].optionMethodName;
             }
             else
             {
-                currentOptionIt = optionIndex;
+                currentOptionSelection = optionHotkey;
                 return "";
             }
         }
 
-        public void AddOption(string optionMethodName, string optionDescription)
+        public void AddOption(string optionMethodName, string optionDescription, string hotkey)
         {
-            menuOptions.Add(new MenuOption { optionMethodName=optionMethodName, optionDescription=optionDescription });
+            int optionHotkeyLength = hotkey.Length;
+            if (optionHotkeyLength > longestOptionForKerning) {
+                longestOptionForKerning = optionHotkeyLength;
+            }
+            menuOptions.Add(
+                hotkey,
+                new MenuOption
+                {
+                    optionMethodName = optionMethodName,
+                    optionDescription = optionDescription,
+                });
         }
 
         public void PrintMenu()
         {
-            Console.WriteLine("    {0}", menuHeader);
+            // Don't write blank headers
+            if(menuHeader !="") {
+                Console.WriteLine("", menuHeader);
+            }
             // HACK: Start with 1 and move 0 to the end of the list to match keyboard layout order
-            int optionIt = 1;
-            while(true)
+            foreach(var menuOption in menuOptions)
             {
-                string optionOutput = String.Format("    {0} {1} {2}", optionIt, FileHelper.USER_INPUT_ARROW, menuOptions[optionIt].optionDescription);
-                if (optionIt == currentOptionIt)
+                StringBuilder optionOutput = new StringBuilder();
+
+                // Append kerning as the difference between the current and longest menu option hotkey
+                for(int kerning = longestOptionForKerning - menuOption.Key.Length; kerning >= 0; kerning--) {
+                    optionOutput.Append(" ");
+                }
+
+                optionOutput.Append(menuOption.Key+FileHelper.USER_INPUT_ARROW+" "+menuOption.Value.optionDescription);
+
+                if (menuOption.Key == currentOptionSelection)
                 {
                     Console.ForegroundColor = optionHighlightColor;
                     Console.WriteLine(optionOutput);
@@ -69,11 +81,6 @@ namespace dingfork
                 {
                     Console.WriteLine(optionOutput);
                 }
-                // 
-                if(optionIt == 0) { break; } // Break out of the loop
-                optionIt++;
-                // HACK: Set the current option to 0 when it gets to the end of the list, see above comment
-                if(optionIt == menuOptions.Count) { optionIt = 0; }
             }
         }
     }

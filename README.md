@@ -7,6 +7,7 @@ A [BrainF*ck](https://en.wikipedia.org/wiki/Brainfuck) interpreter, but the inst
 * Generates and saves nested BrainF*ck code as subroutines.
 * Swap configurable key mappings for default instructions and subroutines.
 * Share subroutines for a given configuration while preserving your personal key mappings.
+* Configurable menu hotkeys.
 
 #### Requirements:
 * [Microsoft .net framework 9.0](https://dotnet.microsoft.com/en-us/download/dotnet/9.0)
@@ -19,13 +20,17 @@ A [BrainF*ck](https://en.wikipedia.org/wiki/Brainfuck) interpreter, but the inst
 ```
   dataConfigName : name of the keymap and subroutine directory in data
 ```
-* [subroutines/](./dingfork/data/default/subroutines) are lists of instructions saved in the configured data folder
-   * Subroutine names begin each line of the file, following with delimited instructions corresponding to that subroutine
-   * Subroutines require a corresponding mapping in the keymap file
+* [subroutines/](./dingfork/data/default/subroutines) are lists of instructions saved in the configured data folder.
+   * Subroutine names begin each line of the file, following with delimited instructions corresponding to that subroutine.
+   * Subroutines require a corresponding mapping in the keymap file.
 * [keymap](./dingfork/data/default/keymap): maps keyboard keys to WingDing symbols and instructions.
-   * Current syntax: [wingding|key^instruction]
-   * Includes `subroutine` key mappings using the subroutine name as the instruction 
-   * Additional instruction for resetting memory [`cls_tape`]
+   * Line syntax: [`wingding`|`key^instruction`].
+   * Includes `subroutine` key mappings using the subroutine name as the instruction.
+   * Additional instruction for resetting memory [`cls_tape`].
+* [menus](./dingfork/data/menus/)
+   * Line syntax: [`option_method_name`|`option_method_description`|`option_hotkey`].
+   * Data for menu option mappings.
+   * You can update the `option_hotkey` values to your preferences.
 
 #### Base Instruction Set:
 ```

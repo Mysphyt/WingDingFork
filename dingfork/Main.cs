@@ -1,20 +1,19 @@
 ﻿/*
     WingDingFork
 
-    TODO:
-        * Replace user input logic with key events
-            > backspace to delete last instruction
-            > escape to quit
-            > live typing or pasting without switching "modes"
+    TODO: 
         * Add "password" protected messages with required input bytes
-        * Detect BrainF*ck vs. Hotkey vs. WingDing code input
+        * ~Detect BrainF*ck vs. Hotkey vs. WingDing code input~
              > Allow for any type of code input when loading from files or pasting
                  . Allows directly pasting wingdings or brainfuck into the interpreter
+        * Add menu "mode" to allow for KeyChar / ie: lowercase user hotkey input
+            * Remap menu hotkeys from WingDingFork menu
+        * Menu file validation
         * Add programmable background music
         * Animate rainbow WingDingFork logo
- 
 */
 
+using System.Text.RegularExpressions;
 using System.Text;
 
 namespace dingfork
@@ -60,9 +59,12 @@ namespace dingfork
             return cleanUserCode;
         }
 
+        // Hacky list of restricted shortcuts for menus and delimiters
+        public List<string> restrictedShortcuts = new List<string> { "^", "|" };
+
         private UserInputType DetectUserInputType(string userInput)
         {
-            if (DataLoader.restrictedShortcuts.Contains(userInput))
+            if (restrictedShortcuts.Contains(userInput))
             {
                 // This is a restricted or menu option
                 return UserInputType.restricted;
@@ -98,7 +100,7 @@ namespace dingfork
         public void Save()
         {
             // Save the current userCode as a new subroutine
-            dataLoader.SaveSubroutine(userCode.ToString());
+            dataLoader.SaveSubroutine(userCode.ToString(), restrictedShortcuts);
         }
         public void ListHotkeys()
         {
@@ -266,19 +268,9 @@ namespace dingfork
             MainLoop();
         }
 
-        private static string[] mainMenuOptions = [
-            "Quit|Quit",
-            "Run|Run current code",
-            "Pop|Delete last instruction",
-            "Clear|Clear all instructions",
-            "Save|Save code as subroutine",
-            "ConvertText|Convert text to code",
-            // "PasteCode|Paste code", Deprecated for now. Should be replaced by auto-detected pasted instruction type
-            "LoadCode|Load code from a file",
-            "ChangeConfig|Change current configuration",
-            "ListHotkeys|List key mappings"
-        ];
 
+
+        // String to format for user code output
         static string unformattedCodeOutput = """
 
             code   ⮚ {0}
@@ -292,13 +284,19 @@ namespace dingfork
             // New menu for this loop
             Menu mainMenu = new Menu
             {
-                menuHeader = "menu"
+                menuHeader = ""
             };
+            string[] mainMenuOptions = File.ReadAllLines(String.Format("{0}/menus/{1}", DataLoader.dataDirectory, "mainmenu"));
+
+            // Reset the restricted shortcuts
+            restrictedShortcuts = new List<string> { "^", FileHelper.INSTRUCTION_DELIM };
+
             // Populate main menu options
             for (int optionIt = 0; optionIt < mainMenuOptions.Length; optionIt++)
             {
                 string[] optionArgs = mainMenuOptions[optionIt].Split("|");
-                mainMenu.AddOption(optionArgs[0], optionArgs[1]);
+                mainMenu.AddOption(optionArgs[0], optionArgs[1], optionArgs[2]);
+                restrictedShortcuts.Add(optionArgs[2]);
             }
             // Load config.yml (fake yml read for now)
             string configPath = String.Format("{0}/config.yml", DataLoader.dataDirectory);
@@ -317,19 +315,33 @@ namespace dingfork
                 Console.WriteLine(String.Format(unformattedCodeOutput, CleanUserCode(userCode.ToString()), codeOutput, dataLoader.dataConfigName));
                 mainMenu.PrintMenu();
 
-                string userKey = Console.ReadKey().KeyChar.ToString();
+                ConsoleKey userKey = Console.ReadKey().Key;
+
+                // Cast to lowercase for now. Need to re-write input logic because ConsoleKeys are always cast to capital letters
+                //      Using KeyChar was allowing lowercase letters, but is always an empty string for special keys
+                string userKeyString = userKey.ToString();
+
+                if (Regex.IsMatch(userKeyString, @"^(d|D)\d+$"))
+                {
+                    // Trim the leading "D" from numeric Key input
+                    userKeyString = userKeyString.Substring(1, userKeyString.Length - 1);
+                }
+                else {
+                    userKeyString = userKeyString.ToLower();
+                }
+
                 Console.Clear();
 
                 // If the user entered an available option [0..mthdOptions.Length]
-                if (int.TryParse(userKey, out int option))
+                if (restrictedShortcuts.Contains(userKeyString))
                 {
                     try
                     {
                         // Invoke the option method
-                        var optionOutput = GetType().GetMethod(mainMenu.GetOptionMethodName(option))?.Invoke(this, []);
+                        var optionOutput = GetType().GetMethod(mainMenu.GetOptionMethodName(userKeyString))?.Invoke(this, []);
                         // Invoke the option method
 
-                        if (optionOutput is string && mainMenu.GetOptionMethodName(option) == "Run")
+                        if (optionOutput is string && mainMenu.GetOptionMethodName(userKeyString) == "Run")
                         {
                             codeOutput = Convert.ToString(optionOutput);
                         }
@@ -337,7 +349,7 @@ namespace dingfork
                     }
                     catch (Exception e)
                     {
-                        UserOpts.PressAnyKey(String.Format("\nOption {0} failed with:\n{1}\n\nPress any key to continue...", option, e.ToString()));
+                        UserOpts.PressAnyKey(String.Format("\nOption {0} failed with:\n{1}\n\nPress any key to continue...", userKeyString, e.ToString()));
                     }
                 }
                 else
@@ -345,10 +357,10 @@ namespace dingfork
                     string wingDing = "";
 
                     // Parse the type of input the user entered
-                    UserInputType inputType = DetectUserInputType(userKey);
+                    UserInputType inputType = DetectUserInputType(userKeyString);
                     if (inputType == UserInputType.hotkey)
                     {
-                        wingDing = dataLoader.GetDing(userKey);
+                        wingDing = dataLoader.GetDing(userKeyString);
                         if (wingDing == "")
                         {
                             continue;
@@ -360,7 +372,7 @@ namespace dingfork
                     }
                     else if (inputType == UserInputType.wingding)
                     {
-                        wingDing = userKey;
+                        wingDing = userKeyString;
                     }
 
                     // Use | as delimeter
@@ -371,7 +383,7 @@ namespace dingfork
             }
         }
 
-   }
+    }
 
 
 
