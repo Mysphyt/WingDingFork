@@ -27,6 +27,7 @@ A [BrainF*ck](https://en.wikipedia.org/wiki/Brainfuck) interpreter, but the inst
    * Line syntax: [`wingding`|`key^instruction`].
    * Includes `subroutine` key mappings using the subroutine name as the instruction.
    * Additional instruction for resetting memory [`cls_tape`].
+   * The `default` configuration defines subroutines for most key characters, allowing you to type sentences as BrainF*ck code.
 * [menus](./dingfork/data/menus/)
    * Line syntax: [`option_method_name`|`option_method_description`|`option_hotkey`].
    * Data for menu option mappings.
