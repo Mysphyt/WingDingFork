@@ -38,7 +38,7 @@ namespace dingfork
                 Print current subroutines
             */
             Console.Clear();
-            FileHelper.print_wdf_header();
+            FileHelper.printWdfHeader();
             Console.WriteLine("\nAvailable key mappings from {0}/keymap:", dataConfigName);
             foreach (var keymap in instructionsToWingDings)
             {
@@ -56,7 +56,7 @@ namespace dingfork
                 Print current subroutines
             */
             Console.Clear();
-            FileHelper.print_wdf_header();
+            FileHelper.printWdfHeader();
             Console.WriteLine("\nAvailable Subroutines in {0}:", dataConfigName);
             foreach (var subroutine in wingDingsToSubroutine)
             {
@@ -86,12 +86,13 @@ namespace dingfork
             {
                 // Remove spaces and split on the isntruction delimiter
                 var args = line.Split(FileHelper.INSTRUCTION_DELIM);
-                if (args.Length != 2)
+                if (args.Length != 3)
                 {
+                    // Invalid keymap args
                     continue;
                 }
                 string wingding = args[0];
-                string mapping = args[1];
+                string mapping = args[1] + FileHelper.INSTRUCTION_DELIM + args[2];
                 if (tmpWingDingMap.ContainsKey(wingding))
                 {
                     // Log duplicate hotkey
@@ -99,7 +100,7 @@ namespace dingfork
                     continue;
                 }
 
-                tmpWingDingMap.Add(args[0], args[1]);
+                tmpWingDingMap.Add(wingding, mapping);
             }
 
             // If there were any duplicates
@@ -119,7 +120,7 @@ namespace dingfork
             // Parse the keys and method names from keymap data
             foreach (var keyToMthd in tmpWingDingMap)
             {
-                string[] keyMthd = keyToMthd.Value.Split("^");
+                string[] keyMthd = keyToMthd.Value.Split(FileHelper.INSTRUCTION_DELIM);
 
                 string keyName = keyMthd[0];
                 string mthdName = keyMthd[1];
@@ -139,7 +140,6 @@ namespace dingfork
                     keysToWingDings.Add(wingKey.Value, wingKey.Key);
                 }
             }
-
         }
 
         public void LoadSubroutines()
@@ -266,7 +266,7 @@ namespace dingfork
             }
         }
 
-        public void SaveSubroutine(string userCode, List<string> restrictedShortcuts)
+        public void SaveSubroutine(string userCode, List<string> reservedShortcuts)
         {
             /*
                 Save a new subroutine 
@@ -279,33 +279,43 @@ namespace dingfork
                     - Use dynamic menus
             */
 
-            string subroutineName = "";
-            string subroutineWingDing = "";
+            // Display the wingdingfork header
+            FileHelper.printWdfHeader();
 
-            FileHelper.print_wdf_header();
+            string subroutineName;
+            string subroutineWingDing;
 
             // Get the subroutine name from the user
             Console.WriteLine("Saving code: {0}", userCode.Replace(FileHelper.INSTRUCTION_DELIM, ""));
-            Console.Write("\n\nEnter subroutine name: ");
+            Console.Write("\nEnter subroutine name: ");
             subroutineName = Console.ReadLine();
 
             // Get The subroutine wingding from the user
-            Console.Write("\n\nSaving subroutine: {0}\n\nEnter subroutine WingDing: ", subroutineName);
+            Console.Write("\nEnter subroutine WingDing: ", subroutineName);
             subroutineWingDing = Console.ReadLine();
 
             // Make sure there is an existing key mapping
             if (!wingDingsToKeys.ContainsKey(subroutineWingDing))
             {
                 // Create a new mapping
-                Console.Write("\n\nNo existing shortcut found in keymap...\n");
-                // Hacky way of getting a non-restricted shortcut from the user
                 string shortcut = "";
-                while (true)
+                for (int tries = 3; tries >= 0; tries--)
                 {
                     Console.Write("\nEnter shortcut key for {0}: ", subroutineName);
+
                     // Readline, but only takes the first character. Prevents errors from pasted input when using readkey.
-                    shortcut = Console.ReadLine().Substring(0, 1);
-                    if (restrictedShortcuts.Contains(shortcut) || keysToWingDings.ContainsKey(shortcut))
+                    shortcut = Console.ReadLine();
+
+                    if (shortcut == "")
+                    {
+                        continue;
+                    }
+                    else
+                    {
+                        shortcut = shortcut.Substring(0, 1);
+                    }
+                    
+                    if (reservedShortcuts.Contains(shortcut) || keysToWingDings.ContainsKey(shortcut))
                     {
                         Console.WriteLine("{0} is already a keymap or menu option.", shortcut);
                     }
@@ -314,10 +324,17 @@ namespace dingfork
                         break; // Accepted shortcut
                     }
                 }
-
-                using (StreamWriter sw = File.AppendText(keymapFile))
+                if (shortcut != "")
                 {
-                    sw.Write("\n" + subroutineWingDing + FileHelper.INSTRUCTION_DELIM + shortcut + "^" + subroutineName);
+                    using (StreamWriter sw = File.AppendText(keymapFile))
+                    {
+                        sw.Write("\n" + subroutineWingDing + FileHelper.INSTRUCTION_DELIM + shortcut + FileHelper.INSTRUCTION_DELIM + subroutineName);
+                    }
+                }
+                else
+                {
+                    UserOpts.PressAnyKey("No valid shortcut was entered. Press any key to continue...");
+                    return;
                 }
             }
 
@@ -333,7 +350,7 @@ namespace dingfork
                 sw.Write("\n" + subroutineName + FileHelper.INSTRUCTION_DELIM + userCode.ToString());
             }
 
-            Console.WriteLine("\n\nCurrent code saved to: subroutines:{0}\n", subroutineName);
+            Console.WriteLine("Current code saved to: subroutines:{0}\n", subroutineName);
             // Wait for user input
             UserOpts.PressAnyKey();
 

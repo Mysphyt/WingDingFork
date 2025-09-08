@@ -15,7 +15,7 @@ namespace dingfork
            \_/\_/  |_|_| |_|\__, |____/|_|_| |_|\__, |_|  \___/|_|  |_|\_\
                             |___/               |___/                     
         """;
-        public static void print_wdf_header()
+        public static void printWdfHeader()
         {
             // Print the above header in rainbow colors
             System.ConsoleColor[] rainbow = [

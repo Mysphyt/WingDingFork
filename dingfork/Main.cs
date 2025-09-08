@@ -1,9 +1,9 @@
-﻿/*
-    WingDingFork
+﻿/* WingDingFork
 
     TODO: 
         * Add "password" protected messages with required input bytes
-        * ~Detect BrainF*ck vs. Hotkey vs. WingDing code input~
+        * Allow for modified hotkeys, ctrl+, alt+
+        * ~Detect BrainF*ck vs. Hotkey vs. WingDingcode input~
              > Allow for any type of code input when loading from files or pasting
                  . Allows directly pasting wingdings or brainfuck into the interpreter
         * Menu file validation
@@ -21,14 +21,6 @@ namespace dingfork
     */
     public class DingFork
     {
-        private enum UserInputType //
-        {
-            hotkey,
-            wingding,
-            restricted,
-            unknown
-            // TODO: default Brainf*ck
-        };
         // Config variable mapping
         private Dictionary<string, string> configMap = new Dictionary<string, string>();
 
@@ -60,27 +52,6 @@ namespace dingfork
         // Hacky list of restricted shortcuts for menus and delimiters
         public List<string> restrictedShortcuts = new List<string> { "^", "|" };
 
-        private UserInputType DetectUserInputType(string userInput)
-        {
-            if (restrictedShortcuts.Contains(userInput))
-            {
-                // This is a restricted or menu option
-                return UserInputType.restricted;
-            }
-            else if (dataLoader.keysToWingDings.ContainsKey(userInput))
-            {
-                // User input is a loaded hotkey
-                return UserInputType.hotkey;
-            }
-            else if (dataLoader.wingDingsToInstructions.ContainsKey(userInput))
-            {
-                // User input is a loaded wingding
-                return UserInputType.wingding;
-            }
-            // Unknown input type
-            return UserInputType.unknown;
-        }
-
         static string InterpretWingDingCode(string userCode)
         {
             // Parse any subroutines
@@ -97,11 +68,13 @@ namespace dingfork
 
         public void Save()
         {
+            Console.Clear();
             // Save the current userCode as a new subroutine
             dataLoader.SaveSubroutine(userCode.ToString(), restrictedShortcuts);
         }
         public void ListHotkeys()
         {
+            Console.Clear();
             // Display current key mappings
             dataLoader.PrintKeymap();
         }
@@ -158,7 +131,7 @@ namespace dingfork
             /*
                 Change the current data configuration 
             */
-            FileHelper.print_wdf_header();
+            FileHelper.printWdfHeader();
             Console.WriteLine("Current config {0} {1}", FileHelper.USER_INPUT_ARROW, dataLoader.dataConfigName);
             Console.Write("\nEnter existing config name {0} ", FileHelper.USER_INPUT_ARROW);
             var newConfig = Console.ReadLine();
@@ -207,7 +180,7 @@ namespace dingfork
             /*
                 Converts text to wingding BrainF*ck instructions
             */
-            FileHelper.print_wdf_header();
+            FileHelper.printWdfHeader();
             Console.Write("Enter text to convert: ");
 
             // Get the text to convert and update UserCode
@@ -228,12 +201,12 @@ namespace dingfork
                 DEPRECATED
                 Get WingDing code from a pasted string
             */
-            FileHelper.print_wdf_header();
+            FileHelper.printWdfHeader();
             Console.WriteLine("\n*code must be | delimited wingdings*\nPaste your code, then hit enter:\n");
             string pastedCode = Console.ReadLine();
 
-            // TODO: Parse/sanitize pasted code for available instructions
-            //       Allow for non-delmited code or code in keybindings (+-^<>... etc)
+            // todo: parse/sanitize pasted code for available instructions
+            //       allow for non-delmited code or code in keybindings (+-^<>... etc)
             userCode = new StringBuilder(pastedCode);
             Run();
             MainLoop();
@@ -246,13 +219,14 @@ namespace dingfork
                 *Note: currently only loads hotkey instructions
                 TODO: allow loading non-delimited wingding code
             */
-            FileHelper.print_wdf_header();
+            FileHelper.printWdfHeader();
             Console.Write("Enter file path: ");
 
             string codeFilepath = Console.ReadLine();
             if (!File.Exists(codeFilepath))
             {
                 UserOpts.PressAnyKey(String.Format("\nFile {0} does not exist.\nPress any key to continue...", codeFilepath));
+                return;
             }
 
             string bfCode = File.ReadAllText(codeFilepath);
@@ -266,12 +240,32 @@ namespace dingfork
             MainLoop();
         }
 
+        public string GetUserInput()
+        {
+            string userKey = "";
+            ConsoleKeyInfo userKeyInfo = Console.ReadKey();
 
+            // Key.ToString parses above special keys but does not work for lowercase letters and other chars like ({}\!@#$%)
+            string[] specialKeys = ["backspace", "enter", "escape", "control"];
+            string userKeyToString = userKeyInfo.Key.ToString().ToLower();
+
+            // Check if user input is among the above special keys
+            if (specialKeys.Contains(userKeyToString))
+            {
+                userKey = userKeyToString;
+            }
+            else
+            {
+                userKey = userKeyInfo.KeyChar.ToString();
+            }
+
+            return userKey;
+        }
 
         // String to format for user code output
         static string unformattedCodeOutput = """
 
-            code   ⮚ {0}
+              code ⮚ {0}
 
             output ⮚ {1}
 
@@ -308,30 +302,17 @@ namespace dingfork
 
             while (true)
             {
+                // Refresh the console output for other potential option menus
+                Console.Clear();
+
                 // Print mainMenu info
-                FileHelper.print_wdf_header();
+                FileHelper.printWdfHeader();
                 Console.WriteLine(String.Format(unformattedCodeOutput, CleanUserCode(userCode.ToString()), codeOutput, dataLoader.dataConfigName));
                 mainMenu.PrintMenu();
 
-                ConsoleKeyInfo userKeyInfo = Console.ReadKey();
-                string userKey = "";
-
-                // Key.ToString parses above special keys but does not work for lowercase letters and other chars like ({}\!@#$%)
-                string[] specialKeys = ["backspace", "enter", "escape", "control"];
-                string userKeyToString = userKeyInfo.Key.ToString().ToLower();
-                // Check if user input is among the above special keys
-                if (specialKeys.Contains(userKeyToString))
-                {
-                    userKey = userKeyToString;
-                }
-                else
-                {
-                    userKey = userKeyInfo.KeyChar.ToString();
-                }
-
                 // Cast to lowercase for now. Need to re-write input logic because ConsoleKeys are always cast to capital letters
                 //      Using KeyChar was allowing lowercase letters, but is always an empty string for special keys
-                string userKeyString = userKey.ToString();
+                string userKeyString = GetUserInput();
 
                 if (Regex.IsMatch(userKeyString, @"^(d|D)\d+$"))
                 {
@@ -341,8 +322,6 @@ namespace dingfork
                 else {
                     userKeyString = userKeyString.ToLower();
                 }
-
-                Console.Clear();
 
                 // If the user entered an available option [0..mthdOptions.Length]
                 if (restrictedShortcuts.Contains(userKeyString))
@@ -357,7 +336,6 @@ namespace dingfork
                         {
                             codeOutput = Convert.ToString(optionOutput);
                         }
-
                     }
                     catch (Exception e)
                     {
@@ -369,30 +347,14 @@ namespace dingfork
                     string wingDing = "";
 
                     // Parse the type of input the user entered
-                    UserInputType inputType = DetectUserInputType(userKeyString);
-                    if (inputType == UserInputType.hotkey)
-                    {
-                        wingDing = dataLoader.GetDing(userKeyString);
-                        if (wingDing == "")
-                        {
-                            continue;
-                        }
-                    }
-                    else if (inputType == UserInputType.restricted)
-                    {
-                        continue;
-                    }
-                    else if (inputType == UserInputType.wingding)
-                    {
-                        wingDing = userKeyString;
-                    }
+                    wingDing = dataLoader.GetDing(userKeyString);
 
                     // Use | as delimeter
                     // --> certain characters have a Length of 2, ie 👇.Length, 👍
                     //  can't iterate one string length at a time and uncertainty of user input length.
                     userCode.Append(wingDing + FileHelper.INSTRUCTION_DELIM);
                 }
-            }
+           }
         }
 
     }

@@ -1,7 +1,7 @@
 # WingDingFork
 A [BrainF*ck](https://en.wikipedia.org/wiki/Brainfuck) interpreter, but the instructions are [WingDings](https://en.wikipedia.org/wiki/Wingdings)
 
-![Main Menu](./ref/main_menu1.png)
+![Main Menu](./ref/main_menu3.png)
 * Generates runnable unicode BrainF*ck code from files and user input.
 * Includes interpreter with programmable instructions.
 * Generates and saves nested BrainF*ck code as subroutines.

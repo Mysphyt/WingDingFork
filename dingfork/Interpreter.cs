@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace dingfork
 {
@@ -17,7 +18,8 @@ namespace dingfork
         public int pointer;
         public int unmatchedBracketCounter = 0;
         public string[] instructions;
-
+        Stopwatch stopwatch = new Stopwatch();
+ 
         StringBuilder output = new StringBuilder();
 
         public int globalInstructionIt = 0;
@@ -77,8 +79,24 @@ namespace dingfork
 
         public void inp_byte()
         {
+            // Stop the stopwatch for user input
+            stopwatch.Stop();
+            // Get input byte from the user
+            Console.Clear();
+            FileHelper.printWdfHeader();
+            Console.Write("Input byte for instruction# {0}: ", globalInstructionIt);
             var key = Console.ReadKey();
-            tape[pointer] = (byte)key.KeyChar;
+            // Make sure the byte input is numeric
+            if (Regex.IsMatch(key.KeyChar.ToString(), @"^\d+$"))
+            {
+                tape[pointer] = (byte)key.KeyChar;
+            }
+            else
+            {
+                UserOpts.PressAnyKey("\nError: cannot set pointer value to non-numeric byte.\nPress any key to continue...");
+            }
+            // Re-start the stopwatch
+            stopwatch.Start();
         }
 
         public void loop_bgn()
@@ -150,8 +168,8 @@ namespace dingfork
 
             if (parsedCode == "") { return ""; } // Nothing to run
 
-            //...
-            var stopwatch = new Stopwatch();
+            // Reset and start the stopwatch
+            stopwatch = new Stopwatch();
             stopwatch.Start();
 
             // Trim whitespace
@@ -168,7 +186,7 @@ namespace dingfork
                 if (instructions.Length == 0) { return ""; }
 
                 // Time in seconds until the program is killed
-                int timeout = 3;
+                int timeout = 5;
 
                 for (globalInstructionIt = 0; globalInstructionIt < instructions.Length; globalInstructionIt++)
                 {
@@ -176,23 +194,19 @@ namespace dingfork
 
                     string instruction = instructions[globalInstructionIt];
 
-                    if (!instructionMthdMap.ContainsKey(instruction))
+                    // Make sure this instruction exists
+                    if (!instructionMthdMap.ContainsKey(instruction) || !availInstructions.Contains(instructionMthdMap[instruction]))
                     {
                         continue;
                     }
 
-                    // Check against avail instructions
-                    if (!availInstructions.Contains(instructionMthdMap[instruction]))
-                    {
-                        continue;
-                    }
                     // Call the instruction method
                     GetType().GetMethod(instructionMthdMap[instruction]).Invoke(this, []);
 
                     float elapsed_time = stopwatch.ElapsedMilliseconds;
-                    if (elapsed_time > timeout * 1000) // Kill the program after 10 seconds, assume infinite loop
+                    if (elapsed_time > timeout * 1000) // Kill the program after [timeout] seconds, assume infinite loop
                     {
-                        throw new Exception(String.Format("Uh-oh! Infinite loop detected... program took longer than 3 seconds to execute\nFailed at: {1}  |  {2}", instruction, globalInstructionIt));
+                        throw new Exception(String.Format("Uh-oh! Infinite loop detected... program took longer than 3 seconds to execute\nFailed at: {0} | {1}", instruction, globalInstructionIt));
                     }
                 }
                 return output.ToString();
