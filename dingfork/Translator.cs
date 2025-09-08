@@ -4,7 +4,7 @@ namespace dingfork
 {
     static class BFConverter
     {
-        public static string ConvertTextToBF(string text)
+        public static string ConvertTextToBF(string text, Dictionary<string, string> baseInstructions)
         {
             // Simplest text to BF converter using no loops
             StringBuilder bf = new();
@@ -15,11 +15,11 @@ namespace dingfork
                 int diff = c - prev;
 
                 if (diff > 0)
-                    bf.Append(new string('+', diff));
+                    bf.Append(new string(baseInstructions["inc_byte"][0], diff));
                 else
-                    bf.Append(new string('-', -diff));
+                    bf.Append(new string(baseInstructions["dec_byte"][0], -diff));
 
-                bf.Append('.');
+                bf.Append(baseInstructions["out_byte"]);
                 prev = c;
             }
 

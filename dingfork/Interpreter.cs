@@ -206,7 +206,7 @@ namespace dingfork
                     float elapsed_time = stopwatch.ElapsedMilliseconds;
                     if (elapsed_time > timeout * 1000) // Kill the program after [timeout] seconds, assume infinite loop
                     {
-                        throw new Exception(String.Format("Uh-oh! Infinite loop detected... program took longer than 3 seconds to execute\nFailed at: {0} | {1}", instruction, globalInstructionIt));
+                        throw new Exception(string.Format("Uh-oh! Infinite loop detected... program took longer than 3 seconds to execute\nFailed at: {0} | {1}", instruction, globalInstructionIt));
                     }
                 }
                 return output.ToString();

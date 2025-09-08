@@ -1,13 +1,16 @@
 /*
-    Menu related classes
+    Menu and MenuOption classes
 */
-using System.Runtime.InteropServices;
 using System.Text;
 
 namespace dingfork
 {
     public class MenuOption()
     {
+        /*
+            A single menu option
+        */
+
         // Name of the method this option invokes
         public string optionMethodName { get; set; } = "";
 
@@ -18,15 +21,29 @@ namespace dingfork
 
     public class Menu()
     {
+        /*
+            Stores and prints menu information     
+        */
         public string menuHeader { get; set; } = "";
 
+        // Current menu hotkey selection
         private string currentOptionSelection = "";
+
+        // Highlight and default colors
         private System.ConsoleColor optionHighlightColor = System.ConsoleColor.DarkCyan;
         private System.ConsoleColor defaultHighlightColor = System.ConsoleColor.White;
+
+        // Menu options <hotkey, option>
         private Dictionary<string, MenuOption> menuOptions = new Dictionary<string, MenuOption>();
+
+        // Store the longest option hotkey length for use in kerning options to line up vertically
         int longestOptionForKerning = 0;
+        
         public string GetOptionMethodName(string optionHotkey)
         {
+            /*
+                Returns the method name associated with the given option hotkey
+            */
             if (menuOptions.ContainsKey(optionHotkey) && currentOptionSelection == optionHotkey)
             {
                 return menuOptions[optionHotkey].optionMethodName;
@@ -40,8 +57,12 @@ namespace dingfork
 
         public void AddOption(string optionMethodName, string optionDescription, string hotkey)
         {
+            /*
+                Adds an option to the menu
+            */
             int optionHotkeyLength = hotkey.Length;
             if (optionHotkeyLength > longestOptionForKerning) {
+                // Update the current longest option hotkey value
                 longestOptionForKerning = optionHotkeyLength;
             }
             menuOptions.Add(
@@ -55,6 +76,10 @@ namespace dingfork
 
         public void PrintMenu()
         {
+            /*
+                Prints the menu
+            */
+
             // Don't write blank headers
             if(menuHeader !="") {
                 Console.WriteLine("", menuHeader);
@@ -69,16 +94,20 @@ namespace dingfork
                     optionOutput.Append(" ");
                 }
 
-                optionOutput.Append(menuOption.Key+FileHelper.USER_INPUT_ARROW+" "+menuOption.Value.optionDescription);
+                // Append the option string
+                optionOutput.Append(menuOption.Key+FileHelper.USER_INPUT_ARROW+menuOption.Value.optionDescription);
 
+                // Highlight the option if it is the current selection
                 if (menuOption.Key == currentOptionSelection)
                 {
                     Console.ForegroundColor = optionHighlightColor;
                     Console.WriteLine(optionOutput);
+                    // Set highlighting back to default
                     Console.ForegroundColor = defaultHighlightColor;
                 }
                 else
                 {
+                    // Write the non-highlighted option
                     Console.WriteLine(optionOutput);
                 }
             }

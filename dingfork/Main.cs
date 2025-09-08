@@ -54,8 +54,9 @@ namespace dingfork
 
         static string InterpretWingDingCode(string userCode)
         {
-            // Parse any subroutines
-            //      returns the wingding code output
+            /*
+                Interprets and runs userCode
+            */
 
             string parsedCode = dataLoader.ParseSubroutines(userCode);
 
@@ -68,29 +69,36 @@ namespace dingfork
 
         public void Save()
         {
+            /*
+                Saves the current userCode to a new subroutine
+            */
             Console.Clear();
             // Save the current userCode as a new subroutine
             dataLoader.SaveSubroutine(userCode.ToString(), restrictedShortcuts);
         }
         public void ListHotkeys()
         {
+            /*
+                Lists currently available hotkeys from keymap
+            */
             Console.Clear();
             // Display current key mappings
             dataLoader.PrintKeymap();
         }
 
-        public void ListSubroutines()
-        {
-            dataLoader.PrintSubroutines();
-        }
-
         public void Quit()
         {
+            /*
+                Exits the program
+            */
             System.Environment.Exit(1);
         }
 
         public string Run()
-        { // Run the current code
+        {
+            /*
+                Runs the current userCode
+            */
             return InterpretWingDingCode(userCode.ToString());
         }
 
@@ -119,11 +127,6 @@ namespace dingfork
                 string newCode = string.Join(FileHelper.INSTRUCTION_DELIM, instructions.Take(instructions.Length - 2)) + FileHelper.INSTRUCTION_DELIM;
                 userCode = new StringBuilder(newCode);
             }
-            else
-            {
-                return;
-            }
-
         }
 
         public void ChangeConfig()
@@ -138,7 +141,7 @@ namespace dingfork
 
             if (newConfig == null) { return; }
 
-            string configDir = String.Format("{0}/{1}", DataLoader.dataDirectory, newConfig);
+            string configDir = string.Format("{0}/{1}", DataLoader.dataDirectory, newConfig);
 
             if (!Directory.Exists(configDir))
             {
@@ -148,17 +151,14 @@ namespace dingfork
                 return;
             }
 
-            // TODO: Create method DataLoader.SetConfig
-            dataLoader.dataConfigName = newConfig;
-            dataLoader.LoadData();
+            // Load the config if it does not match the current
+            if (dataLoader.dataConfigName != newConfig)
+            {
+                dataLoader.dataConfigName = newConfig;
+                dataLoader.LoadData();
+            }
 
             Console.Clear();
-        }
-
-        public void PrintConfig()
-        {
-            // TODO: print config debug info
-            Console.WriteLine("TODO");
         }
 
         public void UpdateUserCodeFromBF(string bfCode)
@@ -180,12 +180,13 @@ namespace dingfork
             /*
                 Converts text to wingding BrainF*ck instructions
             */
+            Console.Clear();
             FileHelper.printWdfHeader();
             Console.Write("Enter text to convert: ");
 
             // Get the text to convert and update UserCode
             string inputText = Console.ReadLine();
-            string convertedBFCode = BFConverter.ConvertTextToBF(inputText);
+            string convertedBFCode = BFConverter.ConvertTextToBF(inputText, dataLoader.instructionsToKeys);
             UpdateUserCodeFromBF(convertedBFCode);
 
             Console.WriteLine("Updated code to:\n {0}", CleanUserCode(userCode.ToString()));
@@ -198,7 +199,6 @@ namespace dingfork
         public void PasteCode()
         {
             /*
-                DEPRECATED
                 Get WingDing code from a pasted string
             */
             FileHelper.printWdfHeader();
@@ -219,13 +219,14 @@ namespace dingfork
                 *Note: currently only loads hotkey instructions
                 TODO: allow loading non-delimited wingding code
             */
+            Console.Clear();
             FileHelper.printWdfHeader();
             Console.Write("Enter file path: ");
 
             string codeFilepath = Console.ReadLine();
             if (!File.Exists(codeFilepath))
             {
-                UserOpts.PressAnyKey(String.Format("\nFile {0} does not exist.\nPress any key to continue...", codeFilepath));
+                UserOpts.PressAnyKey(string.Format("\nFile {0} does not exist.\nPress any key to continue...", codeFilepath));
                 return;
             }
 
@@ -242,6 +243,9 @@ namespace dingfork
 
         public string GetUserInput()
         {
+            /*
+                Waits for the user to input a key and returns a translated string representation 
+            */
             string userKey = "";
             ConsoleKeyInfo userKeyInfo = Console.ReadKey();
 
@@ -252,13 +256,14 @@ namespace dingfork
             // Check if user input is among the above special keys
             if (specialKeys.Contains(userKeyToString))
             {
+                // Special key, use ConsoleKey string
                 userKey = userKeyToString;
             }
             else
             {
+                // Not a special key, use KeyChar
                 userKey = userKeyInfo.KeyChar.ToString();
             }
-
             return userKey;
         }
 
@@ -273,12 +278,16 @@ namespace dingfork
 
         public void MainLoop()
         {
+            /*
+                Main program loop
+            */
+
             // New menu for this loop
             Menu mainMenu = new Menu
             {
                 menuHeader = ""
             };
-            string[] mainMenuOptions = File.ReadAllLines(String.Format("{0}/menus/{1}", DataLoader.dataDirectory, "mainmenu"));
+            string[] mainMenuOptions = File.ReadAllLines(string.Format("{0}/menus/{1}", DataLoader.dataDirectory, "mainmenu"));
 
             // Reset the restricted shortcuts
             restrictedShortcuts = new List<string> { "^", FileHelper.INSTRUCTION_DELIM };
@@ -291,7 +300,7 @@ namespace dingfork
                 restrictedShortcuts.Add(optionArgs[2]);
             }
             // Load config.yml (fake yml read for now)
-            string configPath = String.Format("{0}/config.yml", DataLoader.dataDirectory);
+            string configPath = string.Format("{0}/config.yml", DataLoader.dataDirectory);
 
             configMap = FileHelper.ParseYAML(configPath);
 
@@ -307,21 +316,12 @@ namespace dingfork
 
                 // Print mainMenu info
                 FileHelper.printWdfHeader();
-                Console.WriteLine(String.Format(unformattedCodeOutput, CleanUserCode(userCode.ToString()), codeOutput, dataLoader.dataConfigName));
+                Console.WriteLine(string.Format(unformattedCodeOutput, CleanUserCode(userCode.ToString()), codeOutput, dataLoader.dataConfigName));
                 mainMenu.PrintMenu();
 
                 // Cast to lowercase for now. Need to re-write input logic because ConsoleKeys are always cast to capital letters
                 //      Using KeyChar was allowing lowercase letters, but is always an empty string for special keys
                 string userKeyString = GetUserInput();
-
-                if (Regex.IsMatch(userKeyString, @"^(d|D)\d+$"))
-                {
-                    // Trim the leading "D" from numeric Key input
-                    userKeyString = userKeyString.Substring(1, userKeyString.Length - 1);
-                }
-                else {
-                    userKeyString = userKeyString.ToLower();
-                }
 
                 // If the user entered an available option [0..mthdOptions.Length]
                 if (restrictedShortcuts.Contains(userKeyString))
@@ -339,7 +339,7 @@ namespace dingfork
                     }
                     catch (Exception e)
                     {
-                        UserOpts.PressAnyKey(String.Format("\nOption {0} failed with:\n{1}\n\nPress any key to continue...", userKeyString, e.ToString()));
+                        UserOpts.PressAnyKey(string.Format("\nOption {0} failed with:\n{1}\n\nPress any key to continue...", userKeyString, e.ToString()));
                     }
                 }
                 else
@@ -349,9 +349,6 @@ namespace dingfork
                     // Parse the type of input the user entered
                     wingDing = dataLoader.GetDing(userKeyString);
 
-                    // Use | as delimeter
-                    // --> certain characters have a Length of 2, ie 👇.Length, 👍
-                    //  can't iterate one string length at a time and uncertainty of user input length.
                     userCode.Append(wingDing + FileHelper.INSTRUCTION_DELIM);
                 }
            }
@@ -376,6 +373,13 @@ namespace dingfork
             DingFork df = new DingFork();
 
             df.MainLoop();
+            /*
+            Dictionary<string, string> newDict = [];
+            newDict.Add("A", "A");
+            newDict.Add("a", "a");
+            Console.WriteLine(newDict["A"] + newDict["a"]);
+            Console.ReadKey();
+            */
         }
     }
 
