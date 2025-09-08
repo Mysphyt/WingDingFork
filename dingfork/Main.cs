@@ -2,14 +2,10 @@
     WingDingFork
 
     TODO: 
-        ! Fix casting user input to lowercase, currently messing up special character input ({}!@#$&*$.. etc, not allowing for caps hotkeys)
-
         * Add "password" protected messages with required input bytes
         * ~Detect BrainF*ck vs. Hotkey vs. WingDing code input~
              > Allow for any type of code input when loading from files or pasting
                  . Allows directly pasting wingdings or brainfuck into the interpreter
-        * Add menu "mode" to allow for KeyChar / ie: lowercase user hotkey input
-            * Remap menu hotkeys from WingDingFork menu
         * Menu file validation
         * Add programmable background music
         * Animate rainbow WingDingFork logo
@@ -317,7 +313,21 @@ namespace dingfork
                 Console.WriteLine(String.Format(unformattedCodeOutput, CleanUserCode(userCode.ToString()), codeOutput, dataLoader.dataConfigName));
                 mainMenu.PrintMenu();
 
-                ConsoleKey userKey = Console.ReadKey().Key;
+                ConsoleKeyInfo userKeyInfo = Console.ReadKey();
+                string userKey = "";
+
+                // Key.ToString parses above special keys but does not work for lowercase letters and other chars like ({}\!@#$%)
+                string[] specialKeys = ["backspace", "enter", "escape", "control"];
+                string userKeyToString = userKeyInfo.Key.ToString().ToLower();
+                // Check if user input is among the above special keys
+                if (specialKeys.Contains(userKeyToString))
+                {
+                    userKey = userKeyToString;
+                }
+                else
+                {
+                    userKey = userKeyInfo.KeyChar.ToString();
+                }
 
                 // Cast to lowercase for now. Need to re-write input logic because ConsoleKeys are always cast to capital letters
                 //      Using KeyChar was allowing lowercase letters, but is always an empty string for special keys
