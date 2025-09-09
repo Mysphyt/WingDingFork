@@ -38,7 +38,12 @@ namespace dingfork
 
         // Store the longest option hotkey length for use in kerning options to line up vertically
         int longestOptionForKerning = 0;
-        
+
+        public bool HasHotkey(string hotkey)
+        {
+            return menuOptions.ContainsKey(hotkey);
+        }
+
         public string GetOptionMethodName(string optionHotkey)
         {
             /*
@@ -82,7 +87,7 @@ namespace dingfork
 
             // Don't write blank headers
             if(menuHeader !="") {
-                Console.WriteLine("", menuHeader);
+                Console.WriteLine(menuHeader);
             }
             // HACK: Start with 1 and move 0 to the end of the list to match keyboard layout order
             foreach(var menuOption in menuOptions)

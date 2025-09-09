@@ -1,12 +1,14 @@
 ﻿/* WingDingFork
 
     TODO: 
+        * Convert save option to a menu?
         * Add "password" protected messages with required input bytes
         * Allow for modified hotkeys, ctrl+, alt+
         * Add programmable background music
         * Animate rainbow WingDingFork logo
 */
 
+using System.Reflection.Metadata.Ecma335;
 using System.Text;
 
 namespace dingfork
@@ -27,6 +29,8 @@ namespace dingfork
 
         // Current code output
         private string codeOutput = "";
+        // Store the current menu 
+        private Menu currentMenu;
 
         private static string CleanUserCode(string userCode)
         {
@@ -43,9 +47,6 @@ namespace dingfork
 
             return cleanUserCode;
         }
-
-        // Hacky list of restricted shortcuts for menus and delimiters
-        public List<string> restrictedShortcuts = new List<string> { "^", "|" };
 
         static string InterpretWingDingCode(string userCode)
         {
@@ -84,16 +85,88 @@ namespace dingfork
             }
             Console.Clear(); 
             // Save the current userCode as a new subroutine
-            dataLoader.SaveSubroutine(userCode.ToString(), restrictedShortcuts);
+            dataLoader.SaveSubroutine(userCode.ToString());
         }
+
+        public void DeleteHotkey(string hotkey)
+        {
+
+        }
+
+        public void EditHotkey(string hotkey)
+        {
+
+        }
+        public void EditWingDing(string hotkey)
+        {
+
+        }
+        public void EditInstruction(string hotkey)
+        {
+
+        }
+
         public void ListHotkeys()
         {
             /*
                 Lists currently available hotkeys from keymap
             */
             Console.Clear();
+            List<string> hotkeyMenuOptions = [];
+            foreach (var keyWing in dataLoader.keysToWingDings)
+            {
+                string instruction = dataLoader.wingDingsToInstructions[keyWing.Value];
+                hotkeyMenuOptions.Add(string.Format("{0}|{1}|{2}", instruction, instruction+" "+keyWing.Value, keyWing.Key));
+            }
+            hotkeyMenuOptions.Add("Back|Back|0");
+            Menu hotkeyListMenu = CreateMenu("", "View/Edit Hotkeys", hotkeyMenuOptions);
+            while (true)
+            {
+                Console.Clear();
+                FileHelper.printWdfHeader();
+                hotkeyListMenu.PrintMenu();
+                string userInput = GetUserInput();
+                string optionInstruction = hotkeyListMenu.GetOptionMethodName(userInput);
+                if (optionInstruction == "Back")
+                {
+                    break;
+                }
+                else if (optionInstruction != "")
+                {
+                    // Hotkey selected
+                    string editMenuHeader = string.Format(
+                        "\n    name{1}{2}\n  hotkey{1}{0}\nwingding{1}{3}\n",
+                         userInput, FileHelper.USER_INPUT_ARROW, optionInstruction, dataLoader.keysToWingDings[userInput]);
+                    string hotkey = userInput;
+                    List<string> editOptions = new List<string>
+                    {
+                        "DeleteHotkey|Delete hotkey|1",
+                        "ChangeHotkey|Change hotkey|2",
+                        "ChangeInstruction|Change name|3",
+                        "ChangeWingDing|Change wingding|4", 
+                        "Back|Back|0"
+                    };
+                    Menu hotkeyEditMenu = CreateMenu("edit_menu", editMenuHeader, editOptions);
+                    while (true)
+                    {
+                        Console.Clear();
+                        FileHelper.printWdfHeader();
+                        hotkeyEditMenu.PrintMenu();
+                        userInput = GetUserInput();
+                        string editInstruction  = hotkeyEditMenu.GetOptionMethodName(userInput);
+                        if (editInstruction == "Back")
+                        {
+                            break;
+                        }
+                        else
+                        {
+                            GetType().GetMethod(editInstruction)?.Invoke(this, [hotkey]);
+                        }
+                    }
+                }
+            }
             // Display current key mappings
-            dataLoader.PrintKeymap();
+
         }
 
         public void Quit()
@@ -117,9 +190,9 @@ namespace dingfork
             /*
                 Clears the current code and output
             */
+            Console.Clear();
             userCode.Clear();
             codeOutput = "";
-            Console.Clear();
         }
 
         public void Pop()
@@ -264,6 +337,30 @@ namespace dingfork
 
         """;
 
+        public Menu CreateMenu(string menuName, string menuHeader, List<string> menuOptions)
+        {
+            // New menu for this loop
+            Menu menu = new Menu
+            {
+                menuHeader = menuHeader
+            };
+            string menuConfig = string.Format("{0}/menus/{1}", DataLoader.dataDirectory, menuName);
+            // Parse menu options if none were passed
+            if (menuOptions.Count == 0 && File.Exists(menuConfig))
+            {
+                menuOptions = new List<string>(File.ReadAllLines(menuConfig));
+            }
+
+            // Populate main menu options
+            for (int optionIt = 0; optionIt < menuOptions.Count; optionIt++)
+            {
+                string[] optionArgs = menuOptions[optionIt].Split("|");
+                menu.AddOption(optionArgs[0], optionArgs[1], optionArgs[2]);
+                // reservedhotkeys.Add(optionArgs[2]);
+            }
+            return menu;
+        }
+
         public void MainLoop()
         {
             /*
@@ -271,22 +368,8 @@ namespace dingfork
             */
 
             // New menu for this loop
-            Menu mainMenu = new Menu
-            {
-                menuHeader = ""
-            };
-            string[] mainMenuOptions = File.ReadAllLines(string.Format("{0}/menus/{1}", DataLoader.dataDirectory, "mainmenu"));
+            Menu mainMenu = CreateMenu("mainmenu", "", []);
 
-            // Reset the restricted shortcuts
-            restrictedShortcuts = new List<string> { "^", FileHelper.INSTRUCTION_DELIM };
-
-            // Populate main menu options
-            for (int optionIt = 0; optionIt < mainMenuOptions.Length; optionIt++)
-            {
-                string[] optionArgs = mainMenuOptions[optionIt].Split("|");
-                mainMenu.AddOption(optionArgs[0], optionArgs[1], optionArgs[2]);
-                restrictedShortcuts.Add(optionArgs[2]);
-            }
             // Load config.yml (fake yml read for now)
             string configPath = string.Format("{0}/config.yml", DataLoader.dataDirectory);
 
@@ -302,7 +385,7 @@ namespace dingfork
                 // Refresh the console output for other potential option menus
                 Console.Clear();
 
-                // Print mainMenu info
+                // Print menu info
                 FileHelper.printWdfHeader();
                 Console.WriteLine(string.Format(unformattedCodeOutput, CleanUserCode(userCode.ToString()), codeOutput, dataLoader.dataConfigName));
                 mainMenu.PrintMenu();
@@ -312,7 +395,7 @@ namespace dingfork
                 string userKeyString = GetUserInput();
 
                 // If the user entered an available option [0..mthdOptions.Length]
-                if (restrictedShortcuts.Contains(userKeyString))
+                if (mainMenu.HasHotkey(userKeyString))
                 {
                     try
                     {

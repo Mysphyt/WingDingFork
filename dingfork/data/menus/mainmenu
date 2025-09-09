@@ -5,6 +5,6 @@ PasteCode|Paste code|2
 Save|Save code as subroutine|3
 ConvertText|Convert text to code|4
 LoadCode|Load code from a file|5
-ChangeConfig|Change current configuration|6
-ListHotkeys|List key mappings|7
+ListHotkeys|List/Edit key mappings|6
+ChangeConfig|Change current configuration|7
 Quit|Quit|0

@@ -238,7 +238,7 @@ namespace dingfork
             }
         }
 
-        public void SaveSubroutine(string userCode, List<string> reservedShortcuts)
+        public void SaveSubroutine(string userCode)
         {
             /*
                 Save a new subroutine 
@@ -270,42 +270,42 @@ namespace dingfork
             if (!wingDingsToKeys.ContainsKey(subroutineWingDing))
             {
                 // Create a new mapping
-                string shortcut = "";
+                string hotkey = "";
                 for (int tries = 3; tries >= 0; tries--)
                 {
-                    Console.Write("\nEnter shortcut key for {0}: ", subroutineName);
+                    Console.Write("\nEnter hotkey key for {0}: ", subroutineName);
 
                     // Readline, but only takes the first character. Prevents errors from pasted input when using readkey.
-                    shortcut = Console.ReadLine();
+                    hotkey = Console.ReadLine();
 
-                    if (shortcut == "")
+                    if (hotkey == "")
                     {
                         continue;
                     }
                     else
                     {
-                        shortcut = shortcut.Substring(0, 1);
+                        hotkey = hotkey.Substring(0, 1);
                     }
                     
-                    if (reservedShortcuts.Contains(shortcut) || keysToWingDings.ContainsKey(shortcut))
+                    if (keysToWingDings.ContainsKey(hotkey))
                     {
-                        Console.WriteLine("{0} is already a keymap or menu option.", shortcut);
+                        Console.WriteLine("{0} is already a keymap option.", hotkey);
                     }
                     else
                     {
-                        break; // Accepted shortcut
+                        break; // Accepted hotkey
                     }
                 }
-                if (shortcut != "")
+                if (hotkey != "")
                 {
                     using (StreamWriter sw = File.AppendText(keymapFile))
                     {
-                        sw.Write("\n" + subroutineWingDing + FileHelper.INSTRUCTION_DELIM + shortcut + FileHelper.INSTRUCTION_DELIM + subroutineName);
+                        sw.Write("\n" + subroutineWingDing + FileHelper.INSTRUCTION_DELIM + hotkey + FileHelper.INSTRUCTION_DELIM + subroutineName);
                     }
                 }
                 else
                 {
-                    UserOpts.PressAnyKey("No valid shortcut was entered. Press any key to continue...");
+                    UserOpts.PressAnyKey("No valid hotkey was entered. Press any key to continue...");
                     return;
                 }
             }
