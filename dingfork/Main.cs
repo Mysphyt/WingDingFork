@@ -66,7 +66,18 @@ namespace dingfork
 
             return interpreter.Run(parsedCode, userCode);
         }
-
+        public void PasteCode()
+        {
+            /*
+                Prompt user to paste code to run
+            */
+            Console.Clear();
+            FileHelper.printWdfHeader();
+            Console.Write("\npaste code " + FileHelper.USER_INPUT_ARROW);
+            string pastedCode = Console.ReadLine();
+            string translatedCode = dataLoader.ParseSubroutines(pastedCode);
+            userCode = new StringBuilder(pastedCode);
+        }
         public void Save()
         {
             /*
@@ -191,25 +202,6 @@ namespace dingfork
 
             Console.WriteLine("Updated code to:\n {0}", CleanUserCode(userCode.ToString()));
             UserOpts.PressAnyKey("\nPress any key to Run...\n");
-
-            // Start the run loop with the new code
-            MainLoop();
-        }
-
-        public void PasteCode()
-        {
-            /*
-                Get WingDing code from a pasted string
-            */
-            FileHelper.printWdfHeader();
-            Console.WriteLine("\n*code must be | delimited wingdings*\nPaste your code, then hit enter:\n");
-            string pastedCode = Console.ReadLine();
-
-            // todo: parse/sanitize pasted code for available instructions
-            //       allow for non-delmited code or code in keybindings (+-^<>... etc)
-            userCode = new StringBuilder(pastedCode);
-            Run();
-            MainLoop();
         }
 
         public void LoadCode()
@@ -221,7 +213,7 @@ namespace dingfork
             */
             Console.Clear();
             FileHelper.printWdfHeader();
-            Console.Write("Enter file path: ");
+            Console.Write("Enter file path "+FileHelper.USER_INPUT_ARROW);
 
             string codeFilepath = Console.ReadLine();
             if (!File.Exists(codeFilepath))
@@ -230,15 +222,11 @@ namespace dingfork
                 return;
             }
 
-            string bfCode = File.ReadAllText(codeFilepath);
-            UpdateUserCodeFromBF(bfCode);
+            string fileCode = File.ReadAllText(codeFilepath);
+            fileCode = dataLoader.ParseSubroutines(fileCode);
 
             Console.WriteLine("Updated code to:\n {0}", CleanUserCode(userCode.ToString()));
             UserOpts.PressAnyKey("\nPress any key to Run...\n");
-
-            // Start the run loop with the new code
-            Run();
-            MainLoop();
         }
 
         public string GetUserInput()
@@ -373,13 +361,6 @@ namespace dingfork
             DingFork df = new DingFork();
 
             df.MainLoop();
-            /*
-            Dictionary<string, string> newDict = [];
-            newDict.Add("A", "A");
-            newDict.Add("a", "a");
-            Console.WriteLine(newDict["A"] + newDict["a"]);
-            Console.ReadKey();
-            */
         }
     }
 
