@@ -3,15 +3,10 @@
     TODO: 
         * Add "password" protected messages with required input bytes
         * Allow for modified hotkeys, ctrl+, alt+
-        * ~Detect BrainF*ck vs. Hotkey vs. WingDingcode input~
-             > Allow for any type of code input when loading from files or pasting
-                 . Allows directly pasting wingdings or brainfuck into the interpreter
-        * Menu file validation
         * Add programmable background music
         * Animate rainbow WingDingFork logo
 */
 
-using System.Text.RegularExpressions;
 using System.Text;
 
 namespace dingfork
@@ -75,7 +70,6 @@ namespace dingfork
             FileHelper.printWdfHeader();
             Console.Write("\npaste code " + FileHelper.USER_INPUT_ARROW);
             string pastedCode = Console.ReadLine();
-            string translatedCode = dataLoader.ParseSubroutines(pastedCode);
             userCode = new StringBuilder(pastedCode);
         }
         public void Save()
@@ -83,7 +77,12 @@ namespace dingfork
             /*
                 Saves the current userCode to a new subroutine
             */
-            Console.Clear();
+            if (userCode.ToString() == "")
+            {
+                // No code, nothing to do
+                return;
+            }
+            Console.Clear(); 
             // Save the current userCode as a new subroutine
             dataLoader.SaveSubroutine(userCode.ToString(), restrictedShortcuts);
         }
@@ -145,12 +144,13 @@ namespace dingfork
             /*
                 Change the current data configuration 
             */
+            Console.Clear();
             FileHelper.printWdfHeader();
             Console.WriteLine("Current config {0} {1}", FileHelper.USER_INPUT_ARROW, dataLoader.dataConfigName);
             Console.Write("\nEnter existing config name {0} ", FileHelper.USER_INPUT_ARROW);
             var newConfig = Console.ReadLine();
 
-            if (newConfig == null) { return; }
+            if (newConfig == "") { return; }
 
             string configDir = string.Format("{0}/{1}", DataLoader.dataDirectory, newConfig);
 
