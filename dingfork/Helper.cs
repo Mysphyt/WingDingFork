@@ -15,7 +15,7 @@ namespace dingfork
            \_/\_/  |_|_| |_|\__, |____/|_|_| |_|\__, |_|  \___/|_|  |_|\_\
                             |___/               |___/                     
         """;
-        public static void printWdfHeader()
+        public static void PrintWdfHeader()
         {
             // Print the above header in rainbow colors
             System.ConsoleColor[] rainbow = [
@@ -33,6 +33,26 @@ namespace dingfork
                 if(rainbowIt == rainbow.Length) { rainbowIt = 0; }
             }
             Console.ForegroundColor = System.ConsoleColor.White;
+        }
+
+        static public void ReplaceFileLine(string filename, string findStr, string replaceStr)
+        {
+            if (!File.Exists(filename)) { return; }
+            string[] lines = File.ReadAllLines(filename);
+            string[] newLines = new string[lines.Length];
+            for(int it = 0; it < lines.Length; it++) {
+                if (lines[it] != findStr)
+                {
+                    newLines[it] = lines[it];
+                }
+                else
+                {
+                    // Add the new hotkey
+                    newLines[it] = replaceStr;
+                }
+            }
+            // Write the remapped hotkeys to keymap
+            File.WriteAllLines(filename, newLines);
         }
 
 

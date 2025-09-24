@@ -30,7 +30,7 @@
 ⬟|x|print_x
 ⯁|y|print_y
 ⯀|z|print_z
-⯋| |sprint_pc
+⯋| |sprint_spc
 🞅|r|print_r
 ⯌|s|print_s
 ⯍|t|print_t
@@ -57,7 +57,7 @@
 🕗︎|T|print_T
 🕘︎|U|print_U
 🕚︎|V|print_V
-🕛︎|W|print_W
+🕛︎|3|print_W
 ❒|X|print_X
 🞏|Y|print_Y
 🙵|Z|print_Z

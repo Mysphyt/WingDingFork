@@ -1,4 +1,6 @@
 
+using System.Linq.Expressions;
+
 namespace dingfork
 {
     /*
@@ -21,20 +23,122 @@ namespace dingfork
         // TODO: Clean up / consolidate these mappings
 
         // wingding -> key
-        public Dictionary<string, string> wingDingsToKeys = [];
+        public Dictionary<string, string> wingdingsToKeys = [];
         // key -> wingding
         public Dictionary<string, string> keysToWingDings = [];
         // wingding -> wingding[] instruction list
-        public Dictionary<string, string> wingDingsToCode = [];
-        // wingding -> subroutine name
-        public Dictionary<string, string> wingDingsToSubroutine = [];
+        public Dictionary<string, string> wingdingsToCode = [];
         // wingding -> interpreter instruction method name
-        public Dictionary<string, string> wingDingsToInstructions = [];
+        public Dictionary<string, string> wingdingsToInstructions = [];
         // instruction -> wingding
         public Dictionary<string, string> instructionsToWingDings = [];
         // instruction -> hotkey
         public Dictionary<string, string> instructionsToKeys = [];
 
+        public void DeleteHotkey(string hotkey)
+        {
+            /*
+                Deletes a hotkey from subroutines and keymap files
+            */
+            if (!keysToWingDings.ContainsKey(hotkey)) { return; }
+            string wingding = keysToWingDings[hotkey];
+            string instruction = wingdingsToInstructions[wingding];
+            string code = wingdingsToCode[wingding];
+
+            keysToWingDings.Remove(hotkey);
+            wingdingsToInstructions.Remove(wingding);
+            wingdingsToCode.Remove(wingding);
+            instructionsToKeys.Remove(instruction);
+            instructionsToWingDings.Remove(instruction);
+
+            // Re-write wingding in keymap
+            string oldKeymapLine = string.Format("{0}|{1}|{2}", wingding, hotkey, instruction);
+            // Remove the line from keymap
+            FileHelper.ReplaceFileLine(keymapFile, oldKeymapLine, "");
+
+            // Re-write wingding in keymap
+            string oldSubroutineLine = string.Format("{0}|{1}", wingding, code);
+            // Remove the mapped line from subroutines
+            FileHelper.ReplaceFileLine(subroutinesFile, oldSubroutineLine, "");
+        }
+
+        public void EditWingding(string wingding, string newWingding)
+        {
+            /*
+                
+            */
+            if (!wingdingsToKeys.ContainsKey(wingding)) { return; }
+            if (wingdingsToKeys.ContainsKey(newWingding))
+            {
+                UserOpts.PressAnyKey(string.Format("\n{0} is already a mapped Wingding\nPress any key to continue...", newWingding));
+                return;
+            }
+
+            string hotkey = wingdingsToKeys[wingding];
+            string instruction = wingdingsToInstructions[wingding];
+            string code = wingdingsToCode[wingding];
+
+            // Remove existing mappings
+            wingdingsToCode.Remove(wingding);
+            wingdingsToInstructions.Remove(wingding);
+            instructionsToWingDings.Remove(instruction);
+
+            // Update with new mappings
+            wingdingsToCode[newWingding] = code;
+            wingdingsToInstructions[newWingding] = instruction;
+            instructionsToWingDings[instruction] = newWingding;
+
+            // Confirm with the user
+            UserOpts.PressAnyKey(string.Format("\n\nMapping for {0} updated to {1}\nPress any key to continue...", wingding, newWingding));
+
+            // Re-write wingding in keymap
+            string oldKeymapLine = string.Format("{0}|{1}|{2}", wingding, hotkey, instruction);
+            string newKeymapLine = string.Format("{0}|{1}|{2}", newWingding, hotkey, instruction);
+
+            FileHelper.ReplaceFileLine(keymapFile, oldKeymapLine, newKeymapLine);
+
+            // Re-write wingding in subroutines
+            string oldSubroutineLine = string.Format("{0}|{1}", wingding, code);
+            string newSubroutineLine = string.Format("{0}|{1}", newWingding, code);
+
+            FileHelper.ReplaceFileLine(subroutinesFile, oldSubroutineLine, newSubroutineLine);
+        }
+
+
+
+        public void EditHotkey(string hotkey, string newHotkey)
+        {
+            /*
+
+            */
+
+            if (!keysToWingDings.ContainsKey(hotkey)) { return; }
+            if (keysToWingDings.ContainsKey(newHotkey))
+            {
+                UserOpts.PressAnyKey(string.Format("\n{0} is already a mapped hotkey\nPress any key to continue...", newHotkey));
+                return;
+            }
+
+            string wingding = keysToWingDings[hotkey];
+            string instruction = wingdingsToInstructions[wingding];
+
+            // Remove existing mappings
+            keysToWingDings.Remove(hotkey);
+            instructionsToKeys.Remove(instruction);
+
+            // Update with new mappings
+            keysToWingDings[newHotkey] = wingding;
+            instructionsToKeys[instruction] = newHotkey;
+
+            // Confirm with the user
+            UserOpts.PressAnyKey(string.Format("\n\nMapping for {0} updated to {1}\nPress any key to continue...", hotkey, newHotkey));
+
+            // Re-write hotkey in keymap
+            string oldKeymapLine = string.Format("{0}|{1}|{2}", wingding, hotkey, instruction);
+            string newKeymapLine = string.Format("{0}|{1}|{2}", wingding, newHotkey, instruction);
+
+            FileHelper.ReplaceFileLine(keymapFile, oldKeymapLine, newKeymapLine);
+        }
 
         public void PrintKeymap()
         {
@@ -42,11 +146,11 @@ namespace dingfork
                 Print current subroutines
             */
             Console.Clear();
-            FileHelper.printWdfHeader();
+            FileHelper.PrintWdfHeader();
             Console.WriteLine("\nAvailable key mappings from {0}/keymap:", dataConfigName);
             foreach (var keymap in instructionsToWingDings)
             {
-                string hotkey = wingDingsToKeys[keymap.Value];
+                string hotkey = wingdingsToKeys[keymap.Value];
                 Console.WriteLine("{0} {1} {2} [{3}]", hotkey, FileHelper.USER_INPUT_ARROW, keymap.Value, keymap.Key);
             }
             // Wait for any user input
@@ -97,10 +201,10 @@ namespace dingfork
             }
 
             // Reset keymap dictionaries
-            wingDingsToInstructions = [];
+            wingdingsToInstructions = [];
             instructionsToWingDings = [];
             instructionsToKeys = [];
-            wingDingsToKeys = [];
+            wingdingsToKeys = [];
             keysToWingDings = [];
 
             // Parse the keys and method names from keymap data
@@ -110,16 +214,16 @@ namespace dingfork
 
                 string keyName = keyMthd[0];
                 string mthdName = keyMthd[1];
-                string wingDing = keyToMthd.Key;
+                string wingding = keyToMthd.Key;
 
-                instructionsToWingDings[mthdName] = wingDing;
+                instructionsToWingDings[mthdName] = wingding;
                 instructionsToKeys[mthdName] = keyName;
-                wingDingsToInstructions[wingDing] = mthdName;
-                wingDingsToKeys[wingDing] = keyName;
+                wingdingsToInstructions[wingding] = mthdName;
+                wingdingsToKeys[wingding] = keyName;
             }
 
 
-            foreach (var wingKey in wingDingsToKeys)
+            foreach (var wingKey in wingdingsToKeys)
             {
                 if (!keysToWingDings.ContainsKey(wingKey.Value))
                 {
@@ -138,10 +242,6 @@ namespace dingfork
             {
                 return;
             }
-
-            // Reset the code and name map for subroutines
-            wingDingsToCode = new Dictionary<string, string>();
-            wingDingsToSubroutine = new Dictionary<string, string>();
 
             // Load subroutines
             foreach (string unparsedSubroutine in File.ReadLines(string.Format(subroutinesFile, dataConfigName)))
@@ -164,8 +264,11 @@ namespace dingfork
                     // Look up the wingding for this subroutine
                     string subroutineWingDing = instructionsToWingDings[subroutineName];
 
-                    wingDingsToCode.Add(subroutineWingDing, subroutineCode);
-                    wingDingsToSubroutine.Add(subroutineWingDing, subroutineName);
+                    // TODO: fix multiple calls to this function
+                    if(wingdingsToCode.ContainsKey(subroutineWingDing)) { continue; }
+                    wingdingsToCode.Add(subroutineWingDing, subroutineCode);
+                    if(wingdingsToInstructions.ContainsKey(subroutineWingDing)) { continue; }
+                    wingdingsToInstructions.Add(subroutineWingDing, subroutineName);
                 }
                 catch (Exception e)
                 {
@@ -203,7 +306,7 @@ namespace dingfork
             while (subroutineCode != prevSubroutineCode)
             {
                 prevSubroutineCode = subroutineCode;
-                foreach (var subroutine in wingDingsToCode)
+                foreach (var subroutine in wingdingsToCode)
                 {
                     string subroutineWingDing = subroutine.Key;
 
@@ -252,7 +355,7 @@ namespace dingfork
             */
 
             // Display the wingdingfork header
-            FileHelper.printWdfHeader();
+            FileHelper.PrintWdfHeader();
 
             string subroutineName;
             string subroutineWingDing;
@@ -267,7 +370,7 @@ namespace dingfork
             subroutineWingDing = Console.ReadLine();
 
             // Make sure there is an existing key mapping
-            if (!wingDingsToKeys.ContainsKey(subroutineWingDing))
+            if (!wingdingsToKeys.ContainsKey(subroutineWingDing))
             {
                 // Create a new mapping
                 string hotkey = "";
@@ -336,9 +439,9 @@ namespace dingfork
 
         public string GetSubroutine(string id)
         {
-            if (wingDingsToCode.ContainsKey(id))
+            if (wingdingsToCode.ContainsKey(id))
             {
-                return wingDingsToCode[id];
+                return wingdingsToCode[id];
             }
             return "";
         }

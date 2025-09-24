@@ -1,6 +1,8 @@
 ﻿/* WingDingFork
 
     TODO: 
+        * Reserved menu shortcuts
+        * Break out main methods, getting too long
         * Convert save option to a menu?
         * Add "password" protected messages with required input bytes
         * Allow for modified hotkeys, ctrl+, alt+
@@ -30,7 +32,6 @@ namespace dingfork
         // Current code output
         private string codeOutput = "";
         // Store the current menu 
-        private Menu currentMenu;
 
         private static string CleanUserCode(string userCode)
         {
@@ -58,7 +59,7 @@ namespace dingfork
 
             var interpreter = new Runner();
 
-            interpreter.LoadInstructionMap(dataLoader.wingDingsToInstructions);
+            interpreter.LoadInstructionMap(dataLoader.wingdingsToInstructions);
 
             return interpreter.Run(parsedCode, userCode);
         }
@@ -68,7 +69,7 @@ namespace dingfork
                 Prompt user to paste code to run
             */
             Console.Clear();
-            FileHelper.printWdfHeader();
+            FileHelper.PrintWdfHeader();
             Console.Write("\npaste code " + FileHelper.USER_INPUT_ARROW);
             string pastedCode = Console.ReadLine();
             userCode = new StringBuilder(pastedCode);
@@ -90,19 +91,34 @@ namespace dingfork
 
         public void DeleteHotkey(string hotkey)
         {
-
+            dataLoader.DeleteHotkey(hotkey);
         }
 
         public void EditHotkey(string hotkey)
         {
+            // TODO
+            Console.Clear();
+            FileHelper.PrintWdfHeader();
+            Console.Write("Enter new hotkey to replace {0} ", hotkey);
+            string newHotkey = GetUserInput();
 
+            dataLoader.EditHotkey(hotkey, newHotkey);
         }
-        public void EditWingDing(string hotkey)
+
+        public void EditWingding(string wingding)
         {
+            // TODO
+            Console.Clear();
+            FileHelper.PrintWdfHeader();
+            Console.Write("Enter new wingding to replace {0} ", wingding);
+            string newWingding = Console.ReadLine();  //GetUserInput();
 
+            dataLoader.EditWingding(wingding, newWingding);
         }
+
         public void EditInstruction(string hotkey)
         {
+            // TODO
 
         }
 
@@ -115,7 +131,7 @@ namespace dingfork
             List<string> hotkeyMenuOptions = [];
             foreach (var keyWing in dataLoader.keysToWingDings)
             {
-                string instruction = dataLoader.wingDingsToInstructions[keyWing.Value];
+                string instruction = dataLoader.wingdingsToInstructions[keyWing.Value];
                 hotkeyMenuOptions.Add(string.Format("{0}|{1}|{2}", instruction, instruction+" "+keyWing.Value, keyWing.Key));
             }
             hotkeyMenuOptions.Add("Back|Back|0");
@@ -123,7 +139,7 @@ namespace dingfork
             while (true)
             {
                 Console.Clear();
-                FileHelper.printWdfHeader();
+                FileHelper.PrintWdfHeader();
                 hotkeyListMenu.PrintMenu();
                 string userInput = GetUserInput();
                 string optionInstruction = hotkeyListMenu.GetOptionMethodName(userInput);
@@ -138,19 +154,11 @@ namespace dingfork
                         "\n    name{1}{2}\n  hotkey{1}{0}\nwingding{1}{3}\n",
                          userInput, FileHelper.USER_INPUT_ARROW, optionInstruction, dataLoader.keysToWingDings[userInput]);
                     string hotkey = userInput;
-                    List<string> editOptions = new List<string>
-                    {
-                        "DeleteHotkey|Delete hotkey|1",
-                        "ChangeHotkey|Change hotkey|2",
-                        "ChangeInstruction|Change name|3",
-                        "ChangeWingDing|Change wingding|4", 
-                        "Back|Back|0"
-                    };
-                    Menu hotkeyEditMenu = CreateMenu("edit_menu", editMenuHeader, editOptions);
+                    Menu hotkeyEditMenu = CreateMenu("editmenu", editMenuHeader, []);
                     while (true)
                     {
                         Console.Clear();
-                        FileHelper.printWdfHeader();
+                        FileHelper.PrintWdfHeader();
                         hotkeyEditMenu.PrintMenu();
                         userInput = GetUserInput();
                         string editInstruction  = hotkeyEditMenu.GetOptionMethodName(userInput);
@@ -161,6 +169,19 @@ namespace dingfork
                         else
                         {
                             GetType().GetMethod(editInstruction)?.Invoke(this, [hotkey]);
+                            // Update the menu with new hotkey data
+                            if (editInstruction == "DeleteHotkey" || editInstruction == "EditHotkey")
+                            {
+                                hotkeyMenuOptions = [];
+                                foreach (var keyWing in dataLoader.keysToWingDings)
+                                {
+                                    string instruction = dataLoader.wingdingsToInstructions[keyWing.Value];
+                                    hotkeyMenuOptions.Add(string.Format("{0}|{1}|{2}", instruction, instruction+" "+keyWing.Value, keyWing.Key));
+                                }
+                                hotkeyMenuOptions.Add("Back|Back|0");
+                                hotkeyListMenu = CreateMenu("", "View/Edit Hotkeys", hotkeyMenuOptions);
+                                break;    
+                            }
                         }
                     }
                 }
@@ -218,7 +239,7 @@ namespace dingfork
                 Change the current data configuration 
             */
             Console.Clear();
-            FileHelper.printWdfHeader();
+            FileHelper.PrintWdfHeader();
             Console.WriteLine("Current config {0} {1}", FileHelper.USER_INPUT_ARROW, dataLoader.dataConfigName);
             Console.Write("\nEnter existing config name {0} ", FileHelper.USER_INPUT_ARROW);
             var newConfig = Console.ReadLine();
@@ -265,7 +286,7 @@ namespace dingfork
                 Converts text to wingding BrainF*ck instructions
             */
             Console.Clear();
-            FileHelper.printWdfHeader();
+            FileHelper.PrintWdfHeader();
             Console.Write("Enter text to convert: ");
 
             // Get the text to convert and update UserCode
@@ -285,7 +306,7 @@ namespace dingfork
                 TODO: allow loading non-delimited wingding code
             */
             Console.Clear();
-            FileHelper.printWdfHeader();
+            FileHelper.PrintWdfHeader();
             Console.Write("Enter file path "+FileHelper.USER_INPUT_ARROW);
 
             string codeFilepath = Console.ReadLine();
@@ -386,7 +407,7 @@ namespace dingfork
                 Console.Clear();
 
                 // Print menu info
-                FileHelper.printWdfHeader();
+                FileHelper.PrintWdfHeader();
                 Console.WriteLine(string.Format(unformattedCodeOutput, CleanUserCode(userCode.ToString()), codeOutput, dataLoader.dataConfigName));
                 mainMenu.PrintMenu();
 
@@ -415,12 +436,12 @@ namespace dingfork
                 }
                 else
                 {
-                    string wingDing = "";
+                    string wingding = "";
 
                     // Parse the type of input the user entered
-                    wingDing = dataLoader.GetDing(userKeyString);
+                    wingding = dataLoader.GetDing(userKeyString);
 
-                    userCode.Append(wingDing + FileHelper.INSTRUCTION_DELIM);
+                    userCode.Append(wingding + FileHelper.INSTRUCTION_DELIM);
                 }
            }
         }

@@ -83,7 +83,7 @@ namespace dingfork
             stopwatch.Stop();
             // Get input byte from the user
             Console.Clear();
-            FileHelper.printWdfHeader();
+            FileHelper.PrintWdfHeader();
             Console.Write("Input byte for instruction# {0}: ", globalInstructionIt);
             var key = Console.ReadKey();
             // Make sure the byte input is numeric
